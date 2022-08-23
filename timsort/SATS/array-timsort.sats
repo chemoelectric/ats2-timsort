@@ -28,3 +28,13 @@ array_timsort :
   (&array (a, arrsz),
    size_t n) -< !wrt >
     void
+
+(* Implement either array_timsort$lt or array_timsort$cmp.
+   The former takes precedence. The latter defaults to
+   ‘gcompare_ref_ref<a>’. *)
+fn {a : vt@ype}
+array_timsort$lt :
+  (&a, &a) -<> bool
+fn {a : vt@ype}
+array_timsort$cmp :
+  (&a, &a) -<> int

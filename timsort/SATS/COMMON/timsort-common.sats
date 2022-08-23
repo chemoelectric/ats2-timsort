@@ -26,6 +26,29 @@
 
 (*------------------------------------------------------------------*)
 
+prfn
+lemma_mul_isfun :               (* Multiplication is a function. *)
+  {m1, n1 : int}
+  {m2, n2 : int | m1 == m2; n1 == n2}
+  () -<prf>
+    [m1 * n1 == m2 * n2]
+    void
+
+prfn
+array_v_takeout2 :     (* Get views for two distinct array elements.*)
+  {a     : vt@ype}
+  {p     : addr}
+  {n     : int}
+  {i, j  : nat | i < n; j < n; i != j}
+  array_v (a, p, n) -<prf>
+    @(a @ p + (i * sizeof a),
+      a @ p + (j * sizeof a),
+      (a @ p + (i * sizeof a),
+       a @ p + (j * sizeof a)) -<prf,lin>
+        array_v (a, p, n))
+
+(*------------------------------------------------------------------*)
+
 fn {tk : tkind}
 g0uint_is_even :
   g0uint tk -<> bool

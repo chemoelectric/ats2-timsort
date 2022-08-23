@@ -21,12 +21,6 @@
 
 #define ats2_timsort_inline ATSinline ()
 
-#if defined __GNUC__
-#define ats2_timsort_memcpy __builtin_memcpy
-#else
-#define ats2_timsort_memcpy memcpy
-#endif
-
 ats2_timsort_inline atstype_bool
 ats2_timsort_g0uint_is_even_size (atstype_size n)
 {
