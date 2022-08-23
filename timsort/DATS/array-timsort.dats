@@ -110,6 +110,19 @@ insertion_sort_given_initial_sorted_run :
    bptr (a, p_arr, n)) -< !wrt >
     void
 
+(* Find a monotonically non-descending run or a monotonically
+   descending run, and convert it to a monotonically non-descending
+   run. That is, into a sorted run. *)
+extern fn {a : vt@ype}
+sort_a_monotonic_run :
+  {p_arr : addr}
+  {n     : pos}
+  (!array_v (a, p_arr, n) |
+   bptr_anchor (a, p_arr),
+   bptr (a, p_arr, n)) -< !wrt >
+    [runlen : pos | runlen <= n]
+    bptr (a, p_arr, runlen)
+
 (*------------------------------------------------------------------*)
 
 implement {}
@@ -228,6 +241,56 @@ insertion_sort_given_initial_sorted_run {p_arr} {n}
         end
   in
     loop (pf_arr | bp_i)
+  end
+
+(*------------------------------------------------------------------*)
+
+implement {a}
+sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
+  let
+    val bp_i = bptr_succ<a> bp_arr
+  in
+    if bp_i = bp_n then
+      bp_i                      (* A run of one. *)
+    else if elem_lt<a> (pf_arr | bp_i, bp_arr) then
+      let                       (* A descending run. *)
+        fun
+        loop {i : pos | i <= n}
+             .<n - i>.
+             (pf_arr : !array_v (a, p_arr, n) |
+              bp_i   : bptr (a, p_arr, i))
+            :<> [i1 : pos | i1 <= n]
+                bptr (a, p_arr, i1) =
+          if bp_i = bp_n then
+            bp_i
+          else if elem_lt<a> (pf_arr | bp_i, bptr_pred<a> bp_i) then
+            loop (pf_arr | bptr_succ<a> bp_i)
+          else
+            bp_i
+
+          val bp_i = loop (pf_arr | bptr_succ<a> bp_i)
+      in
+        subreverse_bptr_bptr (pf_arr | bp_arr, bp_i);
+        bp_i
+      end
+    else
+      let                       (* A non-descending run. *)
+        fun
+        loop {i : pos | i <= n}
+             .<n - i>.
+             (pf_arr : !array_v (a, p_arr, n) |
+              bp_i   : bptr (a, p_arr, i))
+            :<> [i1 : pos | i1 <= n]
+                bptr (a, p_arr, i1) =
+          if bp_i = bp_n then
+            bp_i
+          else if elem_lt<a> (pf_arr | bp_i, bptr_pred<a> bp_i) then
+            bp_i
+          else
+            loop (pf_arr | bptr_succ<a> bp_i)
+      in
+        loop (pf_arr | bptr_succ<a> bp_i)
+      end
   end
 
 (*------------------------------------------------------------------*)
