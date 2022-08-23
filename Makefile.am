@@ -75,8 +75,9 @@ PATSOPT_DEPS =
 AM_PATSOPTFLAGS =
 AM_PATSOPTFLAGS += -IATS $(builddir)
 AM_PATSOPTFLAGS += -IATS $(srcdir)
-# AM_PATSOPTFLAGS += -IATS ATS2_QUICKSORTS_CHAR_BIT=$(CHAR_BIT)
-# AM_PATSOPTFLAGS += -IATS ATS2_QUICKSORTS_STK_MAX=$(BITSIZEOF_SIZE_T)
+AM_PATSOPTFLAGS += -IATS ATS2_TIMSORT_CHAR_BIT=$(CHAR_BIT)
+AM_PATSOPTFLAGS += -IATS ATS2_TIMSORT_SIZEOF_SIZE_T=$(SIZEOF_SIZE_T)
+AM_PATSOPTFLAGS += -IATS ATS2_TIMSORT_BITSIZEOF_SIZE_T=$(BITSIZEOF_SIZE_T)
 
 TOTAL_PATSOPTFLAGS =
 TOTAL_PATSOPTFLAGS += $(AM_PATSOPTFLAGS)
@@ -151,31 +152,43 @@ CLEANFILES += $(BPTR_SATS_C)
 CLEANFILES += $(BPTR_DATS_C)
 BPTR_CATS = timsort/CATS/bptr.cats
 
-TIMSORT_SATS = timsort/SATS/timsort.sats
-# TIMSORT_DATS = timsort/DATS/timsort.dats
-TIMSORT_SATS_C = timsort/SATS/timsort_sats.c
-# TIMSORT_DATS_C = timsort/DATS/timsort_dats.c
-CLEANFILES += $(TIMSORT_SATS_C)
-# CLEANFILES += $(TIMSORT_DATS_C)
-# TIMSORT_HATS = timsort/HATS/timsort.hats
-# TIMSORT_CATS = timsort/CATS/timsort.cats
+ARRAY_TIMSORT_SATS = timsort/SATS/array-timsort.sats
+ARRAY_TIMSORT_DATS = timsort/DATS/array-timsort.dats
+ARRAY_TIMSORT_SATS_C = timsort/SATS/array-timsort_sats.c
+ARRAY_TIMSORT_DATS_C = timsort/DATS/array-timsort_dats.c
+CLEANFILES += $(ARRAY_TIMSORT_SATS_C)
+CLEANFILES += $(ARRAY_TIMSORT_DATS_C)
+# ARRAY_TIMSORT_HATS = timsort/HATS/array-timsort.hats
+
+TIMSORT_COMMON_SATS = timsort/SATS/COMMON/timsort-common.sats
+TIMSORT_COMMON_DATS = timsort/DATS/COMMON/timsort-common.dats
+TIMSORT_COMMON_SATS_C = timsort/SATS/COMMON/timsort-common_sats.c
+TIMSORT_COMMON_DATS_C = timsort/DATS/COMMON/timsort-common_dats.c
+CLEANFILES += $(TIMSORT_COMMON_SATS_C)
+CLEANFILES += $(TIMSORT_COMMON_DATS_C)
+
+TIMSORT_CATS = timsort/CATS/timsort.cats
 
 nobase_dist_pkginclude_HEADERS =
 nobase_dist_pkginclude_HEADERS += $(BPTR_SATS)
 nobase_dist_pkginclude_HEADERS += $(BPTR_DATS)
 nobase_dist_pkginclude_HEADERS += $(BPTR_CATS)
-nobase_dist_pkginclude_HEADERS += $(TIMSORT_SATS)
-# nobase_dist_pkginclude_HEADERS += $(TIMSORT_DATS)
-# nobase_dist_pkginclude_HEADERS += $(TIMSORT_HATS)
-# nobase_dist_pkginclude_HEADERS += $(TIMSORT_CATS)
+nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_SATS)
+nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_DATS)
+nobase_dist_pkginclude_HEADERS += $(TIMSORT_COMMON_SATS)
+nobase_dist_pkginclude_HEADERS += $(TIMSORT_COMMON_DATS)
+# nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_HATS)
+nobase_dist_pkginclude_HEADERS += $(TIMSORT_CATS)
 
 nodist_libats2_timsort_la_SOURCES =
 nodist_libats2_timsort_la_SOURCES += $(BPTR_SATS_C)
 nodist_libats2_timsort_la_SOURCES += $(BPTR_DATS_C)
-nodist_libats2_timsort_la_SOURCES += $(TIMSORT_SATS_C)
-# nodist_libats2_timsort_la_SOURCES += $(TIMSORT_DATS_C)
+nodist_libats2_timsort_la_SOURCES += $(ARRAY_TIMSORT_SATS_C)
+nodist_libats2_timsort_la_SOURCES += $(ARRAY_TIMSORT_DATS_C)
+nodist_libats2_timsort_la_SOURCES += $(TIMSORT_COMMON_SATS_C)
+nodist_libats2_timsort_la_SOURCES += $(TIMSORT_COMMON_DATS_C)
 libats2_timsort_la_DEPENDENCIES =
-# libats2_timsort_la_DEPENDENCIES += $(TIMSORT_CATS)
+libats2_timsort_la_DEPENDENCIES += $(TIMSORT_CATS)
 libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 
 #--------------------------------------------------------------------------

@@ -33,7 +33,7 @@
 #
 
 # aminclude_static.am generated automatically by Autoconf
-# from AX_AM_MACROS_STATIC on Tue Aug 23 13:08:32 CDT 2022
+# from AX_AM_MACROS_STATIC on Tue Aug 23 15:30:42 CDT 2022
 
 
 
@@ -175,9 +175,13 @@ libats2_timsort_la_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
 am__objects_1 = timsort/SATS/bptr_sats.lo
 am__objects_2 = timsort/DATS/bptr_dats.lo
-am__objects_3 = timsort/SATS/timsort_sats.lo
+am__objects_3 = timsort/SATS/array-timsort_sats.lo
+am__objects_4 = timsort/DATS/array-timsort_dats.lo
+am__objects_5 = timsort/SATS/COMMON/timsort-common_sats.lo
+am__objects_6 = timsort/DATS/COMMON/timsort-common_dats.lo
 nodist_libats2_timsort_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3)
+	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
+	$(am__objects_6)
 libats2_timsort_la_OBJECTS = $(nodist_libats2_timsort_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -202,9 +206,12 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po \
+	timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo \
 	timsort/DATS/$(DEPDIR)/bptr_dats.Plo \
+	timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo \
+	timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo \
 	timsort/SATS/$(DEPDIR)/bptr_sats.Plo \
-	timsort/SATS/$(DEPDIR)/timsort_sats.Plo
+	timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -293,9 +300,11 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BITSIZEOF_SIZE_T = @BITSIZEOF_SIZE_T@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CHAR_BIT = @CHAR_BIT@
 CODE_COVERAGE_CFLAGS = @CODE_COVERAGE_CFLAGS@
 CODE_COVERAGE_CPPFLAGS = @CODE_COVERAGE_CPPFLAGS@
 CODE_COVERAGE_CXXFLAGS = @CODE_COVERAGE_CXXFLAGS@
@@ -370,6 +379,7 @@ RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SIZEOF_SIZE_T = @SIZEOF_SIZE_T@
 STRIP = @STRIP@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
@@ -451,9 +461,10 @@ AUTOMAKE_OPTIONS = foreign subdir-objects -Wno-portability
 EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
 	list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
-# TIMSORT_DATS_C = timsort/DATS/timsort_dats.c
-CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(TIMSORT_SATS_C) \
-	list-ats-dependencies list-ats-dependencies_depsprog.c
+CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
+	$(ARRAY_TIMSORT_DATS_C) $(TIMSORT_COMMON_SATS_C) \
+	$(TIMSORT_COMMON_DATS_C) list-ats-dependencies \
+	list-ats-dependencies_depsprog.c
 DISTCLEANFILES = Makefile GNUmakefile
 BUILT_SOURCES = 
 AM_CPPFLAGS = -I$(builddir) -I$(srcdir) -I$(PATSHOME) \
@@ -474,9 +485,10 @@ CODE_COVERAGE_IGNORE_PATTERN = /usr/include/* /usr/include/*/* \
 
 #--------------------------------------------------------------------------
 PATSOPT_DEPS = 
-AM_PATSOPTFLAGS = -IATS $(builddir) -IATS $(srcdir)
-# AM_PATSOPTFLAGS += -IATS ATS2_QUICKSORTS_CHAR_BIT=$(CHAR_BIT)
-# AM_PATSOPTFLAGS += -IATS ATS2_QUICKSORTS_STK_MAX=$(BITSIZEOF_SIZE_T)
+AM_PATSOPTFLAGS = -IATS $(builddir) -IATS $(srcdir) -IATS \
+	ATS2_TIMSORT_CHAR_BIT=$(CHAR_BIT) -IATS \
+	ATS2_TIMSORT_SIZEOF_SIZE_T=$(SIZEOF_SIZE_T) -IATS \
+	ATS2_TIMSORT_BITSIZEOF_SIZE_T=$(BITSIZEOF_SIZE_T)
 TOTAL_PATSOPTFLAGS = $(AM_PATSOPTFLAGS) $(PATSOPTFLAGS) \
 	$(XPATSOPTFLAGS)
 TESTS_PATSOPTFLAGS = -IATS $(builddir)/tests -IATS $(srcdir)/tests
@@ -485,22 +497,24 @@ BPTR_DATS = timsort/DATS/bptr.dats
 BPTR_SATS_C = timsort/SATS/bptr_sats.c
 BPTR_DATS_C = timsort/DATS/bptr_dats.c
 BPTR_CATS = timsort/CATS/bptr.cats
-TIMSORT_SATS = timsort/SATS/timsort.sats
-# TIMSORT_DATS = timsort/DATS/timsort.dats
-TIMSORT_SATS_C = timsort/SATS/timsort_sats.c
-# CLEANFILES += $(TIMSORT_DATS_C)
-# TIMSORT_HATS = timsort/HATS/timsort.hats
-# TIMSORT_CATS = timsort/CATS/timsort.cats
+ARRAY_TIMSORT_SATS = timsort/SATS/array-timsort.sats
+ARRAY_TIMSORT_DATS = timsort/DATS/array-timsort.dats
+ARRAY_TIMSORT_SATS_C = timsort/SATS/array-timsort_sats.c
+ARRAY_TIMSORT_DATS_C = timsort/DATS/array-timsort_dats.c
+# ARRAY_TIMSORT_HATS = timsort/HATS/array-timsort.hats
+TIMSORT_COMMON_SATS = timsort/SATS/COMMON/timsort-common.sats
+TIMSORT_COMMON_DATS = timsort/DATS/COMMON/timsort-common.dats
+TIMSORT_COMMON_SATS_C = timsort/SATS/COMMON/timsort-common_sats.c
+TIMSORT_COMMON_DATS_C = timsort/DATS/COMMON/timsort-common_dats.c
+TIMSORT_CATS = timsort/CATS/timsort.cats
+# nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_HATS)
 nobase_dist_pkginclude_HEADERS = $(BPTR_SATS) $(BPTR_DATS) \
-	$(BPTR_CATS) $(TIMSORT_SATS)
-# nobase_dist_pkginclude_HEADERS += $(TIMSORT_DATS)
-# nobase_dist_pkginclude_HEADERS += $(TIMSORT_HATS)
-# nobase_dist_pkginclude_HEADERS += $(TIMSORT_CATS)
+	$(BPTR_CATS) $(ARRAY_TIMSORT_SATS) $(ARRAY_TIMSORT_DATS) \
+	$(TIMSORT_COMMON_SATS) $(TIMSORT_COMMON_DATS) $(TIMSORT_CATS)
 nodist_libats2_timsort_la_SOURCES = $(BPTR_SATS_C) $(BPTR_DATS_C) \
-	$(TIMSORT_SATS_C)
-# nodist_libats2_timsort_la_SOURCES += $(TIMSORT_DATS_C)
-# libats2_timsort_la_DEPENDENCIES += $(TIMSORT_CATS)
-libats2_timsort_la_DEPENDENCIES = $(BPTR_CATS)
+	$(ARRAY_TIMSORT_SATS_C) $(ARRAY_TIMSORT_DATS_C) \
+	$(TIMSORT_COMMON_SATS_C) $(TIMSORT_COMMON_DATS_C)
+libats2_timsort_la_DEPENDENCIES = $(TIMSORT_CATS) $(BPTR_CATS)
 nodist_list_ats_dependencies_SOURCES =  \
 	list-ats-dependencies_depsprog.c
 list_ats_dependencies_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
@@ -648,8 +662,28 @@ timsort/DATS/$(DEPDIR)/$(am__dirstamp):
 	@: > timsort/DATS/$(DEPDIR)/$(am__dirstamp)
 timsort/DATS/bptr_dats.lo: timsort/DATS/$(am__dirstamp) \
 	timsort/DATS/$(DEPDIR)/$(am__dirstamp)
-timsort/SATS/timsort_sats.lo: timsort/SATS/$(am__dirstamp) \
+timsort/SATS/array-timsort_sats.lo: timsort/SATS/$(am__dirstamp) \
 	timsort/SATS/$(DEPDIR)/$(am__dirstamp)
+timsort/DATS/array-timsort_dats.lo: timsort/DATS/$(am__dirstamp) \
+	timsort/DATS/$(DEPDIR)/$(am__dirstamp)
+timsort/SATS/COMMON/$(am__dirstamp):
+	@$(MKDIR_P) timsort/SATS/COMMON
+	@: > timsort/SATS/COMMON/$(am__dirstamp)
+timsort/SATS/COMMON/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) timsort/SATS/COMMON/$(DEPDIR)
+	@: > timsort/SATS/COMMON/$(DEPDIR)/$(am__dirstamp)
+timsort/SATS/COMMON/timsort-common_sats.lo:  \
+	timsort/SATS/COMMON/$(am__dirstamp) \
+	timsort/SATS/COMMON/$(DEPDIR)/$(am__dirstamp)
+timsort/DATS/COMMON/$(am__dirstamp):
+	@$(MKDIR_P) timsort/DATS/COMMON
+	@: > timsort/DATS/COMMON/$(am__dirstamp)
+timsort/DATS/COMMON/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) timsort/DATS/COMMON/$(DEPDIR)
+	@: > timsort/DATS/COMMON/$(DEPDIR)/$(am__dirstamp)
+timsort/DATS/COMMON/timsort-common_dats.lo:  \
+	timsort/DATS/COMMON/$(am__dirstamp) \
+	timsort/DATS/COMMON/$(DEPDIR)/$(am__dirstamp)
 
 libats2-timsort.la: $(libats2_timsort_la_OBJECTS) $(libats2_timsort_la_DEPENDENCIES) $(EXTRA_libats2_timsort_la_DEPENDENCIES) 
 	$(AM_V_CCLD)$(LINK) -rpath $(libdir) $(libats2_timsort_la_OBJECTS) $(libats2_timsort_la_LIBADD) $(LIBS)
@@ -662,16 +696,23 @@ mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f timsort/DATS/*.$(OBJEXT)
 	-rm -f timsort/DATS/*.lo
+	-rm -f timsort/DATS/COMMON/*.$(OBJEXT)
+	-rm -f timsort/DATS/COMMON/*.lo
 	-rm -f timsort/SATS/*.$(OBJEXT)
 	-rm -f timsort/SATS/*.lo
+	-rm -f timsort/SATS/COMMON/*.$(OBJEXT)
+	-rm -f timsort/SATS/COMMON/*.lo
 
 distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/bptr_dats.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/$(DEPDIR)/bptr_sats.Plo@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/$(DEPDIR)/timsort_sats.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -723,7 +764,9 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 	-rm -rf timsort/DATS/.libs timsort/DATS/_libs
+	-rm -rf timsort/DATS/COMMON/.libs timsort/DATS/COMMON/_libs
 	-rm -rf timsort/SATS/.libs timsort/SATS/_libs
+	-rm -rf timsort/SATS/COMMON/.libs timsort/SATS/COMMON/_libs
 
 distclean-libtool:
 	-rm -f libtool config.lt
@@ -1071,8 +1114,12 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f timsort/DATS/$(DEPDIR)/$(am__dirstamp)
 	-rm -f timsort/DATS/$(am__dirstamp)
+	-rm -f timsort/DATS/COMMON/$(DEPDIR)/$(am__dirstamp)
+	-rm -f timsort/DATS/COMMON/$(am__dirstamp)
 	-rm -f timsort/SATS/$(DEPDIR)/$(am__dirstamp)
 	-rm -f timsort/SATS/$(am__dirstamp)
+	-rm -f timsort/SATS/COMMON/$(DEPDIR)/$(am__dirstamp)
+	-rm -f timsort/SATS/COMMON/$(am__dirstamp)
 	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
@@ -1087,9 +1134,12 @@ clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po
+	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
+	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
+	-rm -f timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo
 	-rm -f timsort/SATS/$(DEPDIR)/bptr_sats.Plo
-	-rm -f timsort/SATS/$(DEPDIR)/timsort_sats.Plo
+	-rm -f timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo
 	-rm -f GNUmakefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-local distclean-tags
@@ -1140,9 +1190,12 @@ maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po
+	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
+	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
+	-rm -f timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo
 	-rm -f timsort/SATS/$(DEPDIR)/bptr_sats.Plo
-	-rm -f timsort/SATS/$(DEPDIR)/timsort_sats.Plo
+	-rm -f timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo
 	-rm -f GNUmakefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

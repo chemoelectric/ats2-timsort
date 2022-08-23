@@ -21,7 +21,7 @@
 AC_PREREQ([2.71])
 AC_INIT([ats2-timsort],[1.0.0],[],[ats2-timsort],[])
 
-AC_CONFIG_SRCDIR([timsort/SATS/timsort.sats])
+AC_CONFIG_SRCDIR([timsort/SATS/array-timsort.sats])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -85,13 +85,13 @@ PKG_INSTALLDIR
 #
 # Checks for typedefs, structures, and compiler characteristics.
 
-# CHAR_BIT=8
-# AC_ARG_VAR([CHAR_BIT],[The number of bits in a char [default=8]])
-# AC_CHECK_SIZEOF(size_t)
-# SIZEOF_SIZE_T="${ac_cv_sizeof_size_t}"
-# BITSIZEOF_SIZE_T=`expr ${CHAR_BIT} '*' ${SIZEOF_SIZE_T}`
-# AC_SUBST([SIZEOF_SIZE_T])
-# AC_SUBST([BITSIZEOF_SIZE_T])
+CHAR_BIT=8
+AC_ARG_VAR([CHAR_BIT],[The number of bits in a char [default=8]])
+AC_CHECK_SIZEOF(size_t)
+SIZEOF_SIZE_T="${ac_cv_sizeof_size_t}"
+BITSIZEOF_SIZE_T=`expr ${CHAR_BIT} '*' ${SIZEOF_SIZE_T}`
+AC_SUBST([SIZEOF_SIZE_T])
+AC_SUBST([BITSIZEOF_SIZE_T])
 
 #--------------------------------------------------------------------------
 #
