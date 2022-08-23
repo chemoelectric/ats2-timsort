@@ -34,7 +34,7 @@ staload _ = "timsort/DATS/COMMON/timsort-common.dats"
    extended via an insertion sort. *)
 extern fn {}
 minimum_run_length :
-  {n : nat}
+  {n : int}
   size_t n -<>
     [minrun : int | min (n, 32) <= minrun; minrun <= 64]
     size_t minrun
