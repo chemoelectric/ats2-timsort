@@ -36,13 +36,13 @@ extern fn {}
 minimum_run_length :
   {n : nat}
   size_t n -<>
-    [minrun : nat | minrun <= 64]
+    [minrun : int | min (n, 32) <= minrun; minrun <= 64]
     size_t minrun
 
 (*------------------------------------------------------------------*)
 
 implement {}
-minimum_run_length {n} n =
+minimum_run_length n =
   if n < i2sz 64 then
     n       (* The array to be sorted is small. Use insertion sort. *)
   else
@@ -52,10 +52,10 @@ minimum_run_length {n} n =
        of two. *)
     let
       fun
-      loop1 {q : nat}
+      loop1 {q : int | 32 <= q}
             .<q>.
             (q : size_t q)
-          :<> [minrun : nat | minrun <= 64]
+          :<> [minrun : int | 32 <= minrun; minrun <= 64]
               size_t minrun =
         if q < 64 then
           succ q
@@ -63,10 +63,10 @@ minimum_run_length {n} n =
           loop1 (half q)
 
       fun
-      loop0 {q : nat}
+      loop0 {q : int | 32 <= q}
             .<q>.
             (q : size_t q)
-          :<> [minrun : nat | minrun <= 64]
+          :<> [minrun : int | 32 <= minrun; minrun <= 64]
               size_t minrun =
         if q < 64 then
           q
@@ -79,27 +79,3 @@ minimum_run_length {n} n =
     end
 
 (*------------------------------------------------------------------*)
-
-
-(* /* Compute a good value for the minimum run length; natural runs shorter *)
-(*  * than this are boosted artificially via binary insertion. *)
-(*  * *)
-(*  * If n < 64, return n (it's too small to bother with fancy stuff). *)
-(*  * Else if n is an exact power of 2, return 32. *)
-(*  * Else return an int k, 32 <= k <= 64, such that n/k is close to, but *)
-(*  * strictly less than, an exact power of 2. *)
-(*  * *)
-(*  * See listsort.txt for more info. *)
-(*  */ *)
-(* static Py_ssize_t *)
-(* merge_compute_minrun(Py_ssize_t n) *)
-(* { *)
-(*     Py_ssize_t r = 0;           /* becomes 1 if any 1 bits are shifted off */ *)
-
-(*     assert(n >= 0); *)
-(*     while (n >= 64) { *)
-(*         r |= n & 1; *)
-(*         n >>= 1; *)
-(*     } *)
-(*     return n + r; *)
-(* } *)
