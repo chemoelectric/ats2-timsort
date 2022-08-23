@@ -1,0 +1,11 @@
+syntax: regexp
+
+# Directories for VPATH builds.
+^build/
+
+# Backup files.
+~$
+\.orig$
+
+# Files created by ‘autoreconf -fiv’ or similar.
+^autom4te\.cache$

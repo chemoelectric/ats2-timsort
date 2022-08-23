@@ -1,0 +1,477 @@
+(*
+
+Copyright © 2021 Barry Schwartz
+
+This program is free software: you can redistribute it and/or
+modify it under the terms of the GNU General Public License, as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received copies of the GNU General Public License
+along with this program. If not, see
+<https://www.gnu.org/licenses/>.
+
+*)
+
+(********************************************************************
+
+  Given source file names (relative to builddir or srcdir),
+  list full paths to them and other source files they depend on,
+  with a space character as the separation character.
+
+  The full paths are not necessarily free of "." and ".." entries.
+
+  A trailing newline IS NOT included in the output, but a leading
+  space character IS.
+
+  #include lines within C code are handled the same as within
+  ATS code.
+
+ ********************************************************************)
+
+#include "share/atspre_define.hats"
+#include "share/atspre_staload.hats"
+
+#define :: list_vt_cons
+#define NIL list_vt_nil ()
+
+#define BUILDDIR "@abs_builddir@/"
+#define SRCDIR "@abs_srcdir@/"
+
+(********************************************************************)
+(* replace: free s1 and return s2. *)
+
+fn
+replace_strnptr {p1 : addr} {n1 : nat}
+                {p2 : addr} {n2 : nat}
+                (s1 : strnptr (p1, n1),
+                 s2 : strnptr (p2, n2)) :
+    strnptr (p2, n2) =
+  begin
+    free s1;
+    s2
+  end
+
+symintr replace
+overload replace with replace_strnptr
+
+(********************************************************************)
+
+fn
+strcmp (s1 : string,
+        s2 : string) : int =
+  $extfcall (int, "strcmp", s1, s2)
+
+fn
+strncmp (s1 : string,
+         s2 : string,
+         n  : size_t) : int =
+  $extfcall (int, "strncmp", s1, s2, n)
+
+fn
+open_source_file (filename : string) :
+    Option_vt @(Strnptr1, FILEref) =
+  if strncmp (filename, "/", i2sz 1) = 0 then
+    begin
+      case+ fileref_open_opt (filename, file_mode_r) of
+      | ~ Some_vt f =>
+        let
+          val fullpath = string1_copy (g1ofg0 filename)
+          val _ = assertloc (i2ssz 0 <= length fullpath)
+        in
+          Some_vt @(fullpath, f)
+        end
+      | ~ None_vt () => None_vt ()
+    end
+  else
+    let
+      val fullpath = string_append (BUILDDIR, filename)
+      val fullpath = strptr2strnptr fullpath
+      val _ = assertloc (i2ssz 0 <= length fullpath)
+    in
+      case+ fileref_open_opt ($UNSAFE.castvwtp1 fullpath,
+                              file_mode_r) of
+      | ~ Some_vt f => Some_vt @(fullpath, f)
+      | ~ None_vt () =>
+        let
+          val _ = free fullpath
+          val fullpath = string_append (SRCDIR, filename)
+          val fullpath = strptr2strnptr fullpath
+          val _ = assertloc (i2ssz 0 <= length fullpath)
+        in
+          case+ fileref_open_opt ($UNSAFE.castvwtp1 fullpath,
+                                  file_mode_r) of
+          | ~ Some_vt f => Some_vt @(fullpath, f)
+          | ~ None_vt () =>
+            begin
+              free fullpath;
+              None_vt ()
+            end
+        end
+    end
+
+fn
+exists_in_strnptr_list (s   : !Strnptr1 >> _,
+                        lst : !List_vt (Strnptr1) >> _) :
+    bool =
+  let
+    prval _ = lemma_list_vt_param lst
+    fun
+    loop {n   : nat} .<n>.
+         (s   : !Strnptr1 >> _,
+          lst : !list_vt (Strnptr1, n) >> _) : bool =
+      case+ lst of
+      | NIL => false
+      | @ head :: tail =>
+        if strcmp ($UNSAFE.castvwtp1 head,
+                   $UNSAFE.castvwtp1 s) = 0 then
+          let
+            prval _ = fold@ lst
+          in
+            true
+          end
+        else
+          let
+            val result = loop (s, tail)
+            prval _ = fold@ lst
+          in
+            result
+          end
+  in
+    loop (s, lst)
+  end
+
+fn
+delete_duplicates_strnptr_list {n   : int}
+                               (lst : list_vt (Strnptr1, n)) :
+    [m : int] list_vt (Strnptr1, m) =
+  let
+    prval _ = lemma_list_vt_param lst
+    fun
+    loop {n1, n2 : nat} .<n1>.
+         (lst    : list_vt (Strnptr1, n1),
+          result : list_vt (Strnptr1, n2)) :
+        [m : int] list_vt (Strnptr1, m) =
+      case+ lst of
+      | ~ NIL => list_vt_reverse result
+      | ~ head :: tail =>
+        if exists_in_strnptr_list (head, result) then
+          let
+            prval _ = lemma_list_vt_param result
+          in
+            free head;
+            loop (tail, result)
+          end
+        else
+          let
+            prval _ = lemma_list_vt_param result
+          in
+            loop (tail, head :: result)
+          end
+  in
+    loop (lst, NIL)
+  end
+
+symintr delete_duplicates
+overload delete_duplicates with delete_duplicates_strnptr_list
+
+fn
+free_strnptr_list {n   : int}
+                  (lst : list_vt (Strnptr0, n)) :
+    void =
+  let
+    fun
+    loop {m   : int}
+         (lst : list_vt (Strnptr0, m)) : void =
+      case+ lst of
+      | ~ NIL => ()
+      | ~ head :: tail =>
+        begin
+          strnptr_free head;
+          loop tail
+        end
+  in
+    loop (lst)
+  end
+
+fn
+is_staload (s : string) : bool =
+  strncmp (s, "staload", i2sz 7) = 0
+
+fn
+is_dynload (s : string) : bool =
+  strncmp (s, "dynload", i2sz 7) = 0
+
+fn
+is_include (s : string) : bool =
+  strncmp (s, "#include", i2sz 8) = 0
+
+fn
+trim_leading_space {p : addr} {n : nat}
+                   (s : !strnptr (p, n) >> _) :
+    Strnptr1 =
+  let
+    val n : size_t n = g1i2u (length s)
+    fun
+    find_past {i : nat | i <= n} .<n - i>.
+              (s : !strnptr (p, n) >> _,
+               i : size_t i) :
+        [j : nat | j <= n] size_t j =
+      if i = n then
+        i
+      else if strnptr_get_at (s, i) = ' ' then
+        find_past (s, succ i)
+      else if strnptr_get_at (s, i) = '\t' then
+        find_past (s, succ i)
+      else
+        i
+    val i = find_past (s, i2sz 0)
+  in
+    string_make_substring ($UNSAFE.castvwtp1{string n} s, i, n - i)
+  end
+
+fn
+trim_past_start {p : addr} {n : nat}
+                (s : !strnptr (p, n) >> _) :
+    Strnptr1 =
+  let
+    val n : size_t n = g1i2u (length s)
+    fn
+    skip (s : !strnptr (p, n) >> _) :
+        [j : nat] size_t j =
+      if is_staload ($UNSAFE.castvwtp1 s) then
+        i2sz 7
+      else if is_dynload ($UNSAFE.castvwtp1 s) then
+        i2sz 7
+      else if is_include ($UNSAFE.castvwtp1 s) then
+        i2sz 8
+      else
+        begin
+          fprintln! (stderr_ref, "Line \"", s,
+                     "\" confuses me. Quitting.");
+          exit (1);
+          i2sz 0
+        end
+    val i = skip s
+    val _ = assertloc (i <= n)
+    val t =
+      string_make_substring ($UNSAFE.castvwtp1{string n} s, i, n - i)
+  in
+    replace (t, trim_leading_space (t))
+  end
+
+fn
+trim_past_loadname {p : addr} {n : nat}
+                   (s : !strnptr (p, n) >> _) :
+    Strnptr1 =
+  (* For simplicity, accept "FOO =" and practically anything else
+     ending in a "=", before "staload", "dynload", or "#include" *)
+  if strncmp ($UNSAFE.castvwtp1 s, "\"", i2sz 1) = 0 ||
+     strncmp ($UNSAFE.castvwtp1 s, "<", i2sz 1) = 0 then
+    strnptr_copy s
+  else
+    let
+      val n : size_t n = g1i2u (length s)
+      fun
+      loop {i : nat | i <= n} .<n - i>.
+           (s : !strnptr (p, n) >> _,
+            i : size_t i) :
+          [j : nat | j <= n] size_t j =
+        if i = n then
+          i
+        else if strnptr_get_at (s, i) <> '=' then
+          loop (s, succ i)
+        else
+          succ i
+      val i = loop (s, i2sz 0)
+      val s = string_make_substring ($UNSAFE.castvwtp1{string n} s,
+                                     i, n - i)
+    in
+      replace (s, trim_leading_space (s))
+    end
+
+fn
+trim_past_quote {p : addr} {n : nat}
+                (s : !strnptr (p, n) >> _) :
+    Strnptr1 =
+  (* For simplicity, accept #include "..> and #include <.." *)
+  if strncmp ($UNSAFE.castvwtp1 s, "\"", i2sz 1) <> 0 &&
+     strncmp ($UNSAFE.castvwtp1 s, "<", i2sz 1) <> 0 then
+    begin
+      fprintln! (stderr_ref, "String \"", s,
+                 "\" confuses me. Quitting.");
+      exit (1);
+      string1_copy ("")
+    end
+  else
+    let
+      val n : size_t n = g1i2u (length s)
+      val _ = assertloc (i2sz 1 <= n)
+      val i = i2sz 1
+    in
+      string_make_substring ($UNSAFE.castvwtp1{string n} s, i, n - i)
+    end
+
+fn
+take_until_quote {p : addr} {n : nat}
+                 (s : !strnptr (p, n) >> _) :
+    Strnptr1 =
+  let
+    val n : size_t n = g1i2u (length s)
+    fun
+    find_quote {i : nat | i <= n} .<n - i>.
+               (s : !strnptr (p, n) >> _,
+                i : size_t i) :
+        [j : nat | j <= n] size_t j =
+      if i = n then
+        begin
+          fprintln! (stderr_ref, "Unterminated quoted string \"",
+                     s, "\". Quitting.");
+          exit (1);
+          i
+        end
+      (* For simplicity, accept #include "..> and #include <.." *)
+      else if (strnptr_get_at (s, i) = '"' ||
+               strnptr_get_at (s, i) = '>') then
+        i
+      else
+        find_quote (s, succ i)
+    val i = find_quote (s, i2sz 0)
+  in
+    string_make_substring ($UNSAFE.castvwtp1{string n} s, i2sz 0, i)
+  end
+
+extern fn
+find_depends_fileref (f : FILEref) : List0_vt (Strnptr1)
+
+fn
+find_depends_filename (filename : string) : List0_vt (Strnptr1) =
+  case+ open_source_file (filename) of
+  | ~ Some_vt @(fullpath, f) => fullpath :: find_depends_fileref (f)
+  | ~ None_vt () => NIL
+
+implement
+find_depends_fileref (f) =
+  let
+    fun
+    find_lines (f   : FILEref,
+                lst : List0_vt (Strnptr1)) :
+        List0_vt (Strnptr1) =
+      if fileref_is_eof (f) then
+        lst
+      else
+        let
+          val line = fileref_get_line_string (f)
+          val line = strptr2strnptr line
+        in
+          if fileref_is_eof (f) then
+            begin
+              free line;
+              lst
+            end
+          else
+            let
+              val _ = assertloc (i2ssz 0 <= length line)
+              val s = trim_leading_space line
+            in
+              free line;
+              if (is_staload ($UNSAFE.castvwtp1 s) ||
+                  is_dynload ($UNSAFE.castvwtp1 s) ||
+                  is_include ($UNSAFE.castvwtp1 s)) then
+                let
+                  val s = replace (s, trim_past_start (s))
+                  val s = replace (s, trim_past_loadname (s))
+                  val s = replace (s, trim_past_quote (s))
+                  val s = replace (s, take_until_quote (s))
+                  val _ = assertloc (i2ssz 0 <= length s)
+                  val deps =
+                    find_depends_filename ($UNSAFE.castvwtp1 s)
+                  val _ = free s
+                  val lst = list_vt_append (lst, deps)
+                in
+                  find_lines (f, lst)
+                end
+              else
+                begin
+                  free s;
+                  find_lines (f, lst)
+                end
+            end
+        end
+  in
+    find_lines (f, NIL)
+  end
+
+implement
+main0 (argc, argv) =
+  let
+    fun
+    argv_to_list {n, i : pos | i <= n} .<n - i>.
+                 (argc : int n,
+                  argv : !argv n >> _,
+                  i    : int i,
+                  lst  : List0_vt (Strnptr1)) :
+        List0_vt (Strnptr1) =
+      if i = argc then
+        let
+          val lst = delete_duplicates lst
+          prval _ = lemma_list_vt_param lst
+        in
+          list_vt_reverse lst
+        end
+      else
+        let
+          val s = string1_copy (g1ofg0 argv[i])
+          val _ = assertloc (i2ssz 0 <= length s)
+        in
+          argv_to_list (argc, argv, succ i, s :: lst)
+        end
+
+    fun
+    collect_deps {n    : nat} .<n>.
+                 (args : !list_vt (Strnptr1, n) >> _,
+                  deps : List0_vt (Strnptr1)) :
+        List0_vt (Strnptr1) =
+      case+ args of
+      | NIL => deps
+      | @ filename :: tail =>
+        let
+          val new_deps =
+            find_depends_filename ($UNSAFE.castvwtp1 filename)
+          val new_deps = delete_duplicates new_deps
+          val deps = list_vt_append (deps, new_deps)
+          val deps = delete_duplicates deps
+          prval _ = lemma_list_vt_param deps
+          val result = collect_deps (tail, deps)
+          prval _ = fold@ args
+        in
+          result
+        end
+
+    fun
+    print_deps {n   : nat} .<n>.
+               (lst : !list_vt (Strnptr1, n) >> _) : void =
+      case+ lst of
+      | NIL => ()
+      | @ head :: tail =>
+        {
+          val _ = print! (" ", head)
+          val _ = print_deps (tail)
+          prval _ = fold@ lst
+        }
+  in
+    if 1 <= argc then
+      {
+        val args = argv_to_list (argc, argv, 1, NIL)
+        val deps = collect_deps (args, NIL)
+        val _ = free_strnptr_list args
+        prval _ = lemma_list_vt_param deps
+        val _ = print_deps deps
+        val _ = free_strnptr_list deps
+      }
+  end
