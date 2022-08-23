@@ -105,9 +105,9 @@ insertion_sort_given_initial_sorted_run :
   {n      : int}
   {runlen : pos | runlen <= n}
   (!array_v (a, p_arr, n) |
-   ptr p_arr,
-   size_t runlen,
-   size_t n) -< !wrt >
+   bptr_anchor (a, p_arr),
+   bptr (a, p_arr, runlen),
+   bptr (a, p_arr, n)) -< !wrt >
     void
 
 (*------------------------------------------------------------------*)
@@ -209,13 +209,10 @@ insertion_position
 
 implement {a}
 insertion_sort_given_initial_sorted_run {p_arr} {n}
-                                        (pf_arr | p_arr, runlen, n) =
+                                        (pf_arr |
+                                         bp_arr, bp_i, bp_n) =
+  (* A stable binary insertion sort. *)
   let
-    val bp_arr = ptr2bptr_anchor p_arr
-
-    val bp_i = bptr_add<a> (bp_arr, runlen)
-    and bp_n = bptr_add<a> (bp_arr, n)
-
     fun
     loop {i : pos | i <= n}
          .<n - i>.
