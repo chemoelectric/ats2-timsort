@@ -99,7 +99,6 @@ stk_vt_make (pf | p, stk_max) =
     pf = pf |
     p = p,
     depth = 0,
-    size_sum = i2sz 0,
     stk_max = stk_max
   }
 
@@ -109,8 +108,7 @@ stk_vt_push (pf_entry | p_entry, size, stk) =
     macdef storage = !(stk.p)
   in
     stk.depth := succ (stk.depth);
-    storage[stk.stk_max - stk.depth] := @(p_entry, size);
-    stk.size_sum := stk.size_sum + size
+    storage[stk.stk_max - stk.depth] := @(p_entry, size)
   end
 
 implement {a}
@@ -119,9 +117,6 @@ stk_vt_pop stk =
     macdef storage = !(stk.p)
     val @(p_arr1, size) = storage[stk.stk_max - stk.depth]
     val () = stk.depth := pred (stk.depth)
-    val size_sum = stk.size_sum
-    val () = $effmask_exn assertloc (size <= size_sum)
-    val () = stk.size_sum := size_sum - size
     prval [size : int] EQINT () = eqint_make_guint size
     val () = $effmask_exn assertloc (ptr_isnot_null p_arr1)
   in

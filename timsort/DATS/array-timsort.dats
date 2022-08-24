@@ -323,7 +323,7 @@ timsort_main
            p_arr   : ptr p_arr,
            n       : size_t n,
            p_work  : ptr p_work,
-           stk     : &stk_vt (p_stk, 0, 0, stk_max))
+           stk     : &stk_vt (p_stk, 0, stk_max))
     :<!wrt> void =
   ()                            (* FIXME *)
 
