@@ -30,6 +30,7 @@ staload _ = "timsort/DATS/COMMON/timsort-common.dats"
 staload "timsort/SATS/bptr.sats"
 staload _ = "timsort/DATS/bptr.dats"
 
+#define WORKSPACE_THRESHOLD 256
 #define STK_MAX_THRESHOLD 64   (* The bitsize of a size_t on AMD64. *)
 
 macdef orelse1 (a, b) = (if ,(a) then true else ,(b))
@@ -313,10 +314,11 @@ fn {a : vt@ype}
 timsort   {p_arr   : addr}
           {n       : int}
           {p_work  : addr}
+          {worksz  : int | n <= 2 * worksz}
           {p_stk   : addr}
           {stk_max : pos}
           (pf_arr  : !array_v (a, p_arr, n),
-           pf_work : !array_v (a?, p_work, n) |
+           pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
            n       : size_t n,
            p_work  : ptr p_work,
@@ -329,8 +331,9 @@ timsort_with_stk_on_stack
           {p_arr   : addr}
           {n       : int}
           {p_work  : addr}
+          {worksz  : int | n <= 2 * worksz}
           (pf_arr  : !array_v (a, p_arr, n),
-           pf_work : !array_v (a?, p_work, n) |
+           pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
            n       : size_t n,
            p_work  : ptr p_work)
@@ -350,8 +353,9 @@ timsort_with_stk_in_heap
           {p_arr   : addr}
           {n       : int}
           {p_work  : addr}
+          {worksz  : int | n <= 2 * worksz}
           (pf_arr  : !array_v (a, p_arr, n),
-           pf_work : !array_v (a?, p_work, n) |
+           pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
            n       : size_t n,
            p_work  : ptr p_work)
@@ -377,8 +381,9 @@ timsort_providing_stk
           {p_arr   : addr}
           {n       : int}
           {p_work  : addr}
+          {worksz  : int | n <= 2 * worksz}
           (pf_arr  : !array_v (a, p_arr, n),
-           pf_work : !array_v (a?, p_work, n) |
+           pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
            n       : size_t n,
            p_work  : ptr p_work)
@@ -391,28 +396,64 @@ timsort_providing_stk
 
 implement {a}
 array_timsort_given_workspace {n} {arrsz} {worksz} (arr, n, work) =
+  if n <= i2sz 1 then
+    ()                          (* No sorting is needed. *)
+  else
+    let
+      prval () = lemma_g1uint_param n
+
+      val p_arr = addr@ arr
+      and p_work = addr@ work
+
+      prval [p_arr : addr] EQADDR () = eqaddr_make_ptr p_arr
+      prval [p_work : addr] EQADDR () = eqaddr_make_ptr p_work
+
+      prval @(pf_arr, pf_arr_unused) =
+        array_v_split {a} {p_arr} {arrsz} {n} (view@ arr)
+      prval pf_work = view@ work
+
+      val () = timsort_providing_stk (pf_arr, pf_work |
+                                      p_arr, n, p_work)
+
+      prval () = view@ arr :=
+        array_v_unsplit (pf_arr, pf_arr_unused)
+      prval () = view@ work := pf_work
+    in
+    end
+
+implement {a}
+array_timsort_not_given_workspace {n} {arrsz} (arr, n) =
   let
+    prval () = lemma_array_param arr
     prval () = lemma_g1uint_param n
 
-    val p_arr = addr@ arr
-    and p_work = addr@ work
-
-    prval [p_arr : addr] EQADDR () = eqaddr_make_ptr p_arr
-    prval [p_work : addr] EQADDR () = eqaddr_make_ptr p_work
-
-    prval @(pf_arr, pf_arr_unused) =
-      array_v_split {a} {p_arr} {arrsz} {n} (view@ arr)
-    prval @(pf_work, pf_work_unused) =
-      array_v_split {a?} {p_work} {worksz} {n} (view@ work)
-
-    val () = timsort_providing_stk (pf_arr, pf_work |
-                                    p_arr, n, p_work)
-
-    prval () = view@ arr :=
-      array_v_unsplit (pf_arr, pf_arr_unused)
-    prval () = view@ work :=
-      array_v_unsplit (pf_work, pf_work_unused)
+    fn
+    sort {n      : int}
+         {arrsz  : int | n <= arrsz}
+         {worksz : int | n <= 2 * worksz}
+         (arr    : &array (a, arrsz),
+          n      : size_t n,
+          work   : &array (a?, worksz))
+        :<!wrt> void =
+      array_timsort_given_workspace<a> (arr, n, work)
   in
+    if n <= i2sz 1 then
+      ()                        (* No sorting is needed. *)
+    else if n <= double (i2sz WORKSPACE_THRESHOLD) then
+      let                       (* Put the workspace on the stack. *)
+        var work : @[a?][WORKSPACE_THRESHOLD]
+      in
+        sort (arr, n, work)
+      end
+    else
+      let                       (* Put the workspace in the heap. *)
+        val worksz = n \ceildiv (i2sz 2)
+        val @(pf_work, pfgc_work | p_work) =
+          array_ptr_alloc<a?> worksz
+      in
+        sort (arr, n, !p_work);
+        array_ptr_free (pf_work, pfgc_work | p_work)
+      end
   end
 
 (*------------------------------------------------------------------*)

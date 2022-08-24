@@ -25,7 +25,7 @@ fn {a : vt@ype}
 array_timsort_given_workspace :
   {n      : int}
   {arrsz  : int | n <= arrsz}
-  {worksz : int | n <= worksz}
+  {worksz : int | n <= 2 * worksz}
   (&array (a, arrsz),
    size_t n,
    &array (a?, worksz)) -< !wrt >

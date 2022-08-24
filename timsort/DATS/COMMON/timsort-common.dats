@@ -78,15 +78,18 @@ array_v_takeout2 {a} {p} {n} {i, j} pf_arr =
 
 implement g0uint_is_even<sizeknd> n =
   g0uint_is_even_size n
-
-implement g0uint_is_odd<sizeknd> n =
-  g0uint_is_odd_size n
-
 implement g1uint_is_even<sizeknd> n =
   g1uint_is_even_size n
 
+implement g0uint_is_odd<sizeknd> n =
+  g0uint_is_odd_size n
 implement g1uint_is_odd<sizeknd> n =
   g1uint_is_odd_size n
+
+implement g0uint_ceildiv<sizeknd> (m, n) =
+  g0uint_ceildiv_size (m, n)
+implement g1uint_ceildiv<sizeknd> (m, n) =
+  g1uint_ceildiv_size (m, n)
 
 (*------------------------------------------------------------------*)
 
