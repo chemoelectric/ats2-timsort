@@ -133,7 +133,11 @@ minimum_run_length n =
     (* The algorithm here is similar to that used in Python’s
        listsort, and tries to divide up n into a number of runs that
        is either a power of two or is close to but less than a power
-       of two. *)
+       of two.
+       
+       The routine isolates and shifts the six most significant bits
+       of n. If any of the bits less significant than those was set,
+       then one is added to the result. *)
     let
       fun
       loop1 {q : int | 32 <= q}
