@@ -285,7 +285,7 @@ sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
 
           val bp_i = loop (pf_arr | bptr_succ<a> bp_i)
       in
-        subreverse_bptr_bptr (pf_arr | bp_arr, bp_i);
+        subreverse<a> (pf_arr | bp_arr, bp_i);
         bp_i
       end
     else
