@@ -311,7 +311,8 @@ sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
 (*------------------------------------------------------------------*)
 
 fn {a : vt@ype}
-timsort   {p_arr   : addr}
+timsort_main
+          {p_arr   : addr}
           {n       : int}
           {p_work  : addr}
           {worksz  : int | n <= 2 * worksz}
@@ -343,7 +344,7 @@ timsort_with_stk_on_stack
       @[stk_entry_t][STK_MAX_THRESHOLD] (@(the_null_ptr, i2sz 0))
     var stk = stk_vt_make (view@ stk_storage |
                            addr@ stk_storage, i2sz STK_MAX_THRESHOLD)
-    val () = timsort (pf_arr, pf_work | p_arr, n, p_work, stk)
+    val () = timsort_main (pf_arr, pf_work | p_arr, n, p_work, stk)
     prval () = view@ stk_storage := stk.pf
   in
   end
@@ -369,7 +370,7 @@ timsort_with_stk_in_heap
         (!p_stk_storage, sizeof<size_t>, @(the_null_ptr, i2sz 0))
     var stk = stk_vt_make (pf_stk_storage |
                            p_stk_storage, sizeof<size_t>)
-    val () = timsort (pf_arr, pf_work | p_arr, n, p_work, stk)
+    val () = timsort_main (pf_arr, pf_work | p_arr, n, p_work, stk)
     val () = pf_stk_storage := stk.pf
     val () = array_ptr_free (pf_stk_storage, pfgc_stk_storage |
                              p_stk_storage)
