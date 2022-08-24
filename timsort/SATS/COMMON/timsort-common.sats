@@ -49,6 +49,12 @@ array_v_takeout2 :     (* Get views for two distinct array elements.*)
 
 (*------------------------------------------------------------------*)
 
+fn
+char_bit :
+  () -<> [char_bit : pos] size_t char_bit
+
+(*------------------------------------------------------------------*)
+
 fn {tk : tkind}
 g0uint_is_even :
   g0uint tk -<> bool
@@ -91,5 +97,62 @@ fn
 g1uint_is_odd_size :
   {n : int}
   size_t n -<> bool (n mod 2 == 1) = "mac#%"
+
+(*------------------------------------------------------------------*)
+(* A stack of subarray boundaries.                                  *)
+
+typedef stk_entry_t (p : addr, n : int) =
+  [p == null || 0 < n] @(ptr p, size_t n)
+typedef stk_entry_t (n : int) =
+  [p : addr] stk_entry_t (p, n)
+typedef stk_entry_t =
+  [n : int] stk_entry_t n
+
+vtypedef stk_vt (p        : addr,
+                 depth    : int,
+                 size_sum : int,
+                 stk_max  : int) =
+  @{
+    pf       = array_v (stk_entry_t, p, stk_max) |
+    p        = ptr p,
+    depth    = int depth,
+    size_sum = size_t size_sum,
+    stk_max  = size_t stk_max
+  }
+
+fn {}
+stk_vt_make :
+  {p       : addr}
+  {stk_max : int}
+  (array_v (stk_entry_t, p, stk_max) | ptr p, size_t stk_max) -<>
+    stk_vt (p, 0, 0, stk_max)
+
+fn {a : vt@ype}
+stk_vt_push :
+  {p_stk    : addr}
+  {stk_max  : int}
+  {depth    : nat | depth < stk_max}
+  {size_sum : nat}
+  {p_entry  : addr}
+  {size     : pos}
+  (!array_v (a, p_entry, size) |
+   ptr p_entry,
+   size_t size,
+   &stk_vt (p_stk, depth, size_sum, stk_max)
+     >> stk_vt (p_stk, depth + 1, size_sum + size, stk_max)) -< !wrt >
+    void
+
+fn {a : vt@ype}
+stk_vt_pop :
+  {p_stk    : addr}
+  {stk_max  : int}
+  {depth    : pos | depth < stk_max}
+  {size_sum : pos}
+  {p_entry  : addr}
+  (&stk_vt (p_stk, depth, size_sum, stk_max)
+     >> stk_vt (p_stk, depth - 1, size_sum - size, stk_max)) -< !wrt >
+    #[size : pos | size <= size_sum]
+    @(P2tr1 (array (a, size)),
+      size_t size)
 
 (*------------------------------------------------------------------*)

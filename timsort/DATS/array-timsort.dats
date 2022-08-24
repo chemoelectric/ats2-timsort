@@ -30,6 +30,16 @@ staload _ = "timsort/DATS/COMMON/timsort-common.dats"
 staload "timsort/SATS/bptr.sats"
 staload _ = "timsort/DATS/bptr.dats"
 
+#define STK_MAX_THRESHOLD 64   (* The bitsize of a size_t on AMD64. *)
+
+macdef orelse1 (a, b) = (if ,(a) then true else ,(b))
+infix ( || ) |||
+macdef ||| = orelse1
+
+macdef andalso1 (a, b) = (if ,(a) then ,(b) else false)
+infix ( && ) &&&
+macdef &&& = andalso1
+
 (*------------------------------------------------------------------*)
 
 implement {a}
@@ -295,6 +305,114 @@ sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
       in
         loop (pf_arr | bptr_succ<a> bp_i)
       end
+  end
+
+(*------------------------------------------------------------------*)
+
+fn {a : vt@ype}
+timsort   {p_arr   : addr}
+          {n       : int}
+          {p_work  : addr}
+          {p_stk   : addr}
+          {stk_max : pos}
+          (pf_arr  : !array_v (a, p_arr, n),
+           pf_work : !array_v (a?, p_work, n) |
+           p_arr   : ptr p_arr,
+           n       : size_t n,
+           p_work  : ptr p_work,
+           stk     : &stk_vt (p_stk, 0, 0, stk_max))
+    :<!wrt> void =
+  ()                            (* FIXME *)
+
+fn {a : vt@ype}
+timsort_with_stk_on_stack
+          {p_arr   : addr}
+          {n       : int}
+          {p_work  : addr}
+          (pf_arr  : !array_v (a, p_arr, n),
+           pf_work : !array_v (a?, p_work, n) |
+           p_arr   : ptr p_arr,
+           n       : size_t n,
+           p_work  : ptr p_work)
+    :<!wrt> void =
+  let
+    var stk_storage =
+      @[stk_entry_t][STK_MAX_THRESHOLD] (@(the_null_ptr, i2sz 0))
+    var stk = stk_vt_make (view@ stk_storage |
+                           addr@ stk_storage, i2sz STK_MAX_THRESHOLD)
+    val () = timsort (pf_arr, pf_work | p_arr, n, p_work, stk)
+    prval () = view@ stk_storage := stk.pf
+  in
+  end
+
+fn {a : vt@ype}
+timsort_with_stk_in_heap
+          {p_arr   : addr}
+          {n       : int}
+          {p_work  : addr}
+          (pf_arr  : !array_v (a, p_arr, n),
+           pf_work : !array_v (a?, p_work, n) |
+           p_arr   : ptr p_arr,
+           n       : size_t n,
+           p_work  : ptr p_work)
+    :<!wrt> void =
+  let
+    val () = $effmask_exn assertloc (i2sz 1 <= sizeof<size_t>)
+    val @(pf_stk_storage, pfgc_stk_storage | p_stk_storage) =
+      array_ptr_alloc<stk_entry_t> (sizeof<size_t>)
+    val () =
+      array_initize_elt<stk_entry_t>
+        (!p_stk_storage, sizeof<size_t>, @(the_null_ptr, i2sz 0))
+    var stk = stk_vt_make (pf_stk_storage |
+                           p_stk_storage, sizeof<size_t>)
+    val () = timsort (pf_arr, pf_work | p_arr, n, p_work, stk)
+    val () = pf_stk_storage := stk.pf
+    val () = array_ptr_free (pf_stk_storage, pfgc_stk_storage |
+                             p_stk_storage)
+  in
+  end
+
+fn {a : vt@ype}
+timsort_providing_stk
+          {p_arr   : addr}
+          {n       : int}
+          {p_work  : addr}
+          (pf_arr  : !array_v (a, p_arr, n),
+           pf_work : !array_v (a?, p_work, n) |
+           p_arr   : ptr p_arr,
+           n       : size_t n,
+           p_work  : ptr p_work)
+    :<!wrt> void =
+  if (char_bit () * sizeof<size_t> <= i2sz STK_MAX_THRESHOLD)
+        ||| (iseqz (n >> STK_MAX_THRESHOLD)) then
+    timsort_with_stk_on_stack (pf_arr, pf_work | p_arr, n, p_work)
+  else
+    timsort_with_stk_in_heap (pf_arr, pf_work | p_arr, n, p_work)
+
+implement {a}
+array_timsort_given_workspace {n} {arrsz} {worksz} (arr, n, work) =
+  let
+    prval () = lemma_g1uint_param n
+
+    val p_arr = addr@ arr
+    and p_work = addr@ work
+
+    prval [p_arr : addr] EQADDR () = eqaddr_make_ptr p_arr
+    prval [p_work : addr] EQADDR () = eqaddr_make_ptr p_work
+
+    prval @(pf_arr, pf_arr_unused) =
+      array_v_split {a} {p_arr} {arrsz} {n} (view@ arr)
+    prval @(pf_work, pf_work_unused) =
+      array_v_split {a?} {p_work} {worksz} {n} (view@ work)
+
+    val () = timsort_providing_stk (pf_arr, pf_work |
+                                    p_arr, n, p_work)
+
+    prval () = view@ arr :=
+      array_v_unsplit (pf_arr, pf_arr_unused)
+    prval () = view@ work :=
+      array_v_unsplit (pf_work, pf_work_unused)
+  in
   end
 
 (*------------------------------------------------------------------*)

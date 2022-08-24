@@ -85,14 +85,6 @@ PKG_INSTALLDIR
 #
 # Checks for typedefs, structures, and compiler characteristics.
 
-CHAR_BIT=8
-AC_ARG_VAR([CHAR_BIT],[The number of bits in a char [default=8]])
-AC_CHECK_SIZEOF(size_t)
-SIZEOF_SIZE_T="${ac_cv_sizeof_size_t}"
-BITSIZEOF_SIZE_T=`expr ${CHAR_BIT} '*' ${SIZEOF_SIZE_T}`
-AC_SUBST([SIZEOF_SIZE_T])
-AC_SUBST([BITSIZEOF_SIZE_T])
-
 #--------------------------------------------------------------------------
 #
 # Checks for library functions.

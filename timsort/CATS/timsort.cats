@@ -19,7 +19,15 @@
 #ifndef TIMSORT__CATS__TIMSORT_CATS__HEADER_GUARD__
 #define TIMSORT__CATS__TIMSORT_CATS__HEADER_GUARD__
 
+#include <limits.h>
+
 #define ats2_timsort_inline ATSinline ()
+
+ats2_timsort_inline atstype_size
+ats2_timsort_char_bit (void)
+{
+  return (atstype_size) CHAR_BIT;
+}
 
 ats2_timsort_inline atstype_bool
 ats2_timsort_g0uint_is_even_size (atstype_size n)

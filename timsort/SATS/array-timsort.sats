@@ -22,12 +22,25 @@
 staload "timsort/SATS/COMMON/timsort-common.sats"
 
 fn {a : vt@ype}
-array_timsort :
+array_timsort_given_workspace :
+  {n      : int}
+  {arrsz  : int | n <= arrsz}
+  {worksz : int | n <= worksz}
+  (&array (a, arrsz),
+   size_t n,
+   &array (a?, worksz)) -< !wrt >
+    void
+
+fn {a : vt@ype}
+array_timsort_not_given_workspace :
   {n     : int}
   {arrsz : int | n <= arrsz}
   (&array (a, arrsz),
    size_t n) -< !wrt >
     void
+
+overload array_timsort with array_timsort_given_workspace
+overload array_timsort with array_timsort_not_given_workspace
 
 (* Implement either array_timsort$lt or array_timsort$cmp.
    The former takes precedence. The latter defaults to

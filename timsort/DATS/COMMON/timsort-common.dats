@@ -74,6 +74,8 @@ array_v_takeout2 {a} {p} {n} {i, j} pf_arr =
         lam (pf_i, pf_j) =<lin,prf> fpf_ji (pf_j, pf_i))
     end
 
+(*------------------------------------------------------------------*)
+
 implement g0uint_is_even<sizeknd> n =
   g0uint_is_even_size n
 
@@ -85,3 +87,43 @@ implement g1uint_is_even<sizeknd> n =
 
 implement g1uint_is_odd<sizeknd> n =
   g1uint_is_odd_size n
+
+(*------------------------------------------------------------------*)
+
+implement {}
+stk_vt_make (pf | p, stk_max) =
+  @{
+    pf = pf |
+    p = p,
+    depth = 0,
+    size_sum = i2sz 0,
+    stk_max = stk_max
+  }
+
+implement {a}
+stk_vt_push (pf_entry | p_entry, size, stk) =
+  let
+    macdef storage = !(stk.p)
+  in
+    stk.depth := succ (stk.depth);
+    storage[stk.stk_max - stk.depth] := @(p_entry, size);
+    stk.size_sum := stk.size_sum + size
+  end
+
+implement {a}
+stk_vt_pop stk =
+  let
+    macdef storage = !(stk.p)
+    val @(p_arr1, size) = storage[stk.stk_max - stk.depth]
+    val () = stk.depth := pred (stk.depth)
+    val size_sum = stk.size_sum
+    val () = $effmask_exn assertloc (size <= size_sum)
+    val () = stk.size_sum := size_sum - size
+    prval [size : int] EQINT () = eqint_make_guint size
+    val () = $effmask_exn assertloc (ptr_isnot_null p_arr1)
+  in
+    @($UN.ptr2p2tr {array (a, size)} p_arr1,
+      size)
+  end
+
+(*------------------------------------------------------------------*)
