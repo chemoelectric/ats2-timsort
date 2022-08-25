@@ -1,9 +1,6 @@
 /*
   Copyright © 2022 Barry Schwartz
 
-  For code adapted from Gnulib:
-  Copyright © 2012-2022 Free Software Foundation, Inc.
-
   This program is free software: you can redistribute it and/or
   modify it under the terms of the GNU General Public License, as
   published by the Free Software Foundation, either version 3 of the
@@ -51,68 +48,12 @@ ats2_timsort_g0uint_is_odd_size (atstype_size n)
   return ((n & 1) != 0);
 }
 
-ats2_timsort_inline int
-ats2_timsort_clz_uint32_by_debruijn_sequence (atstype_uint32 n)
-{
-  /* The following code is adapted from Gnulib’s
-     count-leading-zeros.h.
-
-     See also
-     https://www.chessprogramming.org/index.php?title=BitScan&oldid=22495
-
-  */
-
-  /* <https://github.com/gibsjose/BitHacks>
-     <https://www.fit.vutbr.cz/~ibarina/pub/bithacks.pdf> */
-  static const char de_Bruijn_lookup[32] = {
-    31, 22, 30, 21, 18, 10, 29, 2, 20, 17, 15, 13, 9, 6, 28, 1,
-    23, 19, 11, 3, 16, 14, 7, 24, 12, 4, 8, 25, 5, 26, 27, 0
-  };
-
-  n |= n >> 1;
-  n |= n >> 2;
-  n |= n >> 4;
-  n |= n >> 8;
-  n |= n >> 16;
-  return de_Bruijn_lookup[((n * UINT32_C (0x07c4acdd))
-                           & UINT32_C (0xffffffff))
-                          >> 27];
-}
-
-ats2_timsort_inline int
-ats2_timsort_g0uint_clz_size (atstype_size n)
-{
-  /* The result is undefined if n == 0. */
-
-#if defined __GNUC__
-  _Static_assert
-    (sizeof (unsigned long long) >= sizeof (atstype_size),
-     "unsigned long long is not large enough.");
-  return (__builtin_clzll (n) -
-          (sizeof (unsigned long long) - sizeof (atstype_size)));
-#else
-  /* The following code is adapted from Gnulib’s
-     count-leading-zeros.h. */
-  uint32_t leading_32;
-  const size_t size_diff = (sizeof n * CHAR_BIT) - 32;
-  for (int count = 0;
-       (leading_32 = ((n >> size_diff) & UINT32_C (0xffffffff)),
-        (count < size_diff && leading_32 == 0));
-       count += 32)
-    n = (n << 31) << 1;         /* Shift by 32, but in a legal way. */
-  return count + 
-    ats2_timsort_clz_uint32_by_debruijn_sequence (leading_32);
-#endif
-}
-
 #define ats2_timsort_g1uint_ceildiv_size        \
   ats2_timsort_g0uint_ceildiv_size
 #define ats2_timsort_g1uint_is_even_size        \
   ats2_timsort_g0uint_is_even_size
 #define ats2_timsort_g1uint_is_odd_size         \
   ats2_timsort_g0uint_is_odd_size
-#define ats2_timsort_g1uint_clz_size            \
-  ats2_timsort_g0uint_clz_size
 
 ats2_timsort_inline atstype_int
 ats2_timsort_nodepower_fallback (atstype_size n,
@@ -188,7 +129,15 @@ ats2_timsort_nodepower (atstype_size n,
       const atstype_size b =
         (atstype_size) (((T) j + (T) k) << shift) / twice_n;
 
-      result = ats2_timsort_g0uint_clz_size (a ^ b);
+      /* The following assertion is very unlikely to fail on a POSIX
+         system. */
+      _Static_assert
+        (sizeof (unsigned long long) >= sizeof (atstype_size),
+         "unsigned long long is not large enough.");
+
+      result =
+        __builtin_clzll (n) -
+        (sizeof (unsigned long long) - sizeof (atstype_size));
     }
   else
     result = ats2_timsort_nodepower_fallback (n, i, n1, n2);
