@@ -97,18 +97,10 @@ ats2_timsort_bptr_bptr_pred__ (atstype_ptr bp,
   return ((char *) bp - elemsz);
 }
 
-ats2_timsort_bptr_inline atstype_ssize
+ats2_timsort_bptr_inline atstype_size
 ats2_timsort_bptr_bptr_diff__ (atstype_ptr bp,
                                atstype_ptr bq,
                                atstype_size elemsz)
-{
-  return ((char *) bp - (char *) bq) / elemsz;
-}
-
-ats2_timsort_bptr_inline atstype_size
-ats2_timsort_bptr_bptr_diff_unsigned__ (atstype_ptr bp,
-                                        atstype_ptr bq,
-                                        atstype_size elemsz)
 {
   return ((size_t) ((char *) bp - (char *) bq)) / elemsz;
 }

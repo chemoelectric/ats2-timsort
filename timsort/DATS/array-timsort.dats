@@ -217,8 +217,7 @@ insertion_position
              rounding towards bp_k. *)
           stadef h = k - ((k - j) / 2)
           val bp_h : bptr (a, p_arr, h) =
-            bptr_sub<a>
-              (bp_k, half (bptr_diff_unsigned<a> (bp_k, bp_j)))
+            bptr_sub<a> (bp_k, half (bptr_diff<a> (bp_k, bp_j)))
         in
           if elem_lt<a> (pf_arr | bp_i, bp_h) then
             loop (pf_arr | bp_j, bptr_pred<a> bp_h)

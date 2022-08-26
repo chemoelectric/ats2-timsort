@@ -116,12 +116,6 @@ bptr_pred :
 fn {a : vt@ype}
 bptr_diff :
   {p    : addr}
-  {i, j : int}
-  (bptr (a, p, i), bptr (a, p, j)) -<> ssize_t (i - j)
-
-fn {a : vt@ype}
-bptr_diff_unsigned :
-  {p    : addr}
   {i, j : int | i >= j}
   (bptr (a, p, i), bptr (a, p, j)) -<> size_t (i - j)
 

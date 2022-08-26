@@ -241,23 +241,9 @@ bptr_diff {p} {i, j} (bp_i, bp_j) =
       {p    : addr}
       {i, j : int}
       (bptr (a, p, i), bptr (a, p, j), size_t (sizeof a)) -<>
-        ssize_t (i - j) = "mac#%"
-  in
-    bptr_diff__ {a} {p} {i, j} (bp_i, bp_j, sizeof<a>)
-  end
-
-implement {a}
-bptr_diff_unsigned {p} {i, j} (bp_i, bp_j) =
-  let
-    extern fn
-    bptr_diff_unsigned__ :
-      {a    : vt@ype}
-      {p    : addr}
-      {i, j : int}
-      (bptr (a, p, i), bptr (a, p, j), size_t (sizeof a)) -<>
         size_t (i - j) = "mac#%"
   in
-    bptr_diff_unsigned__ {a} {p} {i, j} (bp_i, bp_j, sizeof<a>)
+    bptr_diff__ {a} {p} {i, j} (bp_i, bp_j, sizeof<a>)
   end
 
 implement {a}
@@ -335,7 +321,7 @@ subcirculate_right_bptr_bptr {p} {n} {i, j}
       val () =
         memmove (bptr2ptr (bptr_succ<a> bp_i),
                  bptr2ptr bp_i,
-                 bptr_diff_unsigned<a> (bp_j, bp_i) * sizeof<a>)
+                 bptr_diff<a> (bp_j, bp_i) * sizeof<a>)
 
       prval () = $UN.castview2void_at{a?}{a} pf_i
       val () = bptr_set<a> (pf_i | bp_i, tmp)
