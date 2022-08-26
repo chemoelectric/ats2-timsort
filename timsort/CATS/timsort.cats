@@ -157,7 +157,11 @@ ats2_timsort_nodepower (atstype_size n,
       const sz a = (sz) (((p + q) << shift) / twice_n);
       const sz b = (sz) (((q + r) << shift) / twice_n);
 
-      result = __builtin_clzll (a ^ b) - padding;
+      const sz bits = a ^ b;
+      if (bits == 0)
+        result = CHAR_BIT * sizeof (sz);
+      else
+        result = __builtin_clzll (bits) - padding;
     }
   else
     result = ats2_timsort_nodepower_fallback (n, i, n1, n2);
