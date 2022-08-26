@@ -61,7 +61,8 @@ ats2_timsort_nodepower_fallback_loop (atstype_size n,
                                       atstype_size b,
                                       atstype_int result)
 {
-  while (n <= a && n <= b)
+  atstype_bool done = atsbool_false;
+  do
     {
       result += 1;
       if (n <= a)
@@ -77,7 +78,13 @@ ats2_timsort_nodepower_fallback_loop (atstype_size n,
           a = a << 1;
           b = b << 1;
         }
+      else
+        {
+          /* Here a has a 0-bit and b has a 1-bit. */
+          done = atsbool_true;
+        }
     }
+  while (!done);
 
   return result;
 }
@@ -94,9 +101,10 @@ ats2_timsort_nodepower_fallback (atstype_size n,
   const atstype_size k = j + n2;
 
   /* The fallback method is to tediously expand fixed point fractions,
-     until there is a difference in the bits. This method is employed
-     in the implementation of C-Python. Our implementation does not
-     assume the most significant bit of n is clear. */
+     one bit at a time, until there is a difference in the bits. This
+     method is employed in the implementation of C-Python. Our
+     implementation does not assume the most significant bit of n is
+     clear. */
 
   atstype_size a = i + j;
   atstype_int a_carry = (a < i); /* Does i + j generate a carry? */
@@ -129,33 +137,27 @@ ats2_timsort_nodepower (atstype_size n,
 
 #if defined __GNUC__ && defined __SIZEOF_INT128__
 
-  if (sizeof (atstype_size) * 2 <= sizeof (__uint128_t))
+  typedef __uint128_t u128;
+  typedef atstype_size sz;
+  typedef unsigned long long ull;
+
+  if (sizeof (sz) * 2 <= sizeof (u128) && sizeof (sz) <= sizeof (ull))
     {
-      /* This is the algorithm of the nodePower implementation given
-         in arXiv:1805.04154v1. */
+      /* This is a generalized version of the algorithm employed in
+         arXiv:1805.04154v1. */
 
-      typedef __uint128_t T;
+      const int padding = CHAR_BIT * (sizeof (ull) - sizeof (sz));
+      const int shift = (CHAR_BIT * sizeof (sz)) - 1;
 
-      const int shift = sizeof (atstype_size) - 1;
+      const u128 p = i;
+      const u128 q = p + n1;
+      const u128 r = q + n2;
 
-      const atstype_size j = i + n1;
-      const atstype_size k = j + n2;
+      const u128 twice_n = ((u128) n) << 1;
+      const sz a = (sz) (((p + q) << shift) / twice_n);
+      const sz b = (sz) (((q + r) << shift) / twice_n);
 
-      const T twice_n = ((T) n << 1);
-      const atstype_size a =
-        (atstype_size) (((T) i + (T) j) << shift) / twice_n;
-      const atstype_size b =
-        (atstype_size) (((T) j + (T) k) << shift) / twice_n;
-
-      /* The following assertion is very unlikely to fail on a POSIX
-         system. */
-      _Static_assert
-        (sizeof (unsigned long long) >= sizeof (atstype_size),
-         "unsigned long long is not large enough.");
-
-      result =
-        __builtin_clzll (n) -
-        (sizeof (unsigned long long) - sizeof (atstype_size));
+      result = __builtin_clzll (a ^ b) - padding;
     }
   else
     result = ats2_timsort_nodepower_fallback (n, i, n1, n2);
