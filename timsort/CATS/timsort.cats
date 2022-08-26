@@ -56,47 +56,65 @@ ats2_timsort_g0uint_is_odd_size (atstype_size n)
   ats2_timsort_g0uint_is_odd_size
 
 ats2_timsort_inline atstype_int
+ats2_timsort_nodepower_fallback_loop (atstype_size n,
+                                      atstype_size a,
+                                      atstype_size b,
+                                      atstype_int result)
+{
+  while (n <= a && n <= b)
+    {
+      result += 1;
+      if (n <= a)
+        {
+          /* Both a and b have a 1-bit, so subtract n and move to
+             the next bit. */
+          a = (a - n) << 1;
+          b = (b - n) << 1;
+        }
+      else if (b < n)
+        {
+          /* Both a and b have a 0-bit. Move to the next bit. */
+          a = a << 1;
+          b = b << 1;
+        }
+    }
+
+  return result;
+}
+
+ats2_timsort_inline atstype_int
 ats2_timsort_nodepower_fallback (atstype_size n,
                                  atstype_size i,
                                  atstype_size n1,
                                  atstype_size n2)
 {
+  atstype_int result;
+
   const atstype_size j = i + n1;
   const atstype_size k = j + n2;
 
-  /* The fallback method is to tediously examine the bits you would
-     get if you were to divide by n. This method is employed in the
-     implementation of C-Python. */
+  /* The fallback method is to tediously expand fixed point fractions,
+     until there is a difference in the bits. This method is employed
+     in the implementation of C-Python. Our implementation does not
+     assume the most significant bit of n is clear. */
 
   atstype_size a = i + j;
-  int a_carry = (a < i);        /* Does i + j generate a carry? */
+  atstype_int a_carry = (a < i); /* Does i + j generate a carry? */
 
   atstype_size b = j + k;
-  int b_carry = (b < j);        /* Does j + k generate a carry? */
+  atstype_int b_carry = (b < j); /* Does j + k generate a carry? */
 
-  /* Start at 1 instead of 0, iff n + n generates a carry. */
-  atstype_int result = (n + n < n);
+  atstype_size twice_n = n + n;
+  atstype_int twice_n_carry =
+    (twice_n < n);              /* Does n + n generate a carry? */
 
-  if (a_carry == b_carry)
-    {
-      while (n <= a && n <= b)
-        {
-          result += 1;
-          if (n <= a)
-            {
-              /* Both a and b have a 1-bit, so subtract n and move to
-                 the next bit. */
-              a = (a - n) << 1;
-              b = (b - n) << 1;
-            }
-          else if (b < n)
-            {
-              /* Both a and b have a 0-bit. Move to the next bit. */
-              a = a << 1;
-              b = b << 1;
-            }
-        }
-    }
+  if (!twice_n_carry)
+    result = ats2_timsort_nodepower_fallback_loop (n, a, b, 0);
+  else if (a_carry != b_carry)
+    result = 1;
+  else
+    result = ats2_timsort_nodepower_fallback_loop (n, a - twice_n,
+                                                   b - twice_n, 1);
 
   return result;
 }
