@@ -186,7 +186,6 @@ ats2_timsort_g0uint_clz_size (atstype_size bits)
       typedef size_t sz;                                            \
       typedef unsigned long long ull;                               \
                                                                     \
-      const int padding = CHAR_BIT * (sizeof (ull) - sizeof (sz));  \
       const int shift = (CHAR_BIT * sizeof (sz)) - 1;               \
                                                                     \
       const BIG p = i;                                              \
