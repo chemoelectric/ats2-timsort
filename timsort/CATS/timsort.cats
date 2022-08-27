@@ -153,15 +153,14 @@ ats2_timsort_nodepower (atstype_size n,
       const u128 q = p + n1;
       const u128 r = q + n2;
 
-      const u128 twice_n = ((u128) n) << 1;
-      const sz a = (sz) (((p + q) << shift) / twice_n);
-      const sz b = (sz) (((q + r) << shift) / twice_n);
+      const sz a = (sz) (((p + q) << shift) / n);
+      const sz b = (sz) (((q + r) << shift) / n);
 
       const sz bits = a ^ b;
       if (bits == 0)
-        result = CHAR_BIT * sizeof (sz);
+        result = (CHAR_BIT * sizeof (sz)) + 1;
       else
-        result = __builtin_clzll (bits) - padding;
+        result = (__builtin_clzll (bits) - padding) + 1;
     }
   else
     result = ats2_timsort_nodepower_fallback (n, i, n1, n2);
