@@ -213,12 +213,12 @@ ats2_timsort_nodepower (atstype_size n,
 
   /* Let the C optimizer remove unused branches expanded below. */
 
-  if (sizeof (sz) * 2 <= sizeof (uint64_t)
+  if (sizeof (sz) <= sizeof (uint32_t)
       && sizeof (sz) <= sizeof (ull))
     /* Most likely a 32-bit system. */
     ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t, uint32_t);
 #if defined __SIZEOF_INT128__
-  else if (sizeof (sz) * 2 <= sizeof (__uint128_t)
+  else if (sizeof (sz) <= sizeof (uint64_t)
            && sizeof (sz) <= sizeof (ull))
     /* Most likely a 64-bit system. */
     {
