@@ -169,14 +169,20 @@ fn
 test_nodepower () : void =
   let
     val test_sets =
+      (* FIXME: Come up with a fuller and better set of tests
+                cases. *)
       $list{nodepower_test_set}
         (@(100ULL, 0ULL, 10ULL, 90ULL, 1),
          @(0xFFFFFFFFULL, 1000ULL, 0xA0000000ULL, 0x0B000000ULL, 1),
          @(0xFFFFFFFFULL, 1000ULL, 10ULL, 0x0B000000ULL, 6),
+         @(0xFFFFFFFFULL, 1000ULL, 1000ULL, 500ULL, 21),
+         @(0x100000000ULL, 1000ULL, 0xA0000000ULL, 0x0B000000ULL, 1),
+         @(0x100000000ULL, 1000ULL, 10ULL, 0x0B000000ULL, 6),
          @(0xFFFFFFFFFFFFFFFFULL, 1000ULL, 0xA000000000000000ULL,
            0x0B00000000000000ULL, 1),
          @(0xFFFFFFFFFFFFFFFFULL, 1000ULL, 10ULL,
-           0x0B00000000000000ULL, 6))
+           0x0B00000000000000ULL, 6),
+         @(0xFFFFFFFFFFFFFFFFULL, 1000ULL, 1000ULL, 500ULL, 53))
 
     fun
     loop {len : nat}
