@@ -220,7 +220,10 @@ ats2_timsort_nodepower (atstype_size n,
 #if defined __SIZEOF_INT128__
   else if (sizeof (sz) <= sizeof (uint64_t)
            && sizeof (sz) <= sizeof (ull))
-    /* Most likely a 64-bit system. */
+    /* Most likely a 64-bit system, using a toolchain that has type
+       __uint128_t. GNU has such a toolchain, although I am not
+       certain that fact is documented. (GCC has the documented type
+       ‘unsigned __int128’.) */
     {
       if (n <= 0xFFFFFFFF)
         ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t, uint32_t);
@@ -229,7 +232,13 @@ ats2_timsort_nodepower (atstype_size n,
     }
 #endif
   else
-    result = ats2_timsort_nodepower_fallback (n, i, n1, n2);
+    /* Fallback branch, for almost any system of at least 32 bits. */
+    {
+      if (n <= 0xFFFFFFFF)
+        ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t, uint32_t);
+      else
+        result = ats2_timsort_nodepower_fallback (n, i, n1, n2);
+    }
 
   return result;
 }
