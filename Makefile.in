@@ -195,8 +195,6 @@ list_ats_dependencies_OBJECTS =  \
 am_tests_test_nodepower_OBJECTS =  \
 	tests/test_nodepower-test-nodepower_tests.$(OBJEXT)
 tests_test_nodepower_OBJECTS = $(am_tests_test_nodepower_OBJECTS)
-tests_test_nodepower_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -700,7 +698,8 @@ libats2_timsort_la_DEPENDENCIES = $(TIMSORT_CATS) $(BPTR_CATS)
 tests_test_nodepower_SOURCES = tests/test-nodepower_tests.c
 tests_test_nodepower_DEPENDENCIES = tests/test-nodepower.dats \
 	timsort/CATS/timsort.cats
-tests_test_nodepower_CPPFLAGS = $(AM_CPPFLAGS)
+tests_test_nodepower_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
+tests_test_nodepower_LDADD = 
 nodist_list_ats_dependencies_SOURCES =  \
 	list-ats-dependencies_depsprog.c
 list_ats_dependencies_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC

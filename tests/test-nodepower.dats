@@ -49,6 +49,49 @@ clz_fallback (atstype_size bits)
 }
 
 atstype_int
+nodepower (atstype_size n, atstype_size i,
+           atstype_size n1, atstype_size n2)
+{
+  return ats2_timsort_nodepower (n, i, n1, n2);
+}
+
+atstype_int
+nodepower_32bit (atstype_size n, atstype_size i,
+                 atstype_size n1, atstype_size n2)
+{
+  atstype_int result;
+  if (n <= 0xFFFFFFFF
+      && sizeof (atstype_size) * 2 <= sizeof (atstype_uint64)
+      && sizeof (atstype_size) <= sizeof (atstype_ullint))
+    ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t);
+  else
+    result = nodepower (n, i, n1, n2);
+  return result;
+}
+
+#ifdef __SIZEOF_INT128__
+atstype_int
+nodepower_64bit (atstype_size n, atstype_size i,
+                 atstype_size n1, atstype_size n2)
+{
+  atstype_int result;
+  if (sizeof (atstype_size) <= sizeof (atstype_uint64)
+      && sizeof (atstype_size) <= sizeof (atstype_ullint))
+    ATS2_TIMSORT_NODEPOWER_PREFERRED (__uint128_t);
+  else
+    result = nodepower (n, i, n1, n2);
+  return result;
+}
+#else
+atstype_int
+nodepower_64bit (atstype_size n, atstype_size i,
+                 atstype_size n1, atstype_size n2)
+{
+  return nodepower (n, i, n1, n2);
+}
+#endif
+
+atstype_int
 nodepower_fallback (atstype_size n, atstype_size i,
                     atstype_size n1, atstype_size n2)
 {
@@ -83,11 +126,71 @@ test_clz_fallback (void)
     CHECK (clz_fallback (all_ones >> i) == i);
 }
 
+void
+test_nodepower (atstype_int ( *func ) (atstype_size n,
+                                       atstype_size i,
+                                       atstype_size n1,
+                                       atstype_size n2),
+                atstype_string func_name,
+                atstype_size n, atstype_size i,
+                atstype_size n1, atstype_size n2,
+                atstype_int expected)
+{
+  atstype_int got = func (n, i, n1, n2);
+  if (got == expected)
+    printf ("%s (%zu, %zu, %zu, %zu) == %d\n",
+            func_name, n, i, n1, n2, got);
+  else
+    printf ("%s (%zu, %zu, %zu, %zu) == {expected: %d; got: %d}\n",
+            func_name, n, i, n1, n2, expected, got);
+  CHECK (got == expected);
+}
+
 %}
+
+typedef nodepower_test_set =
+  @(size_t, size_t, size_t, size_t, int)
+
+val nodepower = $extval (ptr, "nodepower")
+val nodepower_32bit = $extval (ptr, "nodepower_32bit")
+val nodepower_64bit = $extval (ptr, "nodepower_64bit")
+val nodepower_fallback = $extval (ptr, "nodepower_fallback")
+
+fn
+test_nodepower () : void =
+  let
+    val test_sets =
+      $list{nodepower_test_set}
+        (@(i2sz 100, i2sz 0, i2sz 10, i2sz 90, 1))
+
+    fun
+    loop {len : nat}
+         .<len>.
+         (func      : ptr,
+          func_name : string,
+          p         : list (nodepower_test_set, len))
+        : void =
+      case+ p of
+      | list_nil () => ()
+      | list_cons (head, tail) =>
+        let
+          val @(n, i, n1, n2, expected) = head
+        in
+          $extfcall (void, "test_nodepower", func, func_name,
+                     n, i, n1, n2, expected);
+          loop (func, func_name, tail)
+        end
+  in
+    loop (nodepower, "nodepower", test_sets);
+    loop (nodepower_32bit, "nodepower_32bit", test_sets);
+    loop (nodepower_64bit, "nodepower_64bit", test_sets);
+    loop (nodepower_fallback, "nodepower_fallback", test_sets)
+  end
 
 implement
 main0 () =
   begin
     $extfcall (void, "test_clz");
     $extfcall (void, "test_clz_fallback");
+    test_nodepower ()
   end

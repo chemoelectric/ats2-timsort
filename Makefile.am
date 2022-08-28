@@ -204,6 +204,8 @@ tests_test_nodepower_DEPENDENCIES += tests/test-nodepower.dats
 tests_test_nodepower_DEPENDENCIES += timsort/CATS/timsort.cats
 tests_test_nodepower_CPPFLAGS =
 tests_test_nodepower_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_nodepower_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_nodepower_LDADD =
 tests/test-nodepower_tests.c: tests/test-nodepower.dats
 
 # TESTS += tests/test-arrays-stability
