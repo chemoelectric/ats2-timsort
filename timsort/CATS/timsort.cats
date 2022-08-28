@@ -89,11 +89,11 @@ ats2_timsort_nodepower_fallback (atstype_size n,
           /* Both a and b have a 1-bit, so subtract n and move to
              the next bit. */
 
-          size_t a1 = a + ~n + 1;
+          atstype_size a1 = a + ~n + 1;
           a = a1 << 1;
           a_carry = (a < a1);
 
-          size_t b1 = b + ~n + 1;
+          atstype_size b1 = b + ~n + 1;
           b = b1 << 1;
           b_carry = (b < b1);
         }
@@ -101,11 +101,11 @@ ats2_timsort_nodepower_fallback (atstype_size n,
         {
           /* Both a and b have a 0-bit. Move to the next bit. */
 
-          size_t a1 = a;
+          atstype_size a1 = a;
           a = a1 << 1;
           a_carry = (a < a1);
 
-          size_t b1 = b;
+          atstype_size b1 = b;
           b = b1 << 1;
           b_carry = (b < b1);
         }
@@ -124,8 +124,8 @@ ats2_timsort_inline atstype_int
 ats2_timsort_g0uint_clz_ullint_fallback (atstype_size bits)
 {
   /* Better methods might include such things as de Bruijn sequences,
-     but the following ought to work, whatever the size of a
-     size_t. */
+     but the following ought to work, whatever the size of an
+     atstype_size. */
 
   typedef atstype_ullint ull;
   typedef unsigned char uch;
