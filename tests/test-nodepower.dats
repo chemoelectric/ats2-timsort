@@ -23,6 +23,8 @@
 #include <limits.h>
 #include <timsort/CATS/timsort.cats>
 
+#define SKIP_TEST -12345
+
 #define CHECK(expr)                             \
   if (expr)                                     \
     {}                                          \
@@ -65,7 +67,7 @@ nodepower_32bit (atstype_size n, atstype_size i,
       && sizeof (atstype_size) <= sizeof (atstype_ullint))
     ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t);
   else
-    result = nodepower (n, i, n1, n2);
+    result = SKIP_TEST;
   return result;
 }
 
@@ -79,7 +81,7 @@ nodepower_64bit (atstype_size n, atstype_size i,
       && sizeof (atstype_size) <= sizeof (atstype_ullint))
     ATS2_TIMSORT_NODEPOWER_PREFERRED (__uint128_t);
   else
-    result = nodepower (n, i, n1, n2);
+    result = SKIP_TEST;
   return result;
 }
 #else
@@ -87,7 +89,7 @@ atstype_int
 nodepower_64bit (atstype_size n, atstype_size i,
                  atstype_size n1, atstype_size n2)
 {
-  return nodepower (n, i, n1, n2);
+  return SKIP_TEST;
 }
 #endif
 
@@ -137,13 +139,17 @@ test_nodepower (atstype_int ( *func ) (atstype_size n,
                 atstype_int expected)
 {
   atstype_int got = func (n, i, n1, n2);
-  if (got == expected)
-    printf ("%s (%zu, %zu, %zu, %zu) == %d\n",
-            func_name, n, i, n1, n2, got);
-  else
-    printf ("%s (%zu, %zu, %zu, %zu) == {expected: %d; got: %d}\n",
-            func_name, n, i, n1, n2, expected, got);
-  CHECK (got == expected);
+  if (got != SKIP_TEST)
+    {
+      if (got == expected)
+        printf ("%s (%zu, %zu, %zu, %zu) == %d\n",
+                func_name, n, i, n1, n2, got);
+      else
+        printf (("%s (%zu, %zu, %zu, %zu) == "
+                 "{expected: %d; got: %d}\n"),
+                func_name, n, i, n1, n2, expected, got);
+      CHECK (got == expected);
+    }
 }
 
 %}
