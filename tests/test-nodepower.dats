@@ -133,28 +133,32 @@ test_nodepower (atstype_int ( *func ) (atstype_size n,
                                        atstype_size n1,
                                        atstype_size n2),
                 atstype_string func_name,
-                atstype_size n, atstype_size i,
-                atstype_size n1, atstype_size n2,
+                atstype_ullint n, atstype_ullint i,
+                atstype_ullint n1, atstype_ullint n2,
                 atstype_int expected)
 {
-  atstype_int got = func (n, i, n1, n2);
-  if (got != SKIP_TEST)
+  if (n <= ~(atstype_size) 0)
     {
-      if (got == expected)
-        printf ("%s (%zu, %zu, %zu, %zu) == %d\n",
-                func_name, n, i, n1, n2, got);
-      else
-        printf (("%s (%zu, %zu, %zu, %zu) == "
-                 "{expected: %d; got: %d}\n"),
-                func_name, n, i, n1, n2, expected, got);
-      CHECK (got == expected);
-    }
+    atstype_int got = func ((atstype_size) n, (atstype_size) i,
+                            (atstype_size) n1, (atstype_size) n2);
+    if (got != SKIP_TEST)
+      {
+        if (got == expected)
+          printf ("%s (%llu, %llu, %llu, %llu) == %d\n",
+                  func_name, n, i, n1, n2, got);
+        else
+          printf (("%s (%llu, %llu, %llu, %llu) == "
+                   "{expected: %d; got: %d}\n"),
+                  func_name, n, i, n1, n2, expected, got);
+        CHECK (got == expected);
+      }
+  }
 }
 
 %}
 
 typedef nodepower_test_set =
-  @(size_t, size_t, size_t, size_t, int)
+  @(ullint, ullint, ullint, ullint, int)
 
 val nodepower = $extval (ptr, "nodepower")
 val nodepower_32bit = $extval (ptr, "nodepower_32bit")
@@ -166,7 +170,13 @@ test_nodepower () : void =
   let
     val test_sets =
       $list{nodepower_test_set}
-        (@(i2sz 100, i2sz 0, i2sz 10, i2sz 90, 1))
+        (@(100ULL, 0ULL, 10ULL, 90ULL, 1),
+         @(0xFFFFFFFFULL, 1000ULL, 0xA0000000ULL, 0x0B000000ULL, 1),
+         @(0xFFFFFFFFULL, 1000ULL, 10ULL, 0x0B000000ULL, 6),
+         @(0xFFFFFFFFFFFFFFFFULL, 1000ULL, 0xA000000000000000ULL,
+           0x0B00000000000000ULL, 1),
+         @(0xFFFFFFFFFFFFFFFFULL, 1000ULL, 10ULL,
+           0x0B00000000000000ULL, 6))
 
     fun
     loop {len : nat}
