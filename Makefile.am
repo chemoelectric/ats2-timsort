@@ -190,16 +190,27 @@ libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 
 #--------------------------------------------------------------------------
 
-# TESTS =
+TESTS =
 
-# EXTRA_DIST += tests/test-arrays-stability.dats
-# EXTRA_DIST += tests/test-arrays-patterns-stable.common.dats
-# EXTRA_DIST += tests/test-arrays-patterns-unstable.common.dats
+TESTS += tests/test-nodepower
+EXTRA_PROGRAMS += tests/test-nodepower
+CLEANFILES += tests/test-nodepower
+CLEANFILES += tests/test-nodepower_tests.c
+EXTRA_DIST += tests/test-nodepower.dats
+tests_test_nodepower_SOURCES =
+tests_test_nodepower_SOURCES += tests/test-nodepower_tests.c
+tests_test_nodepower_DEPENDENCIES =
+tests_test_nodepower_DEPENDENCIES += tests/test-nodepower.dats
+tests_test_nodepower_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_nodepower_CPPFLAGS =
+tests_test_nodepower_CPPFLAGS += $(AM_CPPFLAGS)
+tests/test-nodepower_tests.c: tests/test-nodepower.dats
 
 # TESTS += tests/test-arrays-stability
 # EXTRA_PROGRAMS += tests/test-arrays-stability
 # CLEANFILES += tests/test-arrays-stability
 # CLEANFILES += tests/test-arrays-stability_tests.c
+# EXTRA_DIST += tests/test-arrays-stability.dats
 # tests_test_arrays_stability_SOURCES =
 # tests_test_arrays_stability_SOURCES += tests/test-arrays-stability_tests.c
 # tests_test_arrays_stability_DEPENDENCIES =
@@ -212,9 +223,6 @@ libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 # tests_test_arrays_stability_LDADD =
 # tests_test_arrays_stability_LDADD += libats2-timsort.la
 # tests/test-arrays-stability_tests.c: tests/test-arrays-stability.dats
-
-# include $(top_srcdir)/test-arrays-patterns-stable.am
-# include $(top_srcdir)/test-arrays-patterns-unstable.am
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)

@@ -120,29 +120,8 @@ ats2_timsort_nodepower_fallback (atstype_size n,
   return result;
 }
 
-#if defined __GNUC__
-
 ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_size (atstype_size bits)
-{
-  typedef atstype_size sz;
-  typedef unsigned long long ull;
-
-  int result;
-  if (bits == 0)
-    result = CHAR_BIT * sizeof (sz);
-  else
-    {
-      const int padding = CHAR_BIT * (sizeof (ull) - sizeof (sz));
-      result = __builtin_clzll (bits) - padding;
-    }
-  return result;
-}
-
-#else
-
-ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_size (atstype_size bits)
+ats2_timsort_g0uint_clz_size_fallback (atstype_size bits)
 {
   /* Better methods might include such things as de Bruijn sequences,
      but the following ought to work, whatever the size of a
@@ -173,6 +152,35 @@ ats2_timsort_g0uint_clz_size (atstype_size bits)
         }
     }
   return result;
+}
+
+#if defined __GNUC__
+
+ats2_timsort_inline atstype_int
+ats2_timsort_g0uint_clz_size (atstype_size bits)
+{
+  typedef atstype_size sz;
+  typedef unsigned long long ull;
+
+  int result;
+  if (bits == 0)
+    result = CHAR_BIT * sizeof (sz);
+  else
+    {
+      const int padding = CHAR_BIT * (sizeof (ull) - sizeof (sz));
+      result = __builtin_clzll (bits) - padding;
+    }
+  return result;
+}
+
+#else
+
+ats2_timsort_inline atstype_int
+ats2_timsort_g0uint_clz_size (atstype_size bits)
+{
+  /* Keep the implementation outside the #if, so it can be unit-tested
+     easily on GNU systems. */
+  return ats2_timsort_g0uint_clz_size_fallback (bits);
 }
 
 #endif 
