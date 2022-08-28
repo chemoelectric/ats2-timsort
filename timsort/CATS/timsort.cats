@@ -121,23 +121,23 @@ ats2_timsort_nodepower_fallback (atstype_size n,
 }
 
 ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_size_fallback (atstype_size bits)
+ats2_timsort_g0uint_clz_ullint_fallback (atstype_size bits)
 {
   /* Better methods might include such things as de Bruijn sequences,
      but the following ought to work, whatever the size of a
      size_t. */
 
-  typedef atstype_size sz;
+  typedef atstype_ullint ull;
   typedef unsigned char uch;
 
   int result;
 
   if (bits == 0)
-    result = CHAR_BIT * sizeof (sz);
+    result = CHAR_BIT * sizeof (ull);
   else
     {
       result = 0;
-      int i = sizeof (sz) - 1;
+      int i = sizeof (ull) - 1;
       uch byte = (uch) (bits >> (CHAR_BIT * i));
       while (byte == 0)
         {
@@ -157,54 +157,46 @@ ats2_timsort_g0uint_clz_size_fallback (atstype_size bits)
 #if defined __GNUC__
 
 ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_size (atstype_size bits)
+ats2_timsort_g0uint_clz_ullint (atstype_size bits)
 {
-  typedef atstype_size sz;
-  typedef unsigned long long ull;
+  typedef atstype_ullint ull;
 
-  int result;
-  if (bits == 0)
-    result = CHAR_BIT * sizeof (sz);
-  else
-    {
-      const int padding = CHAR_BIT * (sizeof (ull) - sizeof (sz));
-      result = __builtin_clzll (bits) - padding;
-    }
-  return result;
+  return (bits == 0) ?
+    (CHAR_BIT * sizeof (ull)) : (__builtin_clzll (bits));
 }
 
 #else
 
 ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_size (atstype_size bits)
+ats2_timsort_g0uint_clz_ullint (atstype_size bits)
 {
   /* Keep the implementation outside the #if, so it can be unit-tested
      easily on GNU systems. */
-  return ats2_timsort_g0uint_clz_size_fallback (bits);
+  return ats2_timsort_g0uint_clz_ullint_fallback (bits);
 }
 
 #endif 
 
-#define ATS2_TIMSORT_NODEPOWER_PREFERRED(BIG)                       \
+#define ATS2_TIMSORT_NODEPOWER_PREFERRED(BIG, LITTLE)               \
   do                                                                \
     {                                                               \
       /* This is a variant of the algorithm employed in        */   \
       /* arXiv:1805.04154v1.                                   */   \
                                                                     \
-      typedef size_t sz;                                            \
       typedef unsigned long long ull;                               \
                                                                     \
-      const int shift = (CHAR_BIT * sizeof (sz)) - 1;               \
+      const int shift = (CHAR_BIT * sizeof (LITTLE)) - 1;           \
                                                                     \
       const BIG p = i;                                              \
       const BIG q = p + n1;                                         \
       const BIG r = q + n2;                                         \
                                                                     \
-      const sz a = (sz) ((((p + q) << shift) / n) >> 1);            \
-      const sz b = (sz) ((((q + r) << shift) / n) >> 1);            \
+      const LITTLE a = (LITTLE) ((((p + q) << shift) / n) >> 1);    \
+      const LITTLE b = (LITTLE) ((((q + r) << shift) / n) >> 1);    \
                                                                     \
-      const sz bits = a ^ b;                                        \
-      result = ats2_timsort_g0uint_clz_size (bits);                 \
+      const LITTLE bits = a ^ b;                                    \
+      result = (ats2_timsort_g0uint_clz_ullint (bits)               \
+                - (CHAR_BIT * (sizeof (ull) - sizeof (LITTLE))));   \
     }                                                               \
   while (0)
 
@@ -224,12 +216,17 @@ ats2_timsort_nodepower (atstype_size n,
   if (sizeof (sz) * 2 <= sizeof (uint64_t)
       && sizeof (sz) <= sizeof (ull))
     /* Most likely a 32-bit system. */
-    ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t);
+    ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t, uint32_t);
 #if defined __SIZEOF_INT128__
   else if (sizeof (sz) * 2 <= sizeof (__uint128_t)
            && sizeof (sz) <= sizeof (ull))
     /* Most likely a 64-bit system. */
-    ATS2_TIMSORT_NODEPOWER_PREFERRED (__uint128_t);
+    {
+      if (n <= 0xFFFFFFFF)
+        ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t, uint32_t);
+      else
+        ATS2_TIMSORT_NODEPOWER_PREFERRED (__uint128_t, uint64_t);
+    }
 #endif
   else
     result = ats2_timsort_nodepower_fallback (n, i, n1, n2);

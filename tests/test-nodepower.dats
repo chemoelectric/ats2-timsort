@@ -39,15 +39,15 @@ check_failed (const char *file, unsigned int line)
 }
 
 atstype_int
-clz (atstype_size bits)
+clz (atstype_ullint bits)
 {
-  return ats2_timsort_g0uint_clz_size (bits);
+  return ats2_timsort_g0uint_clz_ullint (bits);
 }
 
 atstype_int
-clz_fallback (atstype_size bits)
+clz_fallback (atstype_ullint bits)
 {
-  return ats2_timsort_g0uint_clz_size_fallback (bits);
+  return ats2_timsort_g0uint_clz_ullint_fallback (bits);
 }
 
 atstype_int
@@ -63,9 +63,8 @@ nodepower_32bit (atstype_size n, atstype_size i,
 {
   atstype_int result;
   if (n <= 0xFFFFFFFF
-      && sizeof (atstype_size) * 2 <= sizeof (atstype_uint64)
       && sizeof (atstype_size) <= sizeof (atstype_ullint))
-    ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t);
+    ATS2_TIMSORT_NODEPOWER_PREFERRED (uint64_t, uint32_t);
   else
     result = SKIP_TEST;
   return result;
@@ -79,7 +78,7 @@ nodepower_64bit (atstype_size n, atstype_size i,
   atstype_int result;
   if (sizeof (atstype_size) <= sizeof (atstype_uint64)
       && sizeof (atstype_size) <= sizeof (atstype_ullint))
-    ATS2_TIMSORT_NODEPOWER_PREFERRED (__uint128_t);
+    ATS2_TIMSORT_NODEPOWER_PREFERRED (__uint128_t, uint64_t);
   else
     result = SKIP_TEST;
   return result;
@@ -103,9 +102,9 @@ nodepower_fallback (atstype_size n, atstype_size i,
 void
 test_clz (void)
 {
-  const int bitsz = CHAR_BIT * sizeof (atstype_size);
-  const atstype_size one = 1;
-  const atstype_size all_ones = ~(atstype_size) 0;
+  const int bitsz = CHAR_BIT * sizeof (atstype_ullint);
+  const atstype_ullint one = 1;
+  const atstype_ullint all_ones = ~(atstype_ullint) 0;
 
   CHECK (clz (0) == bitsz);
   for (int i = 0; i != bitsz; i += 1)
@@ -117,9 +116,9 @@ test_clz (void)
 void
 test_clz_fallback (void)
 {
-  const int bitsz = CHAR_BIT * sizeof (atstype_size);
-  const atstype_size one = 1;
-  const atstype_size all_ones = ~(atstype_size) 0;
+  const int bitsz = CHAR_BIT * sizeof (atstype_ullint);
+  const atstype_ullint one = 1;
+  const atstype_ullint all_ones = ~(atstype_ullint) 0;
 
   CHECK (clz_fallback (0) == bitsz);
   for (int i = 0; i != bitsz; i += 1)
