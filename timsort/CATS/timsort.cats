@@ -191,8 +191,10 @@ ats2_timsort_g0uint_clz_ullint (atstype_size bits)
       const BIG q = p + n1;                                         \
       const BIG r = q + n2;                                         \
                                                                     \
-      const LITTLE a = (LITTLE) ((((p + q) << shift) / n) >> 1);    \
-      const LITTLE b = (LITTLE) ((((q + r) << shift) / n) >> 1);    \
+      const LITTLE a =                                              \
+        (LITTLE) ((((p + q) << shift) / (LITTLE) n) >> 1);          \
+      const LITTLE b =                                              \
+        (LITTLE) ((((q + r) << shift) / (LITTLE) n) >> 1);          \
                                                                     \
       const LITTLE bits = a ^ b;                                    \
       result = (ats2_timsort_g0uint_clz_ullint (bits)               \
