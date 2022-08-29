@@ -42,7 +42,7 @@ test_powers_of_two () : void =
       let
         val minrun = minimum_run_length n
       in
-        assertloc (minrun mod (i2sz 32) = i2sz 0)
+        assertloc (minrun = i2sz 32)
       end
   end
 
