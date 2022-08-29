@@ -99,15 +99,6 @@ overload elem_lt with elem_lt_array_bptr_bptr
 
 (*------------------------------------------------------------------*)
 
-(* Compute a minimum run length. Runs shorter than this will be
-   extended via an insertion sort. *)
-extern fn {}
-minimum_run_length :
-  {n : int}
-  size_t n -<>
-    [minrun : int | min (n, 32) <= minrun; minrun <= 64]
-    size_t minrun
-
 (* A stable insertion sort that assumes the first runlen elements
    already are sorted. *)
 extern fn {a : vt@ype}
@@ -133,49 +124,6 @@ sort_a_monotonic_run :
    bptr (a, p_arr, n)) -< !wrt >
     [runlen : pos | runlen <= n]
     bptr (a, p_arr, runlen)
-
-(*------------------------------------------------------------------*)
-
-implement {}
-minimum_run_length n =
-  if n < i2sz 64 then
-    n       (* The array to be sorted is small. Use insertion sort. *)
-  else
-    (* The algorithm here is similar to that used in Python’s
-       listsort, and tries to divide up n into a number of runs that
-       is either a power of two or is close to but less than a power
-       of two.
-       
-       The routine isolates and shifts the six most significant bits
-       of n. If any of the bits less significant than those was set,
-       then one is added to the result. *)
-    let
-      fun
-      loop1 {q : int | 32 <= q}
-            .<q>.
-            (q : size_t q)
-          :<> [minrun : int | 32 <= minrun; minrun <= 64]
-              size_t minrun =
-        if q < i2sz 64 then
-          succ q
-        else
-          loop1 (half q)
-
-      fun
-      loop0 {q : int | 32 <= q}
-            .<q>.
-            (q : size_t q)
-          :<> [minrun : int | 32 <= minrun; minrun <= 64]
-              size_t minrun =
-        if q < i2sz 64 then
-          q
-        else if is_even q then
-          loop0 (half q)
-        else
-          loop1 (half q)
-    in
-      loop0 n
-    end
 
 (*------------------------------------------------------------------*)
 

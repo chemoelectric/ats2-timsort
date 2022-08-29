@@ -208,23 +208,35 @@ tests_test_nodepower_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_nodepower_LDADD =
 tests/test-nodepower_tests.c: tests/test-nodepower.dats
 
-# TESTS += tests/test-arrays-stability
-# EXTRA_PROGRAMS += tests/test-arrays-stability
-# CLEANFILES += tests/test-arrays-stability
-# CLEANFILES += tests/test-arrays-stability_tests.c
-# EXTRA_DIST += tests/test-arrays-stability.dats
-# tests_test_arrays_stability_SOURCES =
-# tests_test_arrays_stability_SOURCES += tests/test-arrays-stability_tests.c
-# tests_test_arrays_stability_DEPENDENCIES =
-# tests_test_arrays_stability_DEPENDENCIES += tests/test-arrays-stability.dats
-# tests_test_arrays_stability_DEPENDENCIES += libats2-timsort.la
-# tests_test_arrays_stability_DEPENDENCIES += $(TIMSORT_HATS)
-# tests_test_arrays_stability_CPPFLAGS =
-# tests_test_arrays_stability_CPPFLAGS += $(AM_CPPFLAGS)
-# tests_test_arrays_stability_CPPFLAGS += -DATS_MEMALLOC_LIBC
-# tests_test_arrays_stability_LDADD =
-# tests_test_arrays_stability_LDADD += libats2-timsort.la
-# tests/test-arrays-stability_tests.c: tests/test-arrays-stability.dats
+TESTS += tests/test-clz
+EXTRA_PROGRAMS += tests/test-clz
+CLEANFILES += tests/test-clz
+CLEANFILES += tests/test-clz_tests.c
+EXTRA_DIST += tests/test-clz.dats
+tests_test_clz_SOURCES =
+tests_test_clz_SOURCES += tests/test-clz_tests.c
+tests_test_clz_DEPENDENCIES =
+tests_test_clz_DEPENDENCIES += tests/test-clz.dats
+tests_test_clz_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_clz_CPPFLAGS =
+tests_test_clz_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_clz_LDADD =
+tests/test-clz_tests.c: tests/test-clz.dats
+
+TESTS += tests/test-minrun
+EXTRA_PROGRAMS += tests/test-minrun
+CLEANFILES += tests/test-minrun
+CLEANFILES += tests/test-minrun_tests.c
+EXTRA_DIST += tests/test-minrun.dats
+tests_test_minrun_SOURCES =
+tests_test_minrun_SOURCES += tests/test-minrun_tests.c
+tests_test_minrun_DEPENDENCIES =
+tests_test_minrun_DEPENDENCIES += tests/test-minrun.dats
+tests_test_minrun_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_minrun_CPPFLAGS =
+tests_test_minrun_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_minrun_LDADD =
+tests/test-minrun_tests.c: tests/test-minrun.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)

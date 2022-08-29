@@ -39,18 +39,6 @@ check_failed (const char *file, unsigned int line)
 }
 
 atstype_int
-clz (atstype_ullint bits)
-{
-  return ats2_timsort_g0uint_clz_ullint (bits);
-}
-
-atstype_int
-clz_fallback (atstype_ullint bits)
-{
-  return ats2_timsort_g0uint_clz_ullint_fallback (bits);
-}
-
-atstype_int
 nodepower (atstype_size n, atstype_size i,
            atstype_size n1, atstype_size n2)
 {
@@ -97,34 +85,6 @@ nodepower_fallback (atstype_size n, atstype_size i,
                     atstype_size n1, atstype_size n2)
 {
   return ats2_timsort_nodepower_fallback (n, i, n1, n2);
-}
-
-void
-test_clz (void)
-{
-  const int bitsz = CHAR_BIT * sizeof (atstype_ullint);
-  const atstype_ullint one = 1;
-  const atstype_ullint all_ones = ~(atstype_ullint) 0;
-
-  CHECK (clz (0) == bitsz);
-  for (int i = 0; i != bitsz; i += 1)
-    CHECK (clz (one << i) == bitsz - 1 - i);
-  for (int i = 0; i != bitsz; i += 1)
-    CHECK (clz (all_ones >> i) == i);
-}
-
-void
-test_clz_fallback (void)
-{
-  const int bitsz = CHAR_BIT * sizeof (atstype_ullint);
-  const atstype_ullint one = 1;
-  const atstype_ullint all_ones = ~(atstype_ullint) 0;
-
-  CHECK (clz_fallback (0) == bitsz);
-  for (int i = 0; i != bitsz; i += 1)
-    CHECK (clz_fallback (one << i) == bitsz - 1 - i);
-  for (int i = 0; i != bitsz; i += 1)
-    CHECK (clz_fallback (all_ones >> i) == i);
 }
 
 void
@@ -210,8 +170,4 @@ test_nodepower () : void =
 
 implement
 main0 () =
-  begin
-    $extfcall (void, "test_clz");
-    $extfcall (void, "test_clz_fallback");
-    test_nodepower ()
-  end
+  test_nodepower ()

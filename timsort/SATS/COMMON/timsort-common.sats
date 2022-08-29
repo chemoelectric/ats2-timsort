@@ -56,6 +56,20 @@ char_bit :
 (*------------------------------------------------------------------*)
 
 fn {tk : tkind}
+g0uint_ceildiv :
+  (g0uint tk, g0uint tk) -<> g0uint tk
+
+fn {tk : tkind}
+g1uint_ceildiv :
+  {m, n : int | 0 <= m; 1 <= n}
+  (g1uint (tk, m), g1uint (tk, n)) -<>
+    [q : int | q * n == m || q * n == m + 1]
+    g1uint (tk, q)
+
+overload ceildiv with g0uint_ceildiv of 0
+overload ceildiv with g1uint_ceildiv of 10
+
+fn {tk : tkind}
 g0uint_is_even :
   g0uint tk -<> bool
 
@@ -79,38 +93,20 @@ overload is_even with g1uint_is_even of 10
 overload is_odd with g1uint_is_odd of 10
 
 fn {tk : tkind}
-g0uint_ceildiv :
-  (g0uint tk, g0uint tk) -<> g0uint tk
+g0uint_clz :
+  g0uint tk -<> int
 
 fn {tk : tkind}
-g1uint_ceildiv :
-  {m, n : int | 0 <= m; 1 <= n}
-  (g1uint (tk, m), g1uint (tk, n)) -<>
-    [q : int | q * n == m || q * n == m + 1]
-    g1uint (tk, q)
+g1uint_clz :
+  {n : nat}
+  g1uint (tk, n) -<>
+    [i : nat]
+    int i
 
-overload ceildiv with g0uint_ceildiv of 0
-overload ceildiv with g1uint_ceildiv of 10
+overload clz with g0uint_clz of 0
+overload clz with g1uint_clz of 10
 
 (*------------------------------------------------------------------*)
-
-fn
-g0uint_is_even_size :
-  size_t -<> bool = "mac#%"
-
-fn
-g0uint_is_odd_size :
-  size_t -<> bool = "mac#%"
-
-fn
-g1uint_is_even_size :
-  {n : int}
-  size_t n -<> bool (n mod 2 == 0) = "mac#%"
-
-fn
-g1uint_is_odd_size :
-  {n : int}
-  size_t n -<> bool (n mod 2 == 1) = "mac#%"
 
 fn
 g0uint_ceildiv_size :
@@ -122,6 +118,46 @@ g1uint_ceildiv_size :
   (size_t m, size_t n) -<>
     [q : int | q * n == m || q * n == m + 1]
     size_t q = "mac#%"
+
+fn
+g0uint_is_even_size :
+  size_t -<> bool = "mac#%"
+
+fn
+g1uint_is_even_size :
+  {n : int}
+  size_t n -<> bool (n mod 2 == 0) = "mac#%"
+
+fn
+g0uint_is_odd_size :
+  size_t -<> bool = "mac#%"
+
+fn
+g1uint_is_odd_size :
+  {n : int}
+  size_t n -<> bool (n mod 2 == 1) = "mac#%"
+
+fn
+g0uint_clz_ullint :
+  ullint -<> int = "mac#%"
+
+fn
+g1uint_clz_ullint :
+  {n : nat}
+  ullint n -<>
+    [i : nat]
+    int i = "mac#%"
+
+fn
+g0uint_clz_size :
+  size_t -<> int = "mac#%"
+
+fn
+g1uint_clz_size :
+  {n : nat}
+  size_t n -<>
+    [i : nat]
+    int i = "mac#%"
 
 (*------------------------------------------------------------------*)
 (* A stack of subarray boundaries.                                  *)
@@ -175,5 +211,16 @@ stk_vt_pop :
     [size : pos]
     @(P2tr1 (array (a, size)),
       size_t size)
+
+(*------------------------------------------------------------------*)
+
+(* Compute a minimum run length. Runs shorter than this will be
+   extended via an insertion sort. *)
+fn {}
+minimum_run_length :
+  {n : int}
+  size_t n -<>
+    [minrun : int | min (n, 32) <= minrun; minrun <= 64]
+    size_t minrun
 
 (*------------------------------------------------------------------*)

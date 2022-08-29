@@ -48,12 +48,88 @@ ats2_timsort_g0uint_is_odd_size (atstype_size n)
   return ((n & 1) != 0);
 }
 
+ats2_timsort_inline atstype_int
+ats2_timsort_g0uint_clz_ullint_fallback (atstype_size bits)
+{
+  /* Better methods might include such things as de Bruijn sequences,
+     but the following ought to work, whatever the size of an
+     atstype_size. */
+
+  typedef atstype_ullint ull;
+  typedef unsigned char uch;
+
+  int result;
+
+  if (bits == 0)
+    result = CHAR_BIT * sizeof (ull);
+  else
+    {
+      result = 0;
+      int i = sizeof (ull) - 1;
+      uch byte = (uch) (bits >> (CHAR_BIT * i));
+      while (byte == 0)
+        {
+          result += CHAR_BIT;
+          i -= 1;
+          byte = (uch) (bits >> (CHAR_BIT * i));
+        }
+      while ((byte >> (CHAR_BIT - 1)) == 0)
+        {
+          result += 1;
+          byte = (byte << 1);
+        }
+    }
+  return result;
+}
+
+#if defined __GNUC__
+
+ats2_timsort_inline atstype_int
+ats2_timsort_g0uint_clz_ullint (atstype_size bits)
+{
+  typedef atstype_ullint ull;
+
+  return (bits == 0) ?
+    (CHAR_BIT * sizeof (ull)) : (__builtin_clzll (bits));
+}
+
+#else
+
+ats2_timsort_inline atstype_int
+ats2_timsort_g0uint_clz_ullint (atstype_size bits)
+{
+  /* Keep the implementation outside the #if, so it can be unit-tested
+     easily on GNU systems. */
+  return ats2_timsort_g0uint_clz_ullint_fallback (bits);
+}
+
+#endif 
+
+ats2_timsort_inline atstype_int
+ats2_timsort_g0uint_clz_size (atstype_size bits)
+{
+  /* I would be very surprised to see the following assertion
+     fail. Mostly likely atstype_size and atstype_ullint actually have
+     the same size. */
+  _Static_assert
+    (sizeof (atstype_ullint) >= sizeof (atstype_size),
+     "atstype_size cannot be larger than atstype_ullint.");
+
+  return
+    (ats2_timsort_g0uint_clz_ullint (bits)
+     - CHAR_BIT * (sizeof (atstype_ullint) - sizeof (atstype_size)));
+}
+
 #define ats2_timsort_g1uint_ceildiv_size        \
   ats2_timsort_g0uint_ceildiv_size
 #define ats2_timsort_g1uint_is_even_size        \
   ats2_timsort_g0uint_is_even_size
 #define ats2_timsort_g1uint_is_odd_size         \
   ats2_timsort_g0uint_is_odd_size
+#define ats2_timsort_g1uint_clz_ullint          \
+  ats2_timsort_g0uint_clz_ullint
+#define ats2_timsort_g1uint_clz_size            \
+  ats2_timsort_g0uint_clz_size
 
 ats2_timsort_inline atstype_int
 ats2_timsort_nodepower_fallback (atstype_size n,
@@ -119,63 +195,6 @@ ats2_timsort_nodepower_fallback (atstype_size n,
 
   return result;
 }
-
-ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_ullint_fallback (atstype_size bits)
-{
-  /* Better methods might include such things as de Bruijn sequences,
-     but the following ought to work, whatever the size of an
-     atstype_size. */
-
-  typedef atstype_ullint ull;
-  typedef unsigned char uch;
-
-  int result;
-
-  if (bits == 0)
-    result = CHAR_BIT * sizeof (ull);
-  else
-    {
-      result = 0;
-      int i = sizeof (ull) - 1;
-      uch byte = (uch) (bits >> (CHAR_BIT * i));
-      while (byte == 0)
-        {
-          result += CHAR_BIT;
-          i -= 1;
-          byte = (uch) (bits >> (CHAR_BIT * i));
-        }
-      while ((byte >> (CHAR_BIT - 1)) == 0)
-        {
-          result += 1;
-          byte = (byte << 1);
-        }
-    }
-  return result;
-}
-
-#if defined __GNUC__
-
-ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_ullint (atstype_size bits)
-{
-  typedef atstype_ullint ull;
-
-  return (bits == 0) ?
-    (CHAR_BIT * sizeof (ull)) : (__builtin_clzll (bits));
-}
-
-#else
-
-ats2_timsort_inline atstype_int
-ats2_timsort_g0uint_clz_ullint (atstype_size bits)
-{
-  /* Keep the implementation outside the #if, so it can be unit-tested
-     easily on GNU systems. */
-  return ats2_timsort_g0uint_clz_ullint_fallback (bits);
-}
-
-#endif 
 
 #define ATS2_TIMSORT_NODEPOWER_PREFERRED(BIG, LITTLE)               \
   do                                                                \
