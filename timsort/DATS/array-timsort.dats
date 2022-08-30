@@ -125,6 +125,21 @@ sort_a_monotonic_run :
     [runlen : pos | runlen <= n]
     bptr (a, p_arr, runlen)
 
+(* Starting at position i, create a sorted array segment of at least
+   minrun elements, or until the end of the array. *)
+extern fn {a : vt@ype}
+provide_a_sorted_run :
+  {p_arr  : addr}
+  {n      : pos}
+  {i      : nat | i < n}
+  {minrun : pos}
+  (!array_v (a, p_arr, n) |
+   bptr (a, p_arr, i),
+   bptr (a, p_arr, n),
+   size_t minrun) -< !wrt >
+    [j : int | i < j; j <= n]
+    bptr (a, p_arr, j)
+
 (*------------------------------------------------------------------*)
 
 fn {a : vt@ype}
@@ -165,21 +180,21 @@ insertion_position
              rounding towards bp_k. *)
           stadef h = k - ((k - j) / 2)
           val bp_h : bptr (a, p_arr, h) =
-            bptr_sub<a> (bp_k, half (bptr_diff<a> (bp_k, bp_j)))
+            bp_k - (half (bp_k - bp_j))
         in
           if elem_lt<a> (pf_arr | bp_i, bp_h) then
-            loop (pf_arr | bp_j, bptr_pred<a> bp_h)
+            loop (pf_arr | bp_j, pred bp_h)
           else
             loop (pf_arr | bp_h, bp_k)
         end
       else if bp_j <> bp_arr then
-        bptr_succ<a> bp_j
+        succ bp_j
       else if elem_lt<a> (pf_arr | bp_i, bp_arr) then
         bp_arr
       else
-        bptr_succ<a> bp_arr
+        succ bp_arr
   in
-    loop (pf_arr | bp_arr, bptr_pred<a> bp_i)
+    loop (pf_arr | bp_arr, pred bp_i)
   end
 
 implement {a}
@@ -199,7 +214,7 @@ insertion_sort_given_initial_sorted_run {p_arr} {n}
           val bp_j = insertion_position<a> (pf_arr | bp_arr, bp_i)
         in
           subcirculate_right<a> (pf_arr | bp_j, bp_i);
-          loop (pf_arr | bptr_succ<a> bp_i)
+          loop (pf_arr | succ bp_i)
         end
   in
     loop (pf_arr | bp_i)
@@ -210,7 +225,7 @@ insertion_sort_given_initial_sorted_run {p_arr} {n}
 implement {a}
 sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
   let
-    val bp_i = bptr_succ<a> bp_arr
+    val bp_i = succ bp_arr
   in
     if bp_i = bp_n then
       bp_i                      (* A run of one. *)
@@ -225,13 +240,14 @@ sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
                 bptr (a, p_arr, i1) =
           if bp_i = bp_n then
             bp_i
-          else if elem_lt<a> (pf_arr | bp_i, bptr_pred<a> bp_i) then
-            loop (pf_arr | bptr_succ<a> bp_i)
+          else if elem_lt<a> (pf_arr | bp_i, pred bp_i) then
+            loop (pf_arr | succ bp_i)
           else
             bp_i
 
-          val bp_i = loop (pf_arr | bptr_succ<a> bp_i)
-      in        subreverse<a> (pf_arr | bp_arr, bp_i);
+          val bp_i = loop (pf_arr | succ bp_i)
+      in
+        subreverse<a> (pf_arr | bp_arr, bp_i);
         bp_i
       end
     else
@@ -245,13 +261,47 @@ sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
                 bptr (a, p_arr, i1) =
           if bp_i = bp_n then
             bp_i
-          else if elem_lt<a> (pf_arr | bp_i, bptr_pred<a> bp_i) then
+          else if elem_lt<a> (pf_arr | bp_i, pred bp_i) then
             bp_i
           else
-            loop (pf_arr | bptr_succ<a> bp_i)
+            loop (pf_arr | succ bp_i)
       in
-        loop (pf_arr | bptr_succ<a> bp_i)
+        loop (pf_arr | succ bp_i)
       end
+  end
+
+(*------------------------------------------------------------------*)
+
+implement {a}
+provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
+  let
+    val minrun = min (minrun, bp_n - bp_i)
+    prval [minrun : int] EQINT () = eqint_make_guint minrun
+
+    (* Isolate the part of the array to be sorted. *)
+    prval @(pf_arr0, pf_arr1_) =
+      array_v_split {a} {p_arr} {n} {i} pf_arr
+    prval @(pf_arr1, pf_arr2) =
+      array_v_split {a} {p_arr + (i * sizeof a)} {n - i} {minrun}
+                    pf_arr1_
+
+    (* We will sort from bp_i to bp_i + minrun. *)
+    val bp_arr1 = bptr_reanchor<a> bp_i
+    val bp_minrun = bp_arr1 + minrun
+
+    (* The actual sorting. *)
+    val bp_runlen =
+      sort_a_monotonic_run<a>
+        (pf_arr1 | bp_arr1, bp_minrun)
+    val () =
+      insertion_sort_given_initial_sorted_run<a>
+        (pf_arr1 | bp_arr1, bp_runlen, bp_minrun)
+
+    (* Reconstruct the array. *)
+    prval () = pf_arr :=
+      array_v_unsplit (pf_arr0, array_v_unsplit (pf_arr1, pf_arr2))
+  in
+    bp_i + minrun
   end
 
 (*------------------------------------------------------------------*)

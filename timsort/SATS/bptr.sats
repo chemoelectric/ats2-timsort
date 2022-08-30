@@ -75,6 +75,7 @@ bptr_add_g1int :
 
 overload bptr_add with bptr_add_g1uint
 overload bptr_add with bptr_add_g1int
+overload + with bptr_add of 30
 
 (*------------------------------------------------------------------*)
 
@@ -96,6 +97,7 @@ bptr_sub_g1int :
 
 overload bptr_sub with bptr_sub_g1uint
 overload bptr_sub with bptr_sub_g1int
+overload - with bptr_sub of 30
 
 (*------------------------------------------------------------------*)
 
@@ -111,6 +113,9 @@ bptr_pred :
   {i : int}
   bptr (a, p, i) -<> bptr (a, p, i - 1)
 
+overload succ with bptr_succ of 30
+overload pred with bptr_pred of 30
+
 (*------------------------------------------------------------------*)
 
 fn {a : vt@ype}
@@ -118,6 +123,8 @@ bptr_diff :
   {p    : addr}
   {i, j : int | i >= j}
   (bptr (a, p, i), bptr (a, p, j)) -<> size_t (i - j)
+
+overload - with bptr_diff of 30
 
 (*------------------------------------------------------------------*)
 
@@ -260,10 +267,10 @@ subcirculate_right_with_gap_bptr_bptr :
    size_t gap) -< !wrt >
     void
 
-overload interchange with interchange_bptr_bptr
-overload subreverse with subreverse_bptr_bptr
-overload subcirculate_right with subcirculate_right_bptr_bptr
+overload interchange with interchange_bptr_bptr of 30
+overload subreverse with subreverse_bptr_bptr of 30
+overload subcirculate_right with subcirculate_right_bptr_bptr of 30
 overload subcirculate_right_with_gap with
-  subcirculate_right_with_gap_bptr_bptr
+  subcirculate_right_with_gap_bptr_bptr of 30
 
 (*------------------------------------------------------------------*)
