@@ -22,8 +22,10 @@
 #define ats2_timsort_bptr_inline ATSinline ()
 
 #if defined __GNUC__
+#define ats2_timsort_bptr_memcpy __builtin_memcpy
 #define ats2_timsort_bptr_memmove __builtin_memmove
 #else
+#define ats2_timsort_bptr_memcpy memcpy
 #define ats2_timsort_bptr_memmove memmove
 #endif
 
