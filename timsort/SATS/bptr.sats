@@ -271,7 +271,22 @@ subcirculate_right_with_gap_bptr_bptr :
    checked for at runtime, but is implicitly rejected by the need for
    separate views. *)
 fn {a : vt@ype}
-copy_bptr_bptr :
+copy_bptr_bptr_size :
+  {dst : addr}
+  {src : addr}
+  {n   : int}
+  (!array_v (a?, dst, n) >> array_v (a, dst, n),
+   !array_v (a, src, n) >> array_v (a?!, src, n) |
+   bptr_anchor (a?, dst),
+   bptr_anchor (a, src),
+   size_t n) -< !wrt >
+    void
+
+(* Copy elements from one array to a different array. Overlap is not
+   checked for at runtime, but is implicitly rejected by the need for
+   separate views. *)
+fn {a : vt@ype}
+copy_bptr_bptr_bptr :
   {dst : addr}
   {src : addr}
   {n   : int}
@@ -281,6 +296,9 @@ copy_bptr_bptr :
    bptr_anchor (a, src),
    bptr (a, src, n)) -< !wrt >
     void
+
+overload copy_bptr_bptr with copy_bptr_bptr_size
+overload copy_bptr_bptr with copy_bptr_bptr_bptr
 
 overload interchange with interchange_bptr_bptr of 30
 overload subreverse with subreverse_bptr_bptr of 30

@@ -418,8 +418,8 @@ subcirculate_right_with_gap_bptr_bptr {p} {n} {i, m, gap}
     end
 
 implement {a}
-copy_bptr_bptr {dst} {src} {n}
-               (pf_dst, pf_src | bp_dst, bp_src, bp_n) =
+copy_bptr_bptr_size {dst} {src} {n}
+                    (pf_dst, pf_src | bp_dst, bp_src, n) =
   let
     extern fn                   (* Unsafe memcpy. *)
     memcpy : (Ptr, Ptr, Size_t) -< !wrt > void = "mac#%"
@@ -429,7 +429,7 @@ copy_bptr_bptr {dst} {src} {n}
     prval () = mul_gte_gte_gte {sizeof a, n} ()
 
     val () = memcpy (bptr2ptr bp_dst, bptr2ptr bp_src,
-                     sizeof<a> * (bp_n - bp_src))
+                     sizeof<a> * n)
 
     prval () = $UN.castview2void {array_v (a, dst, n)}
                                  {array_v (a?, dst, n)}
@@ -438,4 +438,15 @@ copy_bptr_bptr {dst} {src} {n}
                                  {array_v (a, src, n)}
                                  pf_src
   in
+  end
+
+implement {a}
+copy_bptr_bptr_bptr {dst} {src} {n}
+                    (pf_dst, pf_src | bp_dst, bp_src, bp_n) =
+  let
+    prval () = lemma_array_v_param pf_dst
+  in
+    copy_bptr_bptr_size
+      {dst} {src} {n}
+      (pf_dst, pf_src | bp_dst, bp_src, bp_n - bp_src)
   end
