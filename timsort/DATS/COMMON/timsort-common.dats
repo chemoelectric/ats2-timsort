@@ -36,6 +36,15 @@ lemma_mul_isfun {m1, n1} {m2, n2} () =
   end
 
 primplement
+lemma_mul_commutes {m, n} () =
+  let
+    prval pf1 = mul_make {m, n} ()
+    prval pf2 = mul_commute pf1
+    prval () = mul_elim pf2
+  in
+  end
+
+primplement
 array_v_takeout2 {a} {p} {n} {i, j} pf_arr =
   sif i < j then
     let

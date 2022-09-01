@@ -65,12 +65,12 @@ elem_lt_ptr1_ptr1
 
 fn {a : vt@ype}
 elem_lt_bptr_bptr
-          {p      : addr}
+          {p, q   : addr}
           {i, j   : int}
           (pf_i   : !a @ (p + (i * sizeof a)),
-           pf_j   : !a @ (p + (j * sizeof a)) |
+           pf_j   : !a @ (q + (j * sizeof a)) |
            bp_i   : bptr (a, p, i),
-           bp_j   : bptr (a, p, j))
+           bp_j   : bptr (a, q, j))
     :<> bool =
   elem_lt_ptr1_ptr1<a> (pf_i, pf_j | bptr2ptr bp_i, bptr2ptr bp_j)
 
@@ -96,65 +96,6 @@ elem_lt_array_bptr_bptr
 overload elem_lt with elem_lt_ptr1_ptr1
 overload elem_lt with elem_lt_bptr_bptr
 overload elem_lt with elem_lt_array_bptr_bptr
-
-(*------------------------------------------------------------------*)
-
-(* A stable insertion sort that assumes the first runlen elements
-   already are sorted. *)
-extern fn {a : vt@ype}
-insertion_sort_given_initial_sorted_run :
-  {p_arr  : addr}
-  {n      : int}
-  {runlen : pos | runlen <= n}
-  (!array_v (a, p_arr, n) |
-   bptr_anchor (a, p_arr),
-   bptr (a, p_arr, runlen),
-   bptr (a, p_arr, n)) -< !wrt >
-    void
-
-(* Find a monotonically non-descending run or a monotonically
-   descending run, and convert it to a monotonically non-descending
-   run. That is, into a sorted run. *)
-extern fn {a : vt@ype}
-sort_a_monotonic_run :
-  {p_arr : addr}
-  {n     : pos}
-  (!array_v (a, p_arr, n) |
-   bptr_anchor (a, p_arr),
-   bptr (a, p_arr, n)) -< !wrt >
-    [runlen : pos | runlen <= n]
-    bptr (a, p_arr, runlen)
-
-(* Starting at position i, create a sorted array segment of at least
-   minrun elements, or until the end of the array. *)
-extern fn {a : vt@ype}
-provide_a_sorted_run :
-  {p_arr  : addr}
-  {n      : pos}
-  {i      : nat | i < n}
-  {minrun : pos}
-  (!array_v (a, p_arr, n) |
-   bptr (a, p_arr, i),
-   bptr (a, p_arr, n),
-   size_t minrun) -< !wrt >
-    [j : int | i < j; j <= n]
-    bptr (a, p_arr, j)
-
-extern fn {a : vt@ype}
-merge_left :
-  {p_arr  : addr}
-  {n      : pos}
-  {i      : nat | 2 * i <= n}
-  {p_work : addr}
-  {worksz : int | n <= 2 * worksz}
-  (!array_v (a, p_arr, n),
-   !array_v (a?, p_work, worksz) |
-   bptr_anchor (a, p_arr),
-   bptr (a, p_arr, i),
-   bptr (a, p_arr, n),
-   bptr_anchor (a?, p_work),
-   &Size_t (* gallop_threshold *) ) -< !wrt >
-    void
 
 (*------------------------------------------------------------------*)
 
@@ -213,6 +154,19 @@ insertion_position
     loop (pf_arr | bp_arr, pred bp_i)
   end
 
+(* A stable insertion sort that assumes the first runlen elements
+   already are sorted. *)
+extern fn {a : vt@ype}
+insertion_sort_given_initial_sorted_run :
+  {p_arr  : addr}
+  {n      : int}
+  {runlen : pos | runlen <= n}
+  (!array_v (a, p_arr, n) |
+   bptr_anchor (a, p_arr),
+   bptr (a, p_arr, runlen),
+   bptr (a, p_arr, n)) -< !wrt >
+    void
+
 implement {a}
 insertion_sort_given_initial_sorted_run {p_arr} {n}
                                         (pf_arr |
@@ -237,6 +191,19 @@ insertion_sort_given_initial_sorted_run {p_arr} {n}
   end
 
 (*------------------------------------------------------------------*)
+
+(* Find a monotonically non-descending run or a monotonically
+   descending run, and convert it to a monotonically non-descending
+   run. That is, into a sorted run. *)
+extern fn {a : vt@ype}
+sort_a_monotonic_run :
+  {p_arr : addr}
+  {n     : pos}
+  (!array_v (a, p_arr, n) |
+   bptr_anchor (a, p_arr),
+   bptr (a, p_arr, n)) -< !wrt >
+    [runlen : pos | runlen <= n]
+    bptr (a, p_arr, runlen)
 
 implement {a}
 sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
@@ -288,6 +255,21 @@ sort_a_monotonic_run {p_arr} {n} (pf_arr | bp_arr, bp_n) =
 
 (*------------------------------------------------------------------*)
 
+(* Starting at position i, create a sorted array segment of at least
+   minrun elements, or until the end of the array. *)
+extern fn {a : vt@ype}
+provide_a_sorted_run :
+  {p_arr  : addr}
+  {n      : pos}
+  {i      : nat | i < n}
+  {minrun : pos}
+  (!array_v (a, p_arr, n) |
+   bptr (a, p_arr, i),
+   bptr (a, p_arr, n),
+   size_t minrun) -< !wrt >
+    [j : int | i < j; j <= n]
+    bptr (a, p_arr, j)
+
 implement {a}
 provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
   let
@@ -322,227 +304,151 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
 
 (*------------------------------------------------------------------*)
 
-fn {a : vt@ype}
-scan_R_lt_L_for_merge_left
-          {p_rgt    : addr}
-          {i, n_rgt : nat | i <= n_rgt}
-          {p_L      : addr}
-          (pf_rgt   : !array_v (a, p_rgt, n_rgt),
-           pf_L     : !a @ p_L |
-           bp_R     : bptr (a, p_rgt, i),
-           bp_n_rgt : bptr (a, p_rgt, n_rgt),
-           bp_L     : bptr_anchor (a, p_L))
-    :<> [i1 : int | i <= i1; i1 <= n_rgt]
-        bptr (a, p_rgt, i1) =
-  let
-    fun
-    loop {i0 : nat | i <= i0; i0 <= n_rgt}
-         .<n_rgt - i0>.
-         (pf_rgt : !array_v (a, p_rgt, n_rgt),
-          pf_L   : !a @ p_L |
-          bp_R0  : bptr (a, p_rgt, i0))
-        :<> [i1 : int | i0 <= i1; i1 <= n_rgt]
-            bptr (a, p_rgt, i1) =
-      if bp_R0 = bp_n_rgt then
-        bp_R0
-      else
-        let
-          prval @(pf_rgt1, pf_rgt2) =
-            array_v_split {a} {p_rgt} {n_rgt} {i0} pf_rgt
-          prval @(pf_R0, pf_rgt3) = array_v_uncons pf_rgt2
-          val R0_lt_L =
-            elem_lt<a> (pf_R0, pf_L | bptr2ptr bp_R0, bptr2ptr bp_L)
-          prval () = pf_rgt :=
-            array_v_unsplit (pf_rgt1, array_v_cons (pf_R0, pf_rgt3))
-        in
-          if R0_lt_L then
-            loop (pf_rgt, pf_L | succ bp_R0)
-          else
-            bp_R0
-        end
-  in
-    loop (pf_rgt, pf_L | bp_R)
-  end
+(* FIXME: THERE IS NO GALLOP YET. *)
+extern fn {a : vt@ype}
+merge_left :
+  {p_arr  : addr}
+  {n      : pos}
+  {i      : nat | 2 * i <= n}
+  {p_work : addr}
+  {worksz : int | n <= 2 * worksz}
+  (!array_v (a, p_arr, n),
+   !array_v (a?, p_work, worksz) |
+   bptr_anchor (a, p_arr),
+   bptr (a, p_arr, i),
+   bptr (a, p_arr, n),
+   bptr_anchor (a?, p_work)) -< !wrt >
+    void
 
-fn {a : vt@ype}
-scan_L_lte_R_for_merge_left
-          {p_R      : addr}
-          {p_lft    : addr}
-          {j, n_lft : nat | j <= n_lft}
-          (pf_R     : !a @ p_R,
-           pf_lft   : !array_v (a, p_lft, n_lft) |
-           bp_R     : bptr_anchor (a, p_R),
-           bp_L     : bptr (a, p_lft, j),
-           bp_n_lft : bptr (a, p_lft, n_lft))
-    :<> [j1 : int | j <= j1; j1 <= n_lft]
-        bptr (a, p_lft, j1) =
-  let
-    fun
-    loop {j0 : nat | j <= j0; j0 <= n_lft}
-         .<n_lft - j0>.
-         (pf_R     : !a @ p_R,
-          pf_lft   : !array_v (a, p_lft, n_lft) |
-          bp_L0    : bptr (a, p_lft, j0))
-        :<> [j1 : int | j0 <= j1; j1 <= n_lft]
-            bptr (a, p_lft, j1) =
-      if bp_L0 = bp_n_lft then
-        bp_L0
-      else
-        let
-          prval @(pf_lft1, pf_lft2) =
-            array_v_split {a} {p_lft} {n_lft} {j0} pf_lft
-          prval @(pf_L0, pf_lft3) = array_v_uncons pf_lft2
-          val R_lt_L0 =
-            elem_lt<a> (pf_R, pf_L0 | bptr2ptr bp_R, bptr2ptr bp_L0)
-          prval () = pf_lft :=
-            array_v_unsplit (pf_lft1, array_v_cons (pf_L0, pf_lft3))
-        in
-          if R_lt_L0 then
-            bp_L0
-          else
-            loop (pf_R, pf_lft | succ bp_L0)
-        end
-  in
-    loop (pf_R, pf_lft | bp_L)
-  end
-
-(*
 implement {a}
 merge_left {p_arr} {n} {i} {p_work} {worksz}
-           (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work,
-                              gallop_threshold) =
+           (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work) =
   let
+    stadef pntr (p : addr, i : int) = p + (sizeof a * i)
+
+    (* Split the array into left and right, and copy the left to
+       workspace. *)
     prval @(pf_left, pf_right) =
       array_v_split {a} {p_arr} {n} {i} pf_arr
     prval @(pf_temp, pf_unused) =
       array_v_split {a?} {p_work} {worksz} {i} pf_work
-
     stadef p_temp = p_work
     stadef tempsz = i
-
     val () = copy<a> (pf_temp, pf_left | bp_work, bp_arr, bp_i)
-
     val bp_temp : bptr_anchor (a, p_temp) =
       ptr2bptr_anchor (bptr2ptr bp_work)
     val bp_tempsz : bptr (a, p_temp, tempsz) =
       bp_temp + (bp_i - bp_arr)
-      
+
+    (* Some array segments that start out empty but will grow. *)
     prval pf_merged = array_v_nil {a} {p_arr} ()
     prval pf_between = pf_left
     prval pf_cleared = array_v_nil {a?} {p_temp} ()
 
     fun
     merge_runs
-              {n_merged   : nat}
-              {j          : nat | n_merged <= j; j <= n;
-                                  n - j <= n_merged}
-              {n_cleared  : int | n_cleared == n_merged - (n - j)}
-              .<n - n_merged>.
-              (pf_merged  : array_v (a, p_arr, n_merged),
-               pf_between : array_v (a?,
-                                     p_arr + (sizeof a * n_merged),
-                                     j - n_merged),
-               pf_rgt     : array_v (a, p_arr + (sizeof a * j),
-                                     n - j),
-               pf_cleared : array_v (a?, p_temp, n_cleared),
-               pf_lft     : array_v (a,
-                                     p_temp + (sizeof a * n_cleared),
-                                     tempsz - n_cleared) |
-               bp_between : bptr (a?, p_arr, n_merged),
-               bp_rgt     : bptr (a, p_arr, j),
-               bp_lft     : bptr (a, p_temp, n_cleared))
-        :<!wrt> @(array_v (a, p_arr, n),
-                  array_v (a?, p_temp, tempsz) | ) =
-      (* FIXME: FOR NOW, THIS IS JUST A SIMPLE MERGE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! *)
-      (* FIXME: and not the most efficient one. *)
-      if bp_between = bp_n then
-        let
-          prval () = array_v_unnil pf_between
-          prval () = array_v_unnil pf_rgt
-          prval () = array_v_unnil pf_lft
-        in
-          @(pf_merged, pf_cleared | )
-        end
+              {i_between : nat}
+              {i_rgt     : nat | i_between <= i_rgt; i_rgt <= n}
+              {i_lft     : nat | i_rgt - i_between == tempsz - i_lft}
+              .<n - i_between>.
+              (pf_merged  : !array_v (a, p_arr, i_between)
+                              >> array_v (a, p_arr, n),
+               pf_between : !array_v (a?, pntr (p_arr, i_between),
+                                      i_rgt - i_between) >> void,
+               pf_rgt     : !array_v (a, pntr (p_arr, i_rgt),
+                                      n - i_rgt) >> void,
+               pf_cleared : !array_v (a?, p_temp, i_lft)
+                              >> array_v (a?, p_temp, tempsz),
+               pf_lft     : !array_v (a, pntr (p_temp, i_lft),
+                                      tempsz - i_lft) >> void |
+               bp_between : bptr (a?, p_arr, i_between),
+               bp_rgt     : bptr (a, p_arr, i_rgt),
+               bp_lft     : bptr (a, p_temp, i_lft))
+        :<!wrt> void =
+        if bp_lft = bp_tempsz then
+          let  (* Any remaining right entries already are in place. *)
+            prval () = prop_verify {i_between == i_rgt} ()
+            prval () = lemma_mul_isfun {sizeof a, i_between}
+                                       {sizeof a, i_rgt} ()
+            prval () = lemma_mul_commutes {sizeof a, i_between} ()
+            prval () = pf_lft := array_v_unnil pf_lft
+            prval () = pf_between := array_v_unnil pf_between
+            prval () = pf_merged := array_v_unsplit (pf_merged,
+                                                     pf_rgt)
+            prval () = pf_rgt := ()
+          in
+          end
+        else if bp_rgt = bp_n then
+          let                   (* Copy any remaining left entries. *)
+            prval () =
+              prop_verify {tempsz - i_lft == i_rgt - i_between} ()
+            prval () = lemma_mul_commutes {sizeof a, i_between} ()
+            prval () = lemma_mul_commutes {sizeof a, i_lft} ()
+            prval () = pf_rgt := array_v_unnil pf_rgt
+            val () = copy<a> (pf_between, pf_lft |
+                              bptr_reanchor bp_between,
+                              bptr_reanchor bp_lft,
+                              bp_tempsz - bp_lft)
+            prval () = pf_merged := array_v_unsplit (pf_merged,
+                                                     pf_between)
+            prval () = pf_between := ()
+            prval () = pf_cleared := array_v_unsplit (pf_cleared,
+                                                      pf_lft)
+            prval () = pf_lft := ()
+          in
+          end
       else
         let
+          prval () = lemma_mul_commutes {sizeof a, i_rgt} ()
+          prval () = lemma_mul_commutes {sizeof a, i_lft} ()
+          prval () = lemma_mul_commutes {sizeof a, i_between} ()
+          prval @(pf_taken, pf_between1) = array_v_uncons pf_between
           prval @(pf_R, pf_rgt1) = array_v_uncons pf_rgt
           prval @(pf_L, pf_lft1) = array_v_uncons pf_lft
         in
           if elem_lt<a> (pf_R, pf_L | bp_rgt, bp_lft) then
-            let
-              val [i_R1 : int] bp_R1 =
-                scan_R_lt_L_for_merge_left<a>
-                  (pf_rgt1, pf_L | succ bp_rgt, bp_n,
-                                   bptr_reanchor bp_lft)
-
-              prval @(pf_rgt0, pf_rgt1) =
-                array_v_split {a} {p_arr + (sizeof a * j)}
-                              {n - j} {i_R1 - j}
-                              (array_v_cons (pf_R, pf_rgt1))
-              prval @(pf_between0, pf_between1) =
-                array_v_split {a?} {p_arr + (sizeof a * n_merged)}
-                              {j - n_merged} {i_R1 - j}
-                              pf_between
-
-              val () = copy<a> (pf_between0, pf_rgt0 |
-                                bptr_reanchor bp_between,
-                                bptr_reanchor bp_rgt,
-                                bp_R1 - bp_rgt)
-
-              prval pf_merged1 =
-                array_v_unsplit (pf_merged, pf_between0)
-              prval pf_between2 =
-                array_v_unsplit (pf_between1, pf_rgt0)
+            let                 (* R < L. Take R. *)
+              prval () = pf_lft := array_v_cons (pf_L, pf_lft1)
+              val x = bptr_get<a> (pf_R | bp_rgt)
+              val () = ptr_set<a> (pf_taken | bptr2ptr bp_between, x)
+              prval () = pf_merged :=
+                array_v_extend (pf_merged, pf_taken)
+              prval () = pf_between :=
+                array_v_extend (pf_between1, pf_R)
+              prval () = pf_rgt := pf_rgt1
             in
-              merge_runs
-                (pf_merged1, pf_between2, pf_rgt1,
-                 pf_cleared, array_v_cons (pf_L, pf_lft1) |
-                 bp_between + (bp_R1 - bp_rgt), bp_R1, bp_lft)
+              merge_runs (pf_merged, pf_between, pf_rgt,
+                          pf_cleared, pf_lft |
+                          succ bp_between, succ bp_rgt, bp_lft)
             end
           else
-            let
-              val [i_L1 : int] bp_L1 =
-                scan_L_lte_R_for_merge_left<a>
-                  (pf_R, pf_lft1 | bptr_reanchor bp_rgt,
-                                   succ bp_lft, bp_tempsz)
-
-              prval @(pf_lft0, pf_lft1) =
-                array_v_split {a} {p_temp + (sizeof a * n_cleared)}
-                              {tempsz - n_cleared} {i_L1 - n_cleared}
-                              (array_v_cons (pf_L, pf_lft1))
-              prval @(pf_between0, pf_between1) =
-                array_v_split {a?} {p_arr + (sizeof a * n_merged)}
-                              {j - n_merged} {i_L1 - j}
-                              pf_between
-
-              val () = copy<a> (pf_between0, pf_lft0 |
-                                bptr_reanchor bp_between,
-                                bptr_reanchor bp_lft,
-                                bp_L1 - bp_lft)
-
-              prval pf_merged1 =
-                array_v_unsplit (pf_merged, pf_between0)
-              prval pf_cleared1 =
-                array_v_unsplit (pf_cleared, pf_lft0)
+            let                 (* L <= R. Take L. *)
+              prval () = pf_rgt := array_v_cons (pf_R, pf_rgt1)
+              val x = bptr_get<a> (pf_L | bp_lft)
+              val () = ptr_set<a> (pf_taken | bptr2ptr bp_between, x)
+              prval () = pf_merged :=
+                array_v_extend (pf_merged, pf_taken)
+              prval () = pf_between := pf_between1
+              prval () = pf_cleared :=
+                array_v_extend (pf_cleared, pf_L)
+              prval () = pf_lft := pf_lft1
             in
-              merge_runs
-                (pf_merged1, pf_between1,
-                 array_v_cons (pf_R, pf_rgt1), pf_cleared1, pf_lft1 |
-                 bp_between + (bp_L1 - bp_lft), bp_rgt, bp_L1)
+              merge_runs (pf_merged, pf_between, pf_rgt,
+                          pf_cleared, pf_lft |
+                          succ bp_between, bp_rgt, succ bp_lft)
             end
         end
 
-    val @(pf_arr1, pf_temp1 | ) =
-      merge_runs (pf_merged, pf_between, pf_right,
-                  pf_cleared, pf_temp |
-                  ptr2bptr_anchor (bptr2ptr bp_arr),
-                  bp_i, bp_temp)
+    prval () = lemma_mul_commutes {sizeof a, tempsz} ()
+    val () = merge_runs (pf_merged, pf_between, pf_right,
+                         pf_cleared, pf_temp |
+                         ptr2bptr_anchor (bptr2ptr bp_arr),
+                         bp_i, bp_temp)
 
-    prval () = pf_work := array_v_unsplit (pf_temp1, pf_unused)
-    prval () = pf_arr := pf_arr1
+    prval () = pf_arr := pf_merged
+    prval () = pf_work := array_v_unsplit (pf_cleared, pf_unused)
   in
   end
-*)
 
 (*------------------------------------------------------------------*)
 

@@ -35,6 +35,13 @@ lemma_mul_isfun :               (* Multiplication is a function. *)
     void
 
 prfn
+lemma_mul_commutes :            (* Multiplication is commutative. *)
+  {m, n : int}
+  () -<prf>
+    [m * n == n * m]
+    void
+
+prfn
 array_v_takeout2 :     (* Get views for two distinct array elements.*)
   {a     : vt@ype}
   {p     : addr}
