@@ -304,6 +304,143 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
 
 (*------------------------------------------------------------------*)
 
+extern fn {a : vt@ype}
+find_rightmost_position_with_all_lt_to_left :
+  {p_arr : addr}
+  {n     : pos}
+  {hint  : nat | hint <= n - 1}
+  {p_x0  : addr}
+  {n_x0  : int}
+  {i_x   : nat | i_x <= n_x0 - 1}
+  (!array_v (a, p_arr, n),
+   !array_v (a, p_x0, n_x0) |
+   bptr_anchor (a, p_arr),
+   bptr (a, p_arr, n),
+   size_t hint,
+   bptr (a, p_x0, i_x)) -<>
+    [j : nat | j <= n]
+    bptr (a, p_arr, j)
+
+implement {a}
+find_rightmost_position_with_all_lt_to_left
+          {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
+          (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
+  let
+    fn {}
+    elem_lt_x {k : nat | k <= n - 1}
+              (pf_arr : !array_v (a, p_arr, n),
+               pf_x0  : !array_v (a, p_x0, n_x0) |
+               bp_k   : bptr (a, p_arr, k))
+        :<> bool =
+      let
+        prval @(pf_k, fpf_k) =
+          array_v_takeout {a} {p_arr} {n} {k} pf_arr
+        prval @(pf_x, fpf_x) =
+          array_v_takeout {a} {p_x0} {n_x0} {i_x} pf_x0
+
+        val is_lt = elem_lt<a> (pf_k, pf_x | bp_k, bp_x)
+
+        prval () = pf_arr := fpf_k pf_k
+        prval () = pf_x0 := fpf_x pf_x
+      in
+        is_lt
+      end
+
+    fun
+    binary_search
+              {i, j : nat | i <= j; j <= n - 1}
+              .<j - i>.
+              (pf_arr : !array_v (a, p_arr, n),
+               pf_x0  : !array_v (a, p_x0, n_x0) |
+               bp_i   : bptr (a, p_arr, i),
+               bp_j   : bptr (a, p_arr, j))
+        :<> [k : nat | i <= k; k <= j]
+            bptr (a, p_arr, k) =
+      if bp_i = bp_j then
+        bp_i
+      else
+        let
+          val bp_h = bp_i + half (bp_j - bp_i)
+        in
+          if elem_lt_x (pf_arr, pf_x0 | bp_h) then
+            binary_search (pf_arr, pf_x0 | succ bp_h, bp_j)
+          else
+            binary_search (pf_arr, pf_x0 | bp_i, bp_h)
+        end
+
+    fn {}
+    next_pointer_rightwards
+              {i, j : nat | i <= j; j < n - 1}
+              (bp_i   : bptr (a, p_arr, i),
+               bp_j   : bptr (a, p_arr, j))
+        :<> [j1 : nat | j < j1; j1 <= n - 1]
+            bptr (a, p_arr, j1) =
+      if bp_i = bp_j then
+        succ bp_j
+      else
+        let
+          val bp_n1 = pred bp_n
+          and j = bp_j - bp_arr
+          and diff = bp_j - bp_i
+          val diff1 = double diff
+        in
+          if (diff1 < diff) + (j + diff1 < j) then
+            (* Overflow. *)
+            bp_n1
+          else if bp_n1 - bp_arr <= j + diff1 then
+            bp_n1
+          else
+            bp_j + diff1
+        end
+
+    fun
+    gallop_rightwards
+              {i, j : nat | i <= j; j <= n - 1}
+              .<n - j>.
+              (pf_arr : !array_v (a, p_arr, n),
+               pf_x0  : !array_v (a, p_x0, n_x0) |
+               bp_i   : bptr (a, p_arr, i),
+               bp_j   : bptr (a, p_arr, j))
+        :<> [k : nat | i < k; k <= n]
+            bptr (a, p_arr, k) =
+      if bp_j = pred bp_n then
+        bp_n
+      else
+        let
+          val [j1 : int] bp_j1 = next_pointer_rightwards (bp_i, bp_j)
+          and bp_i1 = bp_j
+        in
+          if elem_lt_x (pf_arr, pf_x0 | bp_j1) then
+            gallop_rightwards (pf_arr, pf_x0 | bp_i1, bp_j1)
+          else
+            binary_search (pf_arr, pf_x0 | succ bp_i1, bp_j1)
+        end
+
+    fun
+    gallop_leftwards
+              {i, j : nat | j <= i; i <= n}
+              .<j>.
+              (pf_arr : !array_v (a, p_arr, n),
+               pf_x0  : !array_v (a, p_x0, n_x0) |
+               bp_i   : bptr (a, p_arr, i),
+               bp_j   : bptr (a, p_arr, j))
+        :<> [k : nat | k <= i]
+            bptr (a, p_arr, k) =
+      let
+      in
+        bp_arr (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *)
+      end
+
+    val bp_hint = bp_arr + hint
+  in
+    if elem_lt_x (pf_arr, pf_x0 | bp_hint) then
+      gallop_rightwards (pf_arr, pf_x0 | bp_hint, bp_hint)
+    else
+      gallop_leftwards (pf_arr, pf_x0 | bp_hint, bp_hint)
+  end
+
+(*------------------------------------------------------------------*)
+
 (* FIXME: THERE IS NO GALLOP YET. *)
 extern fn {a : vt@ype}
 merge_left :
