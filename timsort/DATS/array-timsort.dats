@@ -346,7 +346,7 @@ find_rightmost_position_with_all_lt_to_left
         is_lt
       end
 
-    fun
+    fun {}
     binary_search
               {i, j : nat | i <= j; j <= n - 1}
               .<j - i>.
@@ -417,7 +417,7 @@ find_rightmost_position_with_all_lt_to_left
             bp_i - diff1
         end
 
-    fun
+    fun {}
     gallop_rightwards
               {i, j : nat | i <= j; j <= n - 1}
               .<n - j>.
@@ -440,7 +440,7 @@ find_rightmost_position_with_all_lt_to_left
             binary_search (pf_arr, pf_x0 | succ bp_i, bp_j)
         end
 
-    fun
+    fun {}
     gallop_leftwards
               {i, j : nat | i <= j; j <= n - 1}
               .<i>.
