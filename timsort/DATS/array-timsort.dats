@@ -431,13 +431,13 @@ find_rightmost_position_with_all_lt_to_left
         bp_n
       else
         let
-          val [j1 : int] bp_j1 = next_pointer_rightwards (bp_i, bp_j)
-          and bp_i1 = bp_j
+          val bp_j = next_pointer_rightwards (bp_i, bp_j)
+          and bp_i = bp_j
         in
-          if elem_lt_x (pf_arr, pf_x0 | bp_j1) then
-            gallop_rightwards (pf_arr, pf_x0 | bp_i1, bp_j1)
+          if elem_lt_x (pf_arr, pf_x0 | bp_j) then
+            gallop_rightwards (pf_arr, pf_x0 | bp_i, bp_j)
           else
-            binary_search (pf_arr, pf_x0 | succ bp_i1, bp_j1)
+            binary_search (pf_arr, pf_x0 | succ bp_i, bp_j)
         end
 
     fun
@@ -454,13 +454,13 @@ find_rightmost_position_with_all_lt_to_left
         bp_arr
       else
         let
-          val [i1 : int] bp_i1 = next_pointer_leftwards (bp_i, bp_j)
-          and bp_j1 = bp_i
+          val bp_i = next_pointer_leftwards (bp_i, bp_j)
+          and bp_j = bp_i
         in
-          if elem_lt_x (pf_arr, pf_x0 | bp_i1) then
-            binary_search (pf_arr, pf_x0 | succ bp_i1, bp_j1)
+          if elem_lt_x (pf_arr, pf_x0 | bp_i) then
+            binary_search (pf_arr, pf_x0 | succ bp_i, bp_j)
           else
-            gallop_leftwards (pf_arr, pf_x0 | bp_i1, bp_j1)
+            gallop_leftwards (pf_arr, pf_x0 | bp_i, bp_j)
         end
 
     val bp_hint = bp_arr + hint
