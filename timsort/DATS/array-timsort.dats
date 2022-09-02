@@ -371,8 +371,8 @@ find_rightmost_position_with_all_lt_to_left
     fn {}
     next_pointer_rightwards
               {i, j : nat | i <= j; j < n - 1}
-              (bp_i   : bptr (a, p_arr, i),
-               bp_j   : bptr (a, p_arr, j))
+              (bp_i : bptr (a, p_arr, i),
+               bp_j : bptr (a, p_arr, j))
         :<> [j1 : nat | j < j1; j1 <= n - 1]
             bptr (a, p_arr, j1) =
       if bp_i = bp_j then
@@ -391,6 +391,30 @@ find_rightmost_position_with_all_lt_to_left
             bp_n1
           else
             bp_j + diff1
+        end
+
+    fn {}
+    next_pointer_leftwards
+              {i, j : pos | i <= j; j <= n - 1}
+              (bp_i : bptr (a, p_arr, i),
+               bp_j : bptr (a, p_arr, j))
+        :<> [i1 : nat | i1 < i]
+            bptr (a, p_arr, i1) =
+      if bp_i = bp_j then
+        pred bp_i
+      else
+        let
+          val i = bp_i - bp_arr
+          and diff = bp_j - bp_i
+          val diff1 = double diff
+        in
+          if diff1 < diff then
+            (* Overflow. *)
+            bp_arr
+          else if i <= diff1 then
+            bp_arr
+          else
+            bp_i - diff1
         end
 
     fun
@@ -418,18 +442,26 @@ find_rightmost_position_with_all_lt_to_left
 
     fun
     gallop_leftwards
-              {i, j : nat | j <= i; i <= n}
-              .<j>.
+              {i, j : nat | i <= j; j <= n - 1}
+              .<i>.
               (pf_arr : !array_v (a, p_arr, n),
                pf_x0  : !array_v (a, p_x0, n_x0) |
                bp_i   : bptr (a, p_arr, i),
                bp_j   : bptr (a, p_arr, j))
         :<> [k : nat | k <= i]
             bptr (a, p_arr, k) =
-      let
-      in
-        bp_arr (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *) (* FIXME *)
-      end
+      if bp_i = bp_arr then
+        bp_arr
+      else
+        let
+          val [i1 : int] bp_i1 = next_pointer_leftwards (bp_i, bp_j)
+          and bp_j1 = bp_i
+        in
+          if elem_lt_x (pf_arr, pf_x0 | bp_i1) then
+            binary_search (pf_arr, pf_x0 | succ bp_i1, bp_j1)
+          else
+            gallop_leftwards (pf_arr, pf_x0 | bp_i1, bp_j1)
+        end
 
     val bp_hint = bp_arr + hint
   in
