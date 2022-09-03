@@ -76,9 +76,12 @@ make_sorted_primes () : List1 int =
     loop (NIL, list_vt2t (reverse primes))
   end
 
-fun
-check_pos_lt_left
-          {n   : nat}
+extern fn {}
+check_pos$pred :
+  (int, int) -<> bool
+
+fun {}
+check_pos {n   : nat}
           {pos : nat | pos <= n}
           (arr : &array (int, n),
            n   : size_t n,
@@ -90,13 +93,30 @@ check_pos_lt_left
   in
     for (i := i2sz 0; i != n; i := succ i)
       if i < pos then
-        assertloc (arr[i] < x)
+        assertloc (check_pos$pred<> (arr[i], x))
       else
-        assertloc (arr[i] >= x)
+        assertloc (~check_pos$pred<> (arr[i], x))
   end
 
-fun
-check_many_pos_lt_left
+extern fn {}
+check_many_pos$find_pos :
+  {p_arr : addr}
+  {n     : pos}
+  {hint  : nat | hint <= n - 1}
+  {p_x0  : addr}
+  {n_x0  : int}
+  {i_x   : nat | i_x <= n_x0 - 1}
+  (!array_v (int, p_arr, n),
+   !array_v (int, p_x0, n_x0) |
+   bptr_anchor (int, p_arr),
+   bptr (int, p_arr, n),
+   size_t hint,
+   bptr (int, p_x0, i_x)) -<>
+    [j : nat | j <= n]
+    bptr (int, p_arr, j)
+
+fun {}
+check_many_pos
           {n   : nat}
           (arr : &array (int, n),
            n   : size_t n)
@@ -119,12 +139,53 @@ check_many_pos_lt_left
             val bp_x = ptr2bptr_anchor (addr@ x)
 
             val () = x[0] := pos
-            val bp = find_pos (view@ arr, view@ x |
-                               bp_arr, bp_arr + n, hint, bp_x)
+            val bp =
+              check_many_pos$find_pos<>
+                (view@ arr, view@ x | bp_arr, bp_arr + n, hint, bp_x)
           in
-            check_pos_lt_left (arr, n, pos, bp - bp_arr)
+            check_pos<> (arr, n, pos, bp - bp_arr)
           end
       end
+  end
+
+fun
+check_many_pos_lt_left
+          {n   : nat}
+          (arr : &array (int, n),
+           n   : size_t n)
+    : void =
+  let
+    implement
+    check_pos$pred<> (x, y) =
+      x < y
+    
+    implement
+    check_many_pos$find_pos<> (pf_arr, pf_x0 |
+                               bp_arr, bp_n, hint, bp_x) =
+      find_rightmost_position_with_all_lt_on_its_left<int>
+        (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
+  in
+    check_many_pos<> (arr, n)
+  end
+
+fun
+check_many_pos_lte_left
+          {n   : nat}
+          (arr : &array (int, n),
+           n   : size_t n)
+    : void =
+  let
+    implement
+    check_pos$pred<> (x, y) =
+      x <= y
+    
+    implement
+    check_many_pos$find_pos<> (pf_arr, pf_x0 |
+                               bp_arr, bp_n, hint, bp_x) =
+      find_rightmost_position_with_all_lte_on_its_left<int>
+        (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
+  in
+    check_many_pos<> (arr, n)
   end
 
 fn
@@ -140,9 +201,23 @@ test_lt_on_left_with_sorted_primes () : void =
     array_ptr_free (pf_arr, pfgc_arr | p_arr)
   end
 
+fn
+test_lte_on_left_with_sorted_primes () : void =
+  let
+    val primes_lst = make_sorted_primes ()
+    val n = length primes_lst
+
+    val @(pf_arr, pfgc_arr | p_arr) = array_ptr_alloc<int> (i2sz n)
+  in
+    array_initize_list<int> (!p_arr, n, primes_lst);
+    check_many_pos_lte_left (!p_arr, i2sz n);
+    array_ptr_free (pf_arr, pfgc_arr | p_arr)
+  end
+
 implement
 main () =
   begin
     test_lt_on_left_with_sorted_primes ();
+    test_lte_on_left_with_sorted_primes ();
     0
   end

@@ -303,9 +303,9 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
   end
 
 (*------------------------------------------------------------------*)
+(* Galloping searches.                                              *)
 
-extern fn {a : vt@ype}
-find_rightmost_position_with_all_lt_on_its_left :
+typedef find_pos_t (a : vt@ype) =
   {p_arr : addr}
   {n     : pos}
   {hint  : nat | hint <= n - 1}
@@ -321,13 +321,90 @@ find_rightmost_position_with_all_lt_on_its_left :
     [j : nat | j <= n]
     bptr (a, p_arr, j)
 
+extern fn {a : vt@ype}
+find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred :
+  {p, q : addr}
+  (!a @ p, !a @ q | ptr p, ptr q) -<> bool
+
+extern fn {a : vt@ype}
+find_rightmost_pos_with_all_satisfying_pred_on_its_left :
+  find_pos_t a
+
+extern fn {a : vt@ype}
+find_rightmost_position_with_all_lt_on_its_left :
+  find_pos_t a
+
+extern fn {a : vt@ype}
+find_rightmost_position_with_all_lte_on_its_left :
+  find_pos_t a
+
+fn {a : vt@ype}
+next_pointer_rightwards
+          {p_arr  : addr}
+          {n      : int}
+          {i, j   : nat | i <= j; j < n - 1}
+          (bp_arr : bptr_anchor (a, p_arr),
+           bp_n   : bptr (a, p_arr, n),
+           bp_i   : bptr (a, p_arr, i),
+           bp_j   : bptr (a, p_arr, j))
+    :<> [j1 : nat | j < j1; j1 <= n - 1]
+        bptr (a, p_arr, j1) =
+  if bp_i = bp_j then
+    succ bp_j
+  else
+    let
+      val bp_n1 = pred bp_n
+      and j = bp_j - bp_arr
+      and diff = bp_j - bp_i
+      val diff1 = double diff
+    in
+      if (diff1 < diff) + (j + diff1 < j) then
+        (* Overflow. *)
+        bp_n1
+      else if bp_n1 - bp_arr <= j + diff1 then
+        bp_n1
+      else
+        bp_j + diff1
+    end
+
+fn {a : vt@ype}
+next_pointer_leftwards
+          {p_arr  : addr}
+          {n      : int}
+          {i, j   : pos | i <= j; j <= n - 1}
+          (bp_arr : bptr_anchor (a, p_arr),
+           bp_n   : bptr (a, p_arr, n),
+           bp_i   : bptr (a, p_arr, i),
+           bp_j   : bptr (a, p_arr, j))
+    :<> [i1 : nat | i1 < i]
+        bptr (a, p_arr, i1) =
+  if bp_i = bp_j then
+    pred bp_i
+  else
+    let
+      val i = bp_i - bp_arr
+      and diff = bp_j - bp_i
+      val diff1 = double diff
+    in
+      if diff1 < diff then
+        (* Overflow. *)
+        bp_arr
+      else if i <= diff1 then
+        bp_arr
+      else
+        bp_i - diff1
+    end
+
 implement {a}
-find_rightmost_position_with_all_lt_on_its_left
+find_rightmost_pos_with_all_satisfying_pred_on_its_left
           {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
           (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
   let
+    macdef order_pred =
+      find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred<a>
+
     fn {}
-    elem_lt_x {k : nat | k <= n - 1}
+    elem_pred {k : nat | k <= n - 1}
               (pf_arr : !array_v (a, p_arr, n),
                pf_x0  : !array_v (a, p_x0, n_x0) |
                bp_k   : bptr (a, p_arr, k))
@@ -338,12 +415,13 @@ find_rightmost_position_with_all_lt_on_its_left
         prval @(pf_x, fpf_x) =
           array_v_takeout {a} {p_x0} {n_x0} {i_x} pf_x0
 
-        val is_lt = elem_lt<a> (pf_k, pf_x | bp_k, bp_x)
+        val satisfies =
+          order_pred (pf_k, pf_x | bptr2ptr bp_k, bptr2ptr bp_x)
 
         prval () = pf_arr := fpf_k pf_k
         prval () = pf_x0 := fpf_x pf_x
       in
-        is_lt
+        satisfies
       end
 
     fun {}
@@ -362,59 +440,10 @@ find_rightmost_position_with_all_lt_on_its_left
         let
           val bp_h = bp_i + half (bp_j - bp_i)
         in
-          if elem_lt_x (pf_arr, pf_x0 | bp_h) then
+          if elem_pred (pf_arr, pf_x0 | bp_h) then
             binary_search (pf_arr, pf_x0 | succ bp_h, bp_j)
           else
             binary_search (pf_arr, pf_x0 | bp_i, bp_h)
-        end
-
-    fn {}
-    next_pointer_rightwards
-              {i, j : nat | i <= j; j < n - 1}
-              (bp_i : bptr (a, p_arr, i),
-               bp_j : bptr (a, p_arr, j))
-        :<> [j1 : nat | j < j1; j1 <= n - 1]
-            bptr (a, p_arr, j1) =
-      if bp_i = bp_j then
-        succ bp_j
-      else
-        let
-          val bp_n1 = pred bp_n
-          and j = bp_j - bp_arr
-          and diff = bp_j - bp_i
-          val diff1 = double diff
-        in
-          if (diff1 < diff) + (j + diff1 < j) then
-            (* Overflow. *)
-            bp_n1
-          else if bp_n1 - bp_arr <= j + diff1 then
-            bp_n1
-          else
-            bp_j + diff1
-        end
-
-    fn {}
-    next_pointer_leftwards
-              {i, j : pos | i <= j; j <= n - 1}
-              (bp_i : bptr (a, p_arr, i),
-               bp_j : bptr (a, p_arr, j))
-        :<> [i1 : nat | i1 < i]
-            bptr (a, p_arr, i1) =
-      if bp_i = bp_j then
-        pred bp_i
-      else
-        let
-          val i = bp_i - bp_arr
-          and diff = bp_j - bp_i
-          val diff1 = double diff
-        in
-          if diff1 < diff then
-            (* Overflow. *)
-            bp_arr
-          else if i <= diff1 then
-            bp_arr
-          else
-            bp_i - diff1
         end
 
     fun {}
@@ -431,10 +460,11 @@ find_rightmost_position_with_all_lt_on_its_left
         bp_n
       else
         let
-          val bp_j = next_pointer_rightwards (bp_i, bp_j)
+          val bp_j = next_pointer_rightwards<a> (bp_arr, bp_n,
+                                                 bp_i, bp_j)
           and bp_i = bp_j
         in
-          if elem_lt_x (pf_arr, pf_x0 | bp_j) then
+          if elem_pred (pf_arr, pf_x0 | bp_j) then
             gallop_rightwards (pf_arr, pf_x0 | bp_i, bp_j)
           else
             binary_search (pf_arr, pf_x0 | succ bp_i, bp_j)
@@ -454,10 +484,11 @@ find_rightmost_position_with_all_lt_on_its_left
         bp_arr
       else
         let
-          val bp_i = next_pointer_leftwards (bp_i, bp_j)
+          val bp_i = next_pointer_leftwards<a> (bp_arr, bp_n,
+                                                bp_i, bp_j)
           and bp_j = bp_i
         in
-          if elem_lt_x (pf_arr, pf_x0 | bp_i) then
+          if elem_pred (pf_arr, pf_x0 | bp_i) then
             binary_search (pf_arr, pf_x0 | succ bp_i, bp_j)
           else
             gallop_leftwards (pf_arr, pf_x0 | bp_i, bp_j)
@@ -465,10 +496,40 @@ find_rightmost_position_with_all_lt_on_its_left
 
     val bp_hint = bp_arr + hint
   in
-    if elem_lt_x (pf_arr, pf_x0 | bp_hint) then
+    if elem_pred (pf_arr, pf_x0 | bp_hint) then
       gallop_rightwards (pf_arr, pf_x0 | bp_hint, bp_hint)
     else
       gallop_leftwards (pf_arr, pf_x0 | bp_hint, bp_hint)
+  end
+
+implement {a}
+find_rightmost_position_with_all_lt_on_its_left
+          {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
+          (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
+  let
+    implement
+    find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred<a>
+               (pf_p, pf_q | p, q) =
+      elem_lt<a> (pf_p, pf_q | p, q)
+  in
+    find_rightmost_pos_with_all_satisfying_pred_on_its_left<a>
+      {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
+      (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
+  end
+
+implement {a}
+find_rightmost_position_with_all_lte_on_its_left
+          {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
+          (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
+  let
+    implement
+    find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred<a>
+               (pf_p, pf_q | p, q) =
+      ~elem_lt<a> (pf_q, pf_p | q, p)
+  in
+    find_rightmost_pos_with_all_satisfying_pred_on_its_left<a>
+      {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
+      (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
   end
 
 (*------------------------------------------------------------------*)
