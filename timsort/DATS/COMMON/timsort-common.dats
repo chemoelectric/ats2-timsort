@@ -85,6 +85,9 @@ array_v_takeout2 {a} {p} {n} {i, j} pf_arr =
 
 (*------------------------------------------------------------------*)
 
+implement g1uint_double<sizeknd> n =
+  g1uint_double_size n
+
 implement g0uint_ceildiv<sizeknd> (m, n) =
   g0uint_ceildiv_size (m, n)
 implement g1uint_ceildiv<sizeknd> (m, n) =

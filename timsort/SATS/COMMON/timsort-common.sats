@@ -116,6 +116,10 @@ overload clz with g1uint_clz of 10
 (*------------------------------------------------------------------*)
 
 fn
+g1uint_double_size :
+  g1uint_double_type sizeknd = "mac#%"
+
+fn
 g0uint_ceildiv_size :
   (size_t, size_t) -<> size_t = "mac#%"
 

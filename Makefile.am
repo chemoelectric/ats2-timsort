@@ -192,22 +192,6 @@ libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 
 TESTS =
 
-TESTS += tests/test-nodepower
-EXTRA_PROGRAMS += tests/test-nodepower
-CLEANFILES += tests/test-nodepower
-CLEANFILES += tests/test-nodepower_tests.c
-EXTRA_DIST += tests/test-nodepower.dats
-tests_test_nodepower_SOURCES =
-tests_test_nodepower_SOURCES += tests/test-nodepower_tests.c
-tests_test_nodepower_DEPENDENCIES =
-tests_test_nodepower_DEPENDENCIES += tests/test-nodepower.dats
-tests_test_nodepower_DEPENDENCIES += timsort/CATS/timsort.cats
-tests_test_nodepower_CPPFLAGS =
-tests_test_nodepower_CPPFLAGS += $(AM_CPPFLAGS)
-tests_test_nodepower_CPPFLAGS += -DATS_MEMALLOC_LIBC
-tests_test_nodepower_LDADD =
-tests/test-nodepower_tests.c: tests/test-nodepower.dats
-
 TESTS += tests/test-clz
 EXTRA_PROGRAMS += tests/test-clz
 CLEANFILES += tests/test-clz
@@ -223,6 +207,22 @@ tests_test_clz_CPPFLAGS += $(AM_CPPFLAGS)
 tests_test_clz_LDADD =
 tests/test-clz_tests.c: tests/test-clz.dats
 
+TESTS += tests/test-galloping
+EXTRA_PROGRAMS += tests/test-galloping
+CLEANFILES += tests/test-galloping
+CLEANFILES += tests/test-galloping_tests.c
+EXTRA_DIST += tests/test-galloping.dats
+tests_test_galloping_SOURCES =
+tests_test_galloping_SOURCES += tests/test-galloping_tests.c
+tests_test_galloping_DEPENDENCIES =
+tests_test_galloping_DEPENDENCIES += tests/test-galloping.dats
+tests_test_galloping_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_galloping_CPPFLAGS =
+tests_test_galloping_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_galloping_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_galloping_LDADD =
+tests/test-galloping_tests.c: tests/test-galloping.dats
+
 TESTS += tests/test-minrun
 EXTRA_PROGRAMS += tests/test-minrun
 CLEANFILES += tests/test-minrun
@@ -237,6 +237,22 @@ tests_test_minrun_CPPFLAGS =
 tests_test_minrun_CPPFLAGS += $(AM_CPPFLAGS)
 tests_test_minrun_LDADD =
 tests/test-minrun_tests.c: tests/test-minrun.dats
+
+TESTS += tests/test-nodepower
+EXTRA_PROGRAMS += tests/test-nodepower
+CLEANFILES += tests/test-nodepower
+CLEANFILES += tests/test-nodepower_tests.c
+EXTRA_DIST += tests/test-nodepower.dats
+tests_test_nodepower_SOURCES =
+tests_test_nodepower_SOURCES += tests/test-nodepower_tests.c
+tests_test_nodepower_DEPENDENCIES =
+tests_test_nodepower_DEPENDENCIES += tests/test-nodepower.dats
+tests_test_nodepower_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_nodepower_CPPFLAGS =
+tests_test_nodepower_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_nodepower_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_nodepower_LDADD =
+tests/test-nodepower_tests.c: tests/test-nodepower.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)

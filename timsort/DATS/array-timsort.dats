@@ -305,7 +305,7 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
 (*------------------------------------------------------------------*)
 
 extern fn {a : vt@ype}
-find_rightmost_position_with_all_lt_to_left :
+find_rightmost_position_with_all_lt_on_its_left :
   {p_arr : addr}
   {n     : pos}
   {hint  : nat | hint <= n - 1}
@@ -322,7 +322,7 @@ find_rightmost_position_with_all_lt_to_left :
     bptr (a, p_arr, j)
 
 implement {a}
-find_rightmost_position_with_all_lt_to_left
+find_rightmost_position_with_all_lt_on_its_left
           {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
           (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
   let

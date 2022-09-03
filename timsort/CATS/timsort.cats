@@ -30,6 +30,12 @@ ats2_timsort_char_bit (void)
 }
 
 ats2_timsort_inline atstype_size
+ats2_timsort_g0uint_double_size (atstype_size n)
+{
+  return (n << 1);
+}
+
+ats2_timsort_inline atstype_size
 ats2_timsort_g0uint_ceildiv_size (atstype_size m,
                                   atstype_size n)
 {
@@ -120,6 +126,8 @@ ats2_timsort_g0uint_clz_size (atstype_size bits)
      - CHAR_BIT * (sizeof (atstype_ullint) - sizeof (atstype_size)));
 }
 
+#define ats2_timsort_g1uint_double_size         \
+  ats2_timsort_g0uint_double_size
 #define ats2_timsort_g1uint_ceildiv_size        \
   ats2_timsort_g0uint_ceildiv_size
 #define ats2_timsort_g1uint_is_even_size        \

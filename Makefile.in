@@ -113,10 +113,11 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS =
-EXTRA_PROGRAMS = tests/test-nodepower$(EXEEXT) tests/test-clz$(EXEEXT) \
-	tests/test-minrun$(EXEEXT) list-ats-dependencies$(EXEEXT)
-TESTS = tests/test-nodepower$(EXEEXT) tests/test-clz$(EXEEXT) \
-	tests/test-minrun$(EXEEXT)
+EXTRA_PROGRAMS = tests/test-clz$(EXEEXT) tests/test-galloping$(EXEEXT) \
+	tests/test-minrun$(EXEEXT) tests/test-nodepower$(EXEEXT) \
+	list-ats-dependencies$(EXEEXT)
+TESTS = tests/test-clz$(EXEEXT) tests/test-galloping$(EXEEXT) \
+	tests/test-minrun$(EXEEXT) tests/test-nodepower$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_ac_append_to_file.m4 \
@@ -195,6 +196,9 @@ list_ats_dependencies_OBJECTS =  \
 	$(nodist_list_ats_dependencies_OBJECTS)
 am_tests_test_clz_OBJECTS = tests/test_clz-test-clz_tests.$(OBJEXT)
 tests_test_clz_OBJECTS = $(am_tests_test_clz_OBJECTS)
+am_tests_test_galloping_OBJECTS =  \
+	tests/test_galloping-test-galloping_tests.$(OBJEXT)
+tests_test_galloping_OBJECTS = $(am_tests_test_galloping_OBJECTS)
 am_tests_test_minrun_OBJECTS =  \
 	tests/test_minrun-test-minrun_tests.$(OBJEXT)
 tests_test_minrun_OBJECTS = $(am_tests_test_minrun_OBJECTS)
@@ -218,6 +222,7 @@ depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po \
 	tests/$(DEPDIR)/test_clz-test-clz_tests.Po \
+	tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po \
 	tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po \
 	tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po \
 	timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo \
@@ -247,9 +252,10 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(nodist_libats2_timsort_la_SOURCES) \
 	$(nodist_list_ats_dependencies_SOURCES) \
-	$(tests_test_clz_SOURCES) $(tests_test_minrun_SOURCES) \
-	$(tests_test_nodepower_SOURCES)
-DIST_SOURCES = $(tests_test_clz_SOURCES) $(tests_test_minrun_SOURCES) \
+	$(tests_test_clz_SOURCES) $(tests_test_galloping_SOURCES) \
+	$(tests_test_minrun_SOURCES) $(tests_test_nodepower_SOURCES)
+DIST_SOURCES = $(tests_test_clz_SOURCES) \
+	$(tests_test_galloping_SOURCES) $(tests_test_minrun_SOURCES) \
 	$(tests_test_nodepower_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -651,16 +657,17 @@ AUTOMAKE_OPTIONS = foreign subdir-objects -Wno-portability
 @CODE_COVERAGE_ENABLED_TRUE@code_coverage_sanitize = $(subst -,_,$(subst .,_,$(1)))
 @CODE_COVERAGE_ENABLED_TRUE@AM_DISTCHECK_CONFIGURE_FLAGS := $(AM_DISTCHECK_CONFIGURE_FLAGS) --disable-code-coverage
 EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
-	tests/test-nodepower.dats tests/test-clz.dats \
-	tests/test-minrun.dats list-ats-dependencies.dats
+	tests/test-clz.dats tests/test-galloping.dats \
+	tests/test-minrun.dats tests/test-nodepower.dats \
+	list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
 CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
 	$(ARRAY_TIMSORT_DATS_C) $(TIMSORT_COMMON_SATS_C) \
-	$(TIMSORT_COMMON_DATS_C) tests/test-nodepower \
-	tests/test-nodepower_tests.c tests/test-clz \
-	tests/test-clz_tests.c tests/test-minrun \
-	tests/test-minrun_tests.c list-ats-dependencies \
-	list-ats-dependencies_depsprog.c
+	$(TIMSORT_COMMON_DATS_C) tests/test-clz tests/test-clz_tests.c \
+	tests/test-galloping tests/test-galloping_tests.c \
+	tests/test-minrun tests/test-minrun_tests.c \
+	tests/test-nodepower tests/test-nodepower_tests.c \
+	list-ats-dependencies list-ats-dependencies_depsprog.c
 DISTCLEANFILES = Makefile GNUmakefile
 BUILT_SOURCES = 
 AM_CPPFLAGS = -I$(builddir) -I$(srcdir) -I$(PATSHOME) \
@@ -708,21 +715,26 @@ nodist_libats2_timsort_la_SOURCES = $(BPTR_SATS_C) $(BPTR_DATS_C) \
 	$(ARRAY_TIMSORT_SATS_C) $(ARRAY_TIMSORT_DATS_C) \
 	$(TIMSORT_COMMON_SATS_C) $(TIMSORT_COMMON_DATS_C)
 libats2_timsort_la_DEPENDENCIES = $(TIMSORT_CATS) $(BPTR_CATS)
-tests_test_nodepower_SOURCES = tests/test-nodepower_tests.c
-tests_test_nodepower_DEPENDENCIES = tests/test-nodepower.dats \
-	timsort/CATS/timsort.cats
-tests_test_nodepower_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
-tests_test_nodepower_LDADD = 
 tests_test_clz_SOURCES = tests/test-clz_tests.c
 tests_test_clz_DEPENDENCIES = tests/test-clz.dats \
 	timsort/CATS/timsort.cats
 tests_test_clz_CPPFLAGS = $(AM_CPPFLAGS)
 tests_test_clz_LDADD = 
+tests_test_galloping_SOURCES = tests/test-galloping_tests.c
+tests_test_galloping_DEPENDENCIES = tests/test-galloping.dats \
+	timsort/CATS/timsort.cats
+tests_test_galloping_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
+tests_test_galloping_LDADD = 
 tests_test_minrun_SOURCES = tests/test-minrun_tests.c
 tests_test_minrun_DEPENDENCIES = tests/test-minrun.dats \
 	timsort/CATS/timsort.cats
 tests_test_minrun_CPPFLAGS = $(AM_CPPFLAGS)
 tests_test_minrun_LDADD = 
+tests_test_nodepower_SOURCES = tests/test-nodepower_tests.c
+tests_test_nodepower_DEPENDENCIES = tests/test-nodepower.dats \
+	timsort/CATS/timsort.cats
+tests_test_nodepower_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
+tests_test_nodepower_LDADD = 
 nodist_list_ats_dependencies_SOURCES =  \
 	list-ats-dependencies_depsprog.c
 list_ats_dependencies_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
@@ -911,6 +923,12 @@ tests/test_clz-test-clz_tests.$(OBJEXT): tests/$(am__dirstamp) \
 tests/test-clz$(EXEEXT): $(tests_test_clz_OBJECTS) $(tests_test_clz_DEPENDENCIES) $(EXTRA_tests_test_clz_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test-clz$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_clz_OBJECTS) $(tests_test_clz_LDADD) $(LIBS)
+tests/test_galloping-test-galloping_tests.$(OBJEXT):  \
+	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test-galloping$(EXEEXT): $(tests_test_galloping_OBJECTS) $(tests_test_galloping_DEPENDENCIES) $(EXTRA_tests_test_galloping_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test-galloping$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_galloping_OBJECTS) $(tests_test_galloping_LDADD) $(LIBS)
 tests/test_minrun-test-minrun_tests.$(OBJEXT): tests/$(am__dirstamp) \
 	tests/$(DEPDIR)/$(am__dirstamp)
 
@@ -941,6 +959,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_clz-test-clz_tests.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo@am__quote@ # am--include-marker
@@ -1007,6 +1026,20 @@ tests/test_clz-test-clz_tests.obj: tests/test-clz_tests.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-clz_tests.c' object='tests/test_clz-test-clz_tests.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_clz_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_clz-test-clz_tests.obj `if test -f 'tests/test-clz_tests.c'; then $(CYGPATH_W) 'tests/test-clz_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-clz_tests.c'; fi`
+
+tests/test_galloping-test-galloping_tests.o: tests/test-galloping_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_galloping_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_galloping-test-galloping_tests.o -MD -MP -MF tests/$(DEPDIR)/test_galloping-test-galloping_tests.Tpo -c -o tests/test_galloping-test-galloping_tests.o `test -f 'tests/test-galloping_tests.c' || echo '$(srcdir)/'`tests/test-galloping_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_galloping-test-galloping_tests.Tpo tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-galloping_tests.c' object='tests/test_galloping-test-galloping_tests.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_galloping_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_galloping-test-galloping_tests.o `test -f 'tests/test-galloping_tests.c' || echo '$(srcdir)/'`tests/test-galloping_tests.c
+
+tests/test_galloping-test-galloping_tests.obj: tests/test-galloping_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_galloping_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_galloping-test-galloping_tests.obj -MD -MP -MF tests/$(DEPDIR)/test_galloping-test-galloping_tests.Tpo -c -o tests/test_galloping-test-galloping_tests.obj `if test -f 'tests/test-galloping_tests.c'; then $(CYGPATH_W) 'tests/test-galloping_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-galloping_tests.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_galloping-test-galloping_tests.Tpo tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-galloping_tests.c' object='tests/test_galloping-test-galloping_tests.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_galloping_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_galloping-test-galloping_tests.obj `if test -f 'tests/test-galloping_tests.c'; then $(CYGPATH_W) 'tests/test-galloping_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-galloping_tests.c'; fi`
 
 tests/test_minrun-test-minrun_tests.o: tests/test-minrun_tests.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_minrun_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_minrun-test-minrun_tests.o -MD -MP -MF tests/$(DEPDIR)/test_minrun-test-minrun_tests.Tpo -c -o tests/test_minrun-test-minrun_tests.o `test -f 'tests/test-minrun_tests.c' || echo '$(srcdir)/'`tests/test-minrun_tests.c
@@ -1319,13 +1352,6 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-tests/test-nodepower.log: tests/test-nodepower$(EXEEXT)
-	@p='tests/test-nodepower$(EXEEXT)'; \
-	b='tests/test-nodepower'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
 tests/test-clz.log: tests/test-clz$(EXEEXT)
 	@p='tests/test-clz$(EXEEXT)'; \
 	b='tests/test-clz'; \
@@ -1333,9 +1359,23 @@ tests/test-clz.log: tests/test-clz$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+tests/test-galloping.log: tests/test-galloping$(EXEEXT)
+	@p='tests/test-galloping$(EXEEXT)'; \
+	b='tests/test-galloping'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 tests/test-minrun.log: tests/test-minrun$(EXEEXT)
 	@p='tests/test-minrun$(EXEEXT)'; \
 	b='tests/test-minrun'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+tests/test-nodepower.log: tests/test-nodepower$(EXEEXT)
+	@p='tests/test-nodepower$(EXEEXT)'; \
+	b='tests/test-nodepower'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1597,6 +1637,7 @@ distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po
 	-rm -f tests/$(DEPDIR)/test_clz-test-clz_tests.Po
+	-rm -f tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
@@ -1656,6 +1697,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po
 	-rm -f tests/$(DEPDIR)/test_clz-test-clz_tests.Po
+	-rm -f tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
@@ -1867,9 +1909,10 @@ ats-includes-distclean:
 %_depsprog.c: %.dats $(PATSOPT_DEPS)
 	@$(MKDIR_P) $(@D)
 	$(call v,PATSOPT)$(PATSOPT) -o $(@) $(TOTAL_PATSOPTFLAGS) -d $(<)
-tests/test-nodepower_tests.c: tests/test-nodepower.dats
 tests/test-clz_tests.c: tests/test-clz.dats
+tests/test-galloping_tests.c: tests/test-galloping.dats
 tests/test-minrun_tests.c: tests/test-minrun.dats
+tests/test-nodepower_tests.c: tests/test-nodepower.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
