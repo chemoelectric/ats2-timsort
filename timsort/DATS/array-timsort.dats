@@ -804,7 +804,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
           val bp_lft0 = bptr_reanchor bp_lft
           val bp_n_lft0 = bp_lft0 + (bp_tempsz - bp_lft)
           val [count_lft : int] bp =
-            find_1st_position_past_lt_x
+            find_1st_position_past_lte_x
               {pntr (p_temp, i_lft)} {tempsz - i_lft} {0}
               {pntr (p_arr, i_rgt)} {n - i_rgt} {0}
               (pf_lft, pf_rgt | bp_lft0, bp_n_lft0, i2sz 0,
@@ -891,7 +891,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   val bp_rgt0 = bptr_reanchor bp_rgt
                   val bp_n_rgt0 = bp_rgt0 + (bp_n - bp_rgt)
                   val [count_rgt : int] bp =
-                    find_1st_position_past_lte_x
+                    find_1st_position_past_lt_x
                       {pntr (p_arr, i_rgt)} {n - i_rgt} {0}
                       {pntr (p_temp, i_lft)} {tempsz - i_lft} {0}
                       (pf_rgt, pf_lft | bptr_reanchor bp_rgt0,
