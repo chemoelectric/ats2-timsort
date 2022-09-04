@@ -175,7 +175,7 @@ test_merge_left_with_primes () : void =
     val bp_i = bp_arr + n_left
     and bp_n = bp_arr + n
 
-    var gallop_threshold : [i : pos] size_t i = i2sz 7
+    var gallop_threshold : Size_t = i2sz 7
     val () =
       merge_left<entry_t>
         {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}

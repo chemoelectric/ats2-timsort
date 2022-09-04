@@ -450,3 +450,40 @@ copy_bptr_bptr_bptr {dst} {src} {n}
       {dst} {src} {n}
       (pf_dst, pf_src | bp_dst, bp_src, bp_n - bp_src)
   end
+
+implement {a}
+move_left_bptr_bptr_size {dst} {i} {n}
+                         (pf_dst, pf_src | bp_dst, bp_src, n) =
+  let
+    extern fn                   (* Unsafe memmove. *)
+    memmove : (Ptr, Ptr, Size_t) -< !wrt > void = "mac#%"
+
+    prval () = lemma_sizeof {a} ()
+    prval () = lemma_array_v_param pf_dst
+    prval () = lemma_g1uint_param n
+    prval () = mul_gte_gte_gte {sizeof a, n} ()
+
+    val () = memmove (bptr2ptr bp_dst, bptr2ptr bp_src,
+                      sizeof<a> * n)
+
+    prval () = $UN.castview2void {array_v (a, dst, n)}
+                                 {array_v (a?, dst, i)}
+                                 pf_dst
+    prval () =
+      $UN.castview2void {array_v (a?!, dst + (sizeof a * n), i)}
+                        {array_v (a, dst + (sizeof a * i), n)}
+                        pf_src
+  in
+  end
+
+implement {a}
+move_left_bptr_bptr_bptr {dst} {i} {n}
+                         (pf_dst, pf_src |
+                          bp_dst, bp_src, bp_n) =
+  let
+    prval () = lemma_array_v_param pf_dst
+  in
+    move_left_bptr_bptr_size
+      {dst} {i} {n}
+      (pf_dst, pf_src | bp_dst, bp_src, bp_n - bp_src)
+  end
