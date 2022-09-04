@@ -541,7 +541,7 @@ merge_left :
   {n      : pos}
   {i      : nat | 2 * i <= n}
   {p_work : addr}
-  {worksz : int | n <= 2 * worksz}
+  {worksz : int | i <= worksz}
   (!array_v (a, p_arr, n),
    !array_v (a?, p_work, worksz) |
    bptr_anchor (a, p_arr),
@@ -688,7 +688,7 @@ merge_right :
   {n      : pos}
   {i      : nat | i <= n; n <= 2 * i}
   {p_work : addr}
-  {worksz : int | n <= 2 * worksz}
+  {worksz : int | n - i <= worksz}
   (!array_v (a, p_arr, n),
    !array_v (a?, p_work, worksz) |
    bptr_anchor (a, p_arr),
