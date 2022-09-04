@@ -688,7 +688,7 @@ merge_right :
   {n      : pos}
   {i      : nat | i <= n; n <= 2 * i}
   {p_work : addr}
-  {worksz : int | 2 * i <= worksz}
+  {worksz : int | n <= 2 * worksz}
   (!array_v (a, p_arr, n),
    !array_v (a?, p_work, worksz) |
    bptr_anchor (a, p_arr),

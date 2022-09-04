@@ -123,6 +123,18 @@ make_sorted_primes_entries
     loop (NIL, list_vt2t (reverse primes))
   end
 
+fun
+display {n : nat}
+        (p : list (entry_t, n))
+    : void =
+  case+ p of
+  | NIL => ()
+  | head :: tail =>
+    begin
+      println! (head.key, " -> ", head.value);
+      display tail
+    end
+
 fn
 test_merge_left_with_primes () : void =
   let
@@ -173,17 +185,65 @@ test_merge_left_with_primes () : void =
     and expected =
       list_vt2t (list_mergesort<entry_t> (lst_left + lst_right))
 
-    fun
-    display {n : nat}
-            (p : list (entry_t, n))
-        : void =
-      case+ p of
-      | NIL => ()
-      | head :: tail =>
-        begin
-          println! (head.key, " -> ", head.value);
-          display tail
-        end
+    //val () = display gotten
+    //val () = display expected
+
+    val () = assertloc (gotten = expected)
+
+    val () = array_ptr_free (pf_arr, pfgc_arr | p_arr)
+    and () = array_ptr_free (pf_work, pfgc_work | p_work)
+  in
+  end
+
+fn
+test_merge_right_with_primes () : void =
+  let
+    val lst_left =
+      list_vt2t (list_mergesort<entry_t>
+                   (make_sorted_primes_entries (1000)
+                      + make_sorted_primes_entries (2000)))
+    and lst_right = make_sorted_primes_entries (1)
+
+    val n_left = length lst_left
+    and n_right = length lst_right
+    val () = assertloc (n_left >= n_right)
+
+    val n = n_left + n_right
+
+    prval [n_left : int] EQINT () = eqint_make_gint n_left
+    prval [n_right : int] EQINT () = eqint_make_gint n_right
+    stadef n = n_left + n_right
+
+    val [p_arr : addr] @(pf_arr, pfgc_arr | p_arr) =
+      array_ptr_alloc<entry_t> (i2sz n)
+    val [p_work : addr] @(pf_work, pfgc_work | p_work) =
+      array_ptr_alloc<entry_t> (i2sz (half n + 1))
+
+    val p_left = p_arr
+    and p_right = ptr_add<entry_t> (p_arr, n_left)
+
+    prval @(pf_left, pf_right) =
+      array_v_split {entry_t?} {p_arr} {n} {n_left} pf_arr
+    val () = array_init_from_list (pf_left | p_left, n_left, lst_left)
+    val () = array_init_from_list (pf_right | p_right, n_right,
+                                              lst_right)
+    prval () = pf_arr := array_v_unsplit (pf_left, pf_right)
+
+    val bp_arr = ptr2bptr_anchor p_arr
+    and bp_work = ptr2bptr_anchor p_work
+
+    val bp_i = bp_arr + n_left
+    and bp_n = bp_arr + n
+
+    val () =
+      merge_right<entry_t>
+        {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}
+        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work)
+
+    val gotten =
+      list_vt2t (array_copy_to_list_vt<entry_t> (!p_arr, i2sz n))
+    and expected =
+      list_vt2t (list_mergesort<entry_t> (lst_left + lst_right))
 
     //val () = display gotten
     //val () = display expected
@@ -199,5 +259,6 @@ implement
 main () =
   begin
     test_merge_left_with_primes ();
+    test_merge_right_with_primes ();
     0
   end
