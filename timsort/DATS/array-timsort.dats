@@ -743,10 +743,16 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               and count_lft = succ count_lft
               and count_rgt = i2sz 0
             in
-              merge_runs (pf_merged, pf_between, pf_rgt,
-                          pf_cleared, pf_lft |
-                          bp_between, bp_rgt, bp_lft,
-                          count_lft, count_rgt, threshold)
+              if count_lft >= threshold then
+                galloping_merge (pf_merged, pf_between, pf_rgt,
+                                 pf_cleared, pf_lft |
+                                 bp_between, bp_rgt, bp_lft,
+                                 threshold)
+              else
+                merge_runs (pf_merged, pf_between, pf_rgt,
+                            pf_cleared, pf_lft |
+                            bp_between, bp_rgt, bp_lft,
+                            count_lft, count_rgt, threshold)
             end
         end
     and
