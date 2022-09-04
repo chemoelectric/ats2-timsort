@@ -122,9 +122,6 @@ check_many_pos
            n   : size_t n)
     : void =
   let
-    macdef find_pos =
-      find_rightmost_position_with_all_lt_on_its_left<int>
-
     val bp_arr = ptr2bptr_anchor (addr@ arr)
 
     var pos : int
@@ -162,7 +159,7 @@ check_many_pos_lt_left
     implement
     check_many_pos$find_pos<> (pf_arr, pf_x0 |
                                bp_arr, bp_n, hint, bp_x) =
-      find_rightmost_position_with_all_lt_on_its_left<int>
+      find_1st_position_past_lt_x<int>
         (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
   in
     check_many_pos<> (arr, n)
@@ -182,7 +179,7 @@ check_many_pos_lte_left
     implement
     check_many_pos$find_pos<> (pf_arr, pf_x0 |
                                bp_arr, bp_n, hint, bp_x) =
-      find_rightmost_position_with_all_lte_on_its_left<int>
+      find_1st_position_past_lte_x<int>
         (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
   in
     check_many_pos<> (arr, n)

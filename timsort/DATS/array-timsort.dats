@@ -322,20 +322,20 @@ typedef find_pos_t (a : vt@ype) =
     bptr (a, p_arr, j)
 
 extern fn {a : vt@ype}
-find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred :
+find_1st_position_past_satisfiespred$pred :
   {p, q : addr}
   (!a @ p, !a @ q | ptr p, ptr q) -<> bool
 
 extern fn {a : vt@ype}
-find_rightmost_pos_with_all_satisfying_pred_on_its_left :
+find_1st_position_past_satisfiespred :
   find_pos_t a
 
 extern fn {a : vt@ype}
-find_rightmost_position_with_all_lt_on_its_left :
+find_1st_position_past_lt_x :
   find_pos_t a
 
 extern fn {a : vt@ype}
-find_rightmost_position_with_all_lte_on_its_left :
+find_1st_position_past_lte_x :
   find_pos_t a
 
 fn {a : vt@ype}
@@ -396,12 +396,12 @@ next_pointer_leftwards
     end
 
 implement {a}
-find_rightmost_pos_with_all_satisfying_pred_on_its_left
+find_1st_position_past_satisfiespred
           {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
           (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
   let
     macdef order_pred =
-      find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred<a>
+      find_1st_position_past_satisfiespred$pred<a>
 
     fn {}
     elem_pred {k : nat | k <= n - 1}
@@ -503,31 +503,31 @@ find_rightmost_pos_with_all_satisfying_pred_on_its_left
   end
 
 implement {a}
-find_rightmost_position_with_all_lt_on_its_left
+find_1st_position_past_lt_x
           {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
           (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
   let
     implement
-    find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred<a>
+    find_1st_position_past_satisfiespred$pred<a>
                (pf_p, pf_q | p, q) =
       elem_lt<a> (pf_p, pf_q | p, q)
   in
-    find_rightmost_pos_with_all_satisfying_pred_on_its_left<a>
+    find_1st_position_past_satisfiespred<a>
       {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
       (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
   end
 
 implement {a}
-find_rightmost_position_with_all_lte_on_its_left
+find_1st_position_past_lte_x
           {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
           (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x) =
   let
     implement
-    find_rightmost_pos_with_all_satisfying_pred_on_its_left$pred<a>
+    find_1st_position_past_satisfiespred$pred<a>
                (pf_p, pf_q | p, q) =
       ~elem_lt<a> (pf_q, pf_p | q, p)
   in
-    find_rightmost_pos_with_all_satisfying_pred_on_its_left<a>
+    find_1st_position_past_satisfiespred<a>
       {p_arr} {n} {hint} {p_x0} {n_x0} {i_x}
       (pf_arr, pf_x0 | bp_arr, bp_n, hint, bp_x)
   end
