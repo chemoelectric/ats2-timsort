@@ -223,6 +223,22 @@ tests_test_galloping_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_galloping_LDADD =
 tests/test-galloping_tests.c: tests/test-galloping.dats
 
+TESTS += tests/test-merges
+EXTRA_PROGRAMS += tests/test-merges
+CLEANFILES += tests/test-merges
+CLEANFILES += tests/test-merges_tests.c
+EXTRA_DIST += tests/test-merges.dats
+tests_test_merges_SOURCES =
+tests_test_merges_SOURCES += tests/test-merges_tests.c
+tests_test_merges_DEPENDENCIES =
+tests_test_merges_DEPENDENCIES += tests/test-merges.dats
+tests_test_merges_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_merges_CPPFLAGS =
+tests_test_merges_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_merges_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_merges_LDADD =
+tests/test-merges_tests.c: tests/test-merges.dats
+
 TESTS += tests/test-minrun
 EXTRA_PROGRAMS += tests/test-minrun
 CLEANFILES += tests/test-minrun
