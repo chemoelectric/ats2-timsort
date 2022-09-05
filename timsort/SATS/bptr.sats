@@ -325,11 +325,42 @@ move_left_bptr_bptr_bptr :
    bptr (a, dst, i + n)) -< !wrt >
     void
 
+(* Shift elements rightwards within an array *)
+fn {a : vt@ype}
+move_right_bptr_bptr_size :
+  {src : addr}
+  {i   : nat}
+  {n   : int}
+  (!array_v (a?, src + (sizeof a * n), i)
+      >> array_v (a, src + (sizeof a * i), n),
+   !array_v (a, src, n) >> array_v (a?!, src, i) |
+   bptr (a?, src, i),
+   bptr_anchor (a, src),
+   size_t n) -< !wrt >
+    void
+
+(* Shift elements rightwards within an array *)
+fn {a : vt@ype}
+move_right_bptr_bptr_bptr :
+  {src : addr}
+  {i   : nat}
+  {n   : nat}
+  (!array_v (a?, src + (sizeof a * n), i)
+      >> array_v (a, src + (sizeof a * i), n),
+   !array_v (a, src, n) >> array_v (a?!, src, i) |
+   bptr (a?, src, i),
+   bptr_anchor (a, src),
+   bptr (a, src, n)) -< !wrt >
+    void
+
 overload copy_bptr_bptr with copy_bptr_bptr_size
 overload copy_bptr_bptr with copy_bptr_bptr_bptr
 
 overload move_left_bptr_bptr with move_left_bptr_bptr_size
 overload move_left_bptr_bptr with move_left_bptr_bptr_bptr
+
+overload move_right_bptr_bptr with move_right_bptr_bptr_size
+overload move_right_bptr_bptr with move_right_bptr_bptr_bptr
 
 overload interchange with interchange_bptr_bptr of 30
 overload subreverse with subreverse_bptr_bptr of 30
@@ -338,5 +369,6 @@ overload subcirculate_right_with_gap with
   subcirculate_right_with_gap_bptr_bptr of 30
 overload copy with copy_bptr_bptr of 30
 overload move_left with move_left_bptr_bptr of 30
+overload move_right with move_right_bptr_bptr of 30
 
 (*------------------------------------------------------------------*)
