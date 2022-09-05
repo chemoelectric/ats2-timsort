@@ -720,7 +720,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
                                  bp_between, bp_rgt, bp_lft,
-                                 threshold)
+                                 i2sz 0, threshold)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
@@ -747,7 +747,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
                                  bp_between, bp_rgt, bp_lft,
-                                 threshold)
+                                 i2sz 0, threshold)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
@@ -775,6 +775,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_between : bptr (a?, p_arr, i_between),
                bp_rgt     : bptr (a, p_arr, i_rgt),
                bp_lft     : bptr (a, p_temp, i_lft),
+               count_lft0 : Size_t,
                threshold  : &Size_t >> _)
         :<!wrt> void =
       if bp_lft = bp_tempsz then
@@ -854,7 +855,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
             in
               (* Lower the gallop threshold if either the left or the
                  right equals or exceeds the current threshold. *)
-              if (count_lft >= threshold)
+              if (count_lft0 + count_lft >= threshold)
                     + (bp_n - bp_rgt >= threshold) then
                 lower_gallop_threshold threshold;
 
@@ -956,8 +957,8 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   val bp_between = succ bp_between
                   and bp_lft = succ bp_lft
                 in
-                  if (count_lft >= threshold)
-                        + (count_rgt >= threshold) then
+                  if (count_lft0 + count_lft >= threshold)
+                        + (succ count_rgt >= threshold) then
                     begin
                       (* Lower the gallop threshold and continue
                          galloping. *)
@@ -965,7 +966,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                       galloping_merge (pf_merged, pf_between, pf_rgt,
                                        pf_cleared, pf_lft |
                                        bp_between, bp_rgt, bp_lft,
-                                       threshold)
+                                       i2sz 1, threshold)
                     end
                   else
                     begin
@@ -974,7 +975,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                       merge_runs (pf_merged, pf_between, pf_rgt,
                                   pf_cleared, pf_lft |
                                   bp_between, bp_rgt, bp_lft,
-                                  count_lft, count_rgt, threshold)
+                                  i2sz 0, i2sz 1, threshold)
                     end
                 end
             end
