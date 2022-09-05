@@ -822,7 +822,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
           val count_lft : size_t count_lft = bp - bp_lft0
 
           (* This is the total run length. *)
-          val runlen_lft = count_lft0 + count_lft
+          val total_lft = count_lft0 + count_lft
 
           (* Copy the data. *)
           prval @(pf_between1, pf_between2) =
@@ -857,7 +857,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               prval () = lemma_mul_isfun {sizeof a, i_lft}
                                          {sizeof a, tempsz} ()
             in
-              if (runlen_lft >= threshold)
+              if (total_lft >= threshold)
                     + (bp_n - bp_rgt >= threshold) then
                 lower_gallop_threshold threshold;
 
@@ -889,7 +889,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   prval () = lemma_mul_isfun {sizeof a, i_rgt}
                                              {sizeof a, n} ()
                 in
-                  if runlen_lft >= threshold then
+                  if total_lft >= threshold then
                     lower_gallop_threshold threshold;
 
                   right_is_done {i_between} {i_lft}
@@ -915,9 +915,9 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                     bp - bptr_reanchor bp_rgt0
 
                   (* This is the run length. *)
-                  val runlen_rgt =
+                  val total_rgt =
                     begin
-                      if runlen_lft = i2sz 0 then
+                      if total_lft = i2sz 0 then
                         succ (count_rgt0 + count_rgt)
                       else
                         count_rgt
@@ -971,8 +971,8 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   val bp_between = succ bp_between
                   and bp_lft = succ bp_lft
                 in
-                  if (runlen_lft >= threshold)
-                        + (runlen_rgt >= threshold) then
+                  if (total_lft >= threshold)
+                        + (total_rgt >= threshold) then
                     begin
                       (* Lower the gallop threshold and continue
                          galloping. *)
