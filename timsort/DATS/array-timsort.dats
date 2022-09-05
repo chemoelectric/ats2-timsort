@@ -535,6 +535,24 @@ find_1st_position_past_lte_x
 (*------------------------------------------------------------------*)
 (* Merges.                                                          *)
 
+fn {}
+lower_gallop_threshold
+          {threshold : int}
+          (threshold : &size_t threshold
+                          >> size_t (max (1, threshold - 1)))
+    :<!wrt> void =
+  if threshold <= i2sz 1 then
+    threshold := i2sz 1
+  else
+    threshold := pred threshold
+
+fn {}
+raise_gallop_threshold
+          {threshold : int}
+          (threshold : &size_t threshold >> size_t (threshold + 1))
+    :<!wrt> void =
+  threshold := succ threshold
+
 extern fn {a : vt@ype}
 merge_left :
   {p_arr  : addr}
@@ -548,7 +566,7 @@ merge_left :
    bptr (a, p_arr, i),
    bptr (a, p_arr, n),
    bptr_anchor (a?, p_work),
-   &Size_t (* gallop threshold *)) -< !wrt >
+   &Size_t >> _ (* gallop threshold *)) -< !wrt >
     void
 
 implement {a}
@@ -574,28 +592,22 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
 
     fn {}
     left_is_done
-              {i_between : nat}
-              {i_rgt     : nat | i_between == i_rgt; i_rgt <= n}
-              {i_lft     : nat | tempsz - i_lft == 0}
-              (pf_merged  : !array_v (a, p_arr, i_between)
+              {i_rgt      : nat | i_rgt <= n}
+              (pf_merged  : !array_v (a, p_arr, i_rgt)
                               >> array_v (a, p_arr, n),
-               pf_between : !array_v (a?, pntr (p_arr, i_between),
-                                      i_rgt - i_between) >> void,
+               pf_between : !array_v (a?, pntr (p_arr, i_rgt), 0)
+                              >> void,
                pf_rgt     : !array_v (a, pntr (p_arr, i_rgt),
-                                      n - i_rgt) >> void,
-               pf_cleared : !array_v (a?, p_temp, i_lft)
-                              >> array_v (a?, p_temp, tempsz),
-               pf_lft     : !array_v (a, pntr (p_temp, i_lft),
-                                      tempsz - i_lft) >> void | )
+                                      n - i_rgt)
+                              >> void,
+               pf_lft     : !array_v (a, pntr (p_temp, tempsz), 0)
+                              >> void | )
           :<> void =
         (* This routine generates no executable code, and could have
            been written as a prfn. *)
         let
           (* Any remaining right entries already are in place. *)
-          prval () = prop_verify {i_between == i_rgt} ()
-          prval () = lemma_mul_isfun {sizeof a, i_between}
-                                     {sizeof a, i_rgt} ()
-          prval () = lemma_mul_commutes {sizeof a, i_between} ()
+          prval () = lemma_mul_commutes {sizeof a, i_rgt} ()
           prval () = pf_lft := array_v_unnil pf_lft
           prval () = pf_between := array_v_unnil pf_between
           prval () = pf_merged := array_v_unsplit (pf_merged, pf_rgt)
@@ -605,15 +617,13 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
 
     fn
     right_is_done
-              {i_between : nat}
-              {i_rgt     : nat | i_between <= i_rgt; i_rgt == n}
-              {i_lft     : nat | i_rgt - i_between == tempsz - i_lft}
+              {i_between : nat | i_between <= n}
+              {i_lft     : nat | n - i_between == tempsz - i_lft}
               (pf_merged  : !array_v (a, p_arr, i_between)
                               >> array_v (a, p_arr, n),
                pf_between : !array_v (a?, pntr (p_arr, i_between),
-                                      i_rgt - i_between) >> void,
-               pf_rgt     : !array_v (a, pntr (p_arr, i_rgt),
-                                      n - i_rgt) >> void,
+                                      n - i_between) >> void,
+               pf_rgt     : !array_v (a, pntr (p_arr, n), 0) >> void,
                pf_cleared : !array_v (a?, p_temp, i_lft)
                               >> array_v (a?, p_temp, tempsz),
                pf_lft     : !array_v (a, pntr (p_temp, i_lft),
@@ -622,8 +632,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_lft     : bptr (a, p_temp, i_lft))
           :<!wrt> void =
         let                   (* Copy any remaining left entries. *)
-          prval () =
-            prop_verify {tempsz - i_lft == i_rgt - i_between} ()
           prval () = lemma_mul_commutes {sizeof a, i_between} ()
           prval () = lemma_mul_commutes {sizeof a, i_lft} ()
           prval () = pf_rgt := array_v_unnil pf_rgt
@@ -644,7 +652,8 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
     merge_runs
               {i_between : nat}
               {i_rgt     : nat | i_between <= i_rgt; i_rgt <= n}
-              {i_lft     : nat | i_rgt - i_between == tempsz - i_lft}
+              {i_lft     : nat | i_lft <= tempsz;
+                                 i_rgt - i_between == tempsz - i_lft}
               .<n - i_between>.
               (pf_merged  : !array_v (a, p_arr, i_between)
                               >> array_v (a, p_arr, n),
@@ -661,17 +670,28 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_lft     : bptr (a, p_temp, i_lft),
                count_lft  : Size_t,
                count_rgt  : Size_t,
-               threshold  : &Size_t)
+               threshold  : &Size_t >> _)
         :<!wrt> void =
       if bp_lft = bp_tempsz then
-        left_is_done {i_between} {i_rgt} {i_lft}
-                     (pf_merged, pf_between, pf_rgt,
-                      pf_cleared, pf_lft | )
+        let
+          prval () = lemma_mul_isfun {sizeof a, i_between}
+                                     {sizeof a, i_rgt} ()
+          prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                     {sizeof a, tempsz} ()
+        in
+          left_is_done {i_rgt}
+                       (pf_merged, pf_between, pf_rgt, pf_lft | )
+        end
       else if bp_rgt = bp_n then
-        right_is_done {i_between} {i_rgt} {i_lft}
-                      (pf_merged, pf_between, pf_rgt,
-                       pf_cleared, pf_lft |
-                       bp_between, bp_lft)
+        let
+          prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                     {sizeof a, n} ()
+        in
+          right_is_done {i_between} {i_lft}
+                        (pf_merged, pf_between, pf_rgt,
+                         pf_cleared, pf_lft |
+                         bp_between, bp_lft)
+        end
       else
         let
           prval () = lemma_mul_commutes {sizeof a, i_rgt} ()
@@ -696,14 +716,12 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               and count_lft = i2sz 0
               and count_rgt = succ count_rgt
             in
-(*
               if count_rgt >= threshold then
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
                                  bp_between, bp_rgt, bp_lft,
                                  count_lft, count_rgt, threshold)
               else
-*)
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
                             bp_between, bp_rgt, bp_lft,
@@ -725,18 +743,24 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               and count_lft = succ count_lft
               and count_rgt = i2sz 0
             in
-              merge_runs (pf_merged, pf_between, pf_rgt,
-                          pf_cleared, pf_lft |
-                          bp_between, bp_rgt, bp_lft,
-                          count_lft, count_rgt, threshold)
+              if count_lft >= threshold then
+                galloping_merge (pf_merged, pf_between, pf_rgt,
+                                 pf_cleared, pf_lft |
+                                 bp_between, bp_rgt, bp_lft,
+                                 count_lft, count_rgt, threshold)
+              else
+                merge_runs (pf_merged, pf_between, pf_rgt,
+                            pf_cleared, pf_lft |
+                            bp_between, bp_rgt, bp_lft,
+                            count_lft, count_rgt, threshold)
             end
         end
-(*
     and
     galloping_merge
               {i_between : nat}
               {i_rgt     : nat | i_between <= i_rgt; i_rgt <= n}
-              {i_lft     : nat | i_rgt - i_between == tempsz - i_lft}
+              {i_lft     : nat | i_lft <= tempsz;
+                                 i_rgt - i_between == tempsz - i_lft}
               .<n - i_between>.
               (pf_merged  : !array_v (a, p_arr, i_between)
                               >> array_v (a, p_arr, n),
@@ -751,15 +775,225 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_between : bptr (a?, p_arr, i_between),
                bp_rgt     : bptr (a, p_arr, i_rgt),
                bp_lft     : bptr (a, p_temp, i_lft),
-               count_lft  : Size_t,
-               count_rgt  : Size_t,
-               threshold  : &Size_t)
+               count_lft0 : Size_t,
+               count_rgt0 : Size_t,
+               threshold  : &Size_t >> _)
         :<!wrt> void =
-      let
-      in
-(* FIXME *)
-      end
-*)
+      if bp_lft = bp_tempsz then
+        let
+          prval () = lemma_mul_isfun {sizeof a, i_between}
+                                     {sizeof a, i_rgt} ()
+          prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                     {sizeof a, tempsz} ()
+        in
+          left_is_done {i_rgt}
+                       (pf_merged, pf_between, pf_rgt, pf_lft | )
+        end
+      else if bp_rgt = bp_n then
+        let
+          prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                     {sizeof a, n} ()
+        in
+          right_is_done {i_between} {i_lft}
+                        (pf_merged, pf_between, pf_rgt,
+                         pf_cleared, pf_lft |
+                         bp_between, bp_lft)
+        end
+      else
+        let
+          prval () = prop_verify {i_between < i_rgt} ()
+          prval () = prop_verify {i_rgt < n} ()
+
+          prval () = lemma_mul_commutes {sizeof a, i_lft} ()
+          and () = lemma_mul_commutes {sizeof a, i_rgt} ()
+          and () = lemma_mul_commutes {sizeof a, i_between} ()
+
+          (* Find a position within the left side data. *)
+          val bp_lft0 = bptr_reanchor bp_lft
+          val bp_n_lft0 = bp_lft0 + (bp_tempsz - bp_lft)
+          val [count_lft : int] bp =
+            find_1st_position_past_lte_x
+              {pntr (p_temp, i_lft)} {tempsz - i_lft} {0}
+              {pntr (p_arr, i_rgt)} {n - i_rgt} {0}
+              (pf_lft, pf_rgt | bp_lft0, bp_n_lft0, i2sz 0,
+                                bptr_reanchor bp_rgt)
+
+          (* This is how much to copy. *)
+          val count_lft : size_t count_lft = bp - bp_lft0
+
+          (* This is the total run length. *)
+          val total_lft = count_lft0 + count_lft
+
+          (* Copy the data. *)
+          prval @(pf_between1, pf_between2) =
+            array_v_split {a?} {pntr (p_arr, i_between)}
+                          {i_rgt - i_between} {count_lft}
+                          pf_between
+          prval @(pf_lft1, pf_lft2) =
+            array_v_split {a} {pntr (p_temp, i_lft)}
+                          {tempsz - i_lft} {count_lft}
+                          pf_lft
+          val () = copy<a> (pf_between1, pf_lft1 |
+                            bptr_reanchor bp_between,
+                            bp_lft0, count_lft)
+          prval () = pf_merged :=
+            array_v_unsplit (pf_merged, pf_between1)
+          prval () = pf_between := pf_between2
+          prval () = pf_cleared :=
+            array_v_unsplit (pf_cleared, pf_lft1)
+          prval () = pf_lft := pf_lft2
+
+          stadef i_between = i_between + count_lft
+          stadef i_lft = i_lft + count_lft
+          val bp_between = bp_between + count_lft
+          and bp_lft = bp_lft + count_lft
+
+          prval () = lemma_mul_commutes {sizeof a, count_lft} ()
+        in
+          if bp_lft = bp_tempsz then
+            let
+              prval () = lemma_mul_isfun {sizeof a, i_between}
+                                         {sizeof a, i_rgt} ()
+              prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                         {sizeof a, tempsz} ()
+            in
+              if (total_lft >= threshold)
+                    + (bp_n - bp_rgt >= threshold) then
+                lower_gallop_threshold threshold;
+
+              left_is_done {i_rgt}
+                           (pf_merged, pf_between, pf_rgt, pf_lft | )
+            end
+          else
+            let
+              (* Copy the right side element whose position has been
+                 found. *)
+              prval @(pf_taken, pf_between1) =
+                array_v_uncons pf_between
+              prval @(pf_R, pf_rgt1) = array_v_uncons pf_rgt
+              val x = bptr_get<a> (pf_R | bp_rgt)
+              val () = ptr_set<a> (pf_taken | bptr2ptr bp_between, x)
+              prval () = pf_merged :=
+                array_v_extend (pf_merged, pf_taken)
+              and () = pf_between :=
+                array_v_extend (pf_between1, pf_R)
+              and () = pf_rgt := pf_rgt1
+
+              stadef i_between = i_between + 1
+              stadef i_rgt = i_rgt + 1
+              val bp_between = succ bp_between
+              and bp_rgt = succ bp_rgt
+            in
+              if bp_rgt = bp_n then
+                let
+                  prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                             {sizeof a, n} ()
+                in
+                  if total_lft >= threshold then
+                    lower_gallop_threshold threshold;
+
+                  right_is_done {i_between} {i_lft}
+                                (pf_merged, pf_between, pf_rgt,
+                                 pf_cleared, pf_lft |
+                                 bp_between, bp_lft)
+                end
+              else
+                let
+                  (* Find a position within the right side data. *)
+                  val bp_rgt0 = bptr_reanchor bp_rgt
+                  val bp_n_rgt0 = bp_rgt0 + (bp_n - bp_rgt)
+                  val [count_rgt : int] bp =
+                    find_1st_position_past_lt_x
+                      {pntr (p_arr, i_rgt)} {n - i_rgt} {0}
+                      {pntr (p_temp, i_lft)} {tempsz - i_lft} {0}
+                      (pf_rgt, pf_lft | bptr_reanchor bp_rgt0,
+                                        bp_n_rgt0, i2sz 0,
+                                        bptr_reanchor bp_lft)
+
+                  (* This is how much to copy. *)
+                  val count_rgt : size_t count_rgt =
+                    bp - bptr_reanchor bp_rgt0
+
+                  (* This is the run length. *)
+                  val total_rgt =
+                    begin
+                      if total_lft = i2sz 0 then
+                        succ (count_rgt0 + count_rgt)
+                      else
+                        count_rgt
+                    end : Size_t
+
+                  (* Copy the data. *)
+                  prval @(pf_rgt1, pf_rgt2) =
+                    array_v_split {a} {pntr (p_arr, i_rgt)}
+                                  {n - i_rgt} {count_rgt}
+                                  pf_rgt
+                  val bp_between0 = bptr_reanchor bp_between
+                  val bp_rgt_src =
+                    ptr2bptr_anchor (bptr2ptr bp_between0)
+                        + (bp_rgt - bp_between)
+                  val () =
+                    move_left<a> {pntr (p_arr, i_between)}
+                                 {i_rgt - i_between} {count_rgt}
+                                 (pf_between, pf_rgt1 |
+                                  bp_between0, bp_rgt_src, count_rgt)
+                  prval () = pf_merged :=
+                    array_v_unsplit (pf_merged, pf_between)
+                  and () = pf_between := pf_rgt1
+                  and () = pf_rgt := pf_rgt2
+
+                  stadef i_between = i_between + count_rgt
+                  stadef i_rgt = i_rgt + count_rgt
+                  val bp_between = bp_between + count_rgt
+                  and bp_rgt = bp_rgt + count_rgt
+
+                  prval () = lemma_mul_commutes {sizeof a, i_lft} ()
+                  and () = lemma_mul_commutes {sizeof a, i_rgt} ()
+                  and () = lemma_mul_commutes {sizeof a, i_between} ()
+
+                  (* Copy the left side element whose position has been
+                     found. *)
+                  prval @(pf_taken, pf_between1) =
+                    array_v_uncons pf_between
+                  prval @(pf_L, pf_lft1) = array_v_uncons pf_lft
+                  val x = bptr_get<a> (pf_L | bp_lft)
+                  val () = ptr_set<a> (pf_taken |
+                                       bptr2ptr bp_between, x)
+                  prval () = pf_merged :=
+                    array_v_extend (pf_merged, pf_taken)
+                  and () = pf_between := pf_between1
+                  and () = pf_cleared :=
+                    array_v_extend (pf_cleared, pf_L)
+                  and () = pf_lft := pf_lft1
+
+                  stadef i_between = i_between + 1
+                  stadef i_lft = i_lft + 1
+                  val bp_between = succ bp_between
+                  and bp_lft = succ bp_lft
+                in
+                  if (total_lft >= threshold)
+                        + (total_rgt >= threshold) then
+                    begin
+                      (* Lower the gallop threshold and continue
+                         galloping. *)
+                      lower_gallop_threshold threshold;
+                      galloping_merge (pf_merged, pf_between, pf_rgt,
+                                       pf_cleared, pf_lft |
+                                       bp_between, bp_rgt, bp_lft,
+                                       i2sz 1, i2sz 0, threshold)
+                    end
+                  else
+                    begin
+                      (* Raise the gallop threshold and stop galloping. *)
+                      raise_gallop_threshold threshold;
+                      merge_runs (pf_merged, pf_between, pf_rgt,
+                                  pf_cleared, pf_lft |
+                                  bp_between, bp_rgt, bp_lft,
+                                  i2sz 1, i2sz 0, threshold)
+                    end
+                end
+            end
+        end
 
     prval pf_merged = array_v_nil {a} {p_arr} ()
     prval pf_between = pf_left
@@ -776,7 +1010,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
   in
   end
 
-(* FIXME: THERE IS NO GALLOP YET. *)
 extern fn {a : vt@ype}
 merge_right :
   {p_arr  : addr}
@@ -789,12 +1022,14 @@ merge_right :
    bptr_anchor (a, p_arr),
    bptr (a, p_arr, i),
    bptr (a, p_arr, n),
-   bptr_anchor (a?, p_work)) -< !wrt >
+   bptr_anchor (a?, p_work),
+   &Size_t >> _ (* gallop threshold *)) -< !wrt >
     void
 
 implement {a}
 merge_right {p_arr} {n} {i} {p_work} {worksz}
-            (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work) =
+            (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work,
+                               gallop_threshold) =
   let
     stadef pntr (p : addr, i : int) = p + (sizeof a * i)
 
@@ -813,7 +1048,60 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
     val bp_tempsz : bptr (a, p_temp, tempsz) =
       bp_temp + (bp_n - bp_i)
 
-    fun
+    fn {}
+    right_is_done
+              {i_lft      : nat | i_lft <= n}
+              (pf_lft     : !array_v (a, p_arr, i_lft) >> void,
+               pf_between : !array_v (a?, pntr (p_arr, i_lft), 0)
+                              >> void,
+               pf_merged  : !array_v (a, pntr (p_arr, i_lft),
+                                      n - i_lft)
+                              >> array_v (a, p_arr, n),
+               pf_rgt     : !array_v (a, p_temp, 0) >> void | )
+        :<!wrt> void =
+      (* This routine generates no executable code, and could have
+         been written as a prfn. *)
+      let
+        (* Any remaining left entries already are in place. *)
+        prval () = lemma_mul_commutes {sizeof a, i_lft} ()
+        prval () = pf_rgt := array_v_unnil pf_rgt
+        prval () = pf_between := array_v_unnil pf_between
+        prval () = pf_merged := array_v_unsplit (pf_lft,
+                                                 pf_merged)
+        prval () = pf_lft := ()
+      in
+      end
+
+    fn
+    left_is_done
+              {i_rgt : nat | i_rgt <= n}
+              (pf_lft     : !array_v (a, p_arr, 0) >> void,
+               pf_between : !array_v (a?, p_arr, i_rgt) >> void,
+               pf_merged  : !array_v (a, pntr (p_arr, i_rgt),
+                                      n - i_rgt)
+                              >> array_v (a, p_arr, n),
+               pf_rgt     : !array_v (a, p_temp, i_rgt) >> void,
+               pf_cleared : !array_v (a?!, pntr (p_temp, i_rgt),
+                                      tempsz - i_rgt)
+                              >> array_v (a?, p_temp, tempsz) |
+               bp_rgt     : bptr (a, p_temp, i_rgt))
+        :<!wrt> void =
+      let                      (* Copy any remaining right entries. *)
+        prval () = lemma_mul_commutes {sizeof a, i_rgt} ()
+        prval () = pf_lft := array_v_unnil pf_lft
+        val () = copy<a> (pf_between, pf_rgt |
+                          ptr2bptr_anchor (bptr2ptr bp_arr),
+                          bp_temp, bp_rgt)
+        prval () = pf_merged := array_v_unsplit (pf_between,
+                                                 pf_merged)
+        prval () = pf_between := ()
+        prval () = pf_cleared := array_v_unsplit (pf_rgt,
+                                                  pf_cleared)
+        prval () = pf_rgt := ()
+      in
+      end
+
+    fnx
     merge_runs
               {i_merged : nat | i_merged <= n}
               {i_lft    : nat | i_lft <= i_merged}
@@ -831,45 +1119,32 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                               >> array_v (a?, p_temp, tempsz) |
                bp_merged  : bptr (a?, p_arr, i_merged),
                bp_lft     : bptr (a, p_arr, i_lft),
-               bp_rgt     : bptr (a, p_temp, i_rgt))
+               bp_rgt     : bptr (a, p_temp, i_rgt),
+               count_lft  : Size_t,
+               count_rgt  : Size_t,
+               threshold  : &Size_t >> _)
         :<!wrt> void =
       if bp_rgt = bp_temp then
-        let   (* Any remaining left entries already are in place. *)
-          prval () = prop_verify {i_rgt == 0} ()
-          prval () = prop_verify {i_lft == i_merged} ()
-          prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                     {sizeof a, 0} ()
+        let
           prval () = lemma_mul_isfun {sizeof a, i_lft}
                                      {sizeof a, i_merged} ()
-          prval () = lemma_mul_commutes {sizeof a, i_lft} ()
-          prval () = pf_rgt := array_v_unnil pf_rgt
-          prval () = pf_between := array_v_unnil pf_between
-          prval () = pf_merged := array_v_unsplit (pf_lft,
-                                                   pf_merged)
-          prval () = pf_lft := ()
+          prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                     {sizeof a, 0} ()
         in
+          right_is_done {i_lft}
+                        (pf_lft, pf_between, pf_merged, pf_rgt | )
         end
       else if bp_lft = bp_arr then
-        let                  (* Copy any remaining right entries. *)
-          prval () = prop_verify {i_lft == 0} ()
-          prval () = prop_verify {i_rgt == i_merged} ()
-          prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                     {sizeof a, 0} ()
+        let
           prval () = lemma_mul_isfun {sizeof a, i_rgt}
                                      {sizeof a, i_merged} ()
-          prval () = lemma_mul_commutes {sizeof a,
-                                         i_merged - i_lft} ()
-          prval () = pf_lft := array_v_unnil pf_lft
-          val () = copy<a> (pf_between, pf_rgt |
-                            ptr2bptr_anchor (bptr2ptr bp_arr),
-                            bp_temp, bp_rgt)
-          prval () = pf_merged := array_v_unsplit (pf_between,
-                                                   pf_merged)
-          prval () = pf_between := ()
-          prval () = pf_cleared := array_v_unsplit (pf_rgt,
-                                                    pf_cleared)
-          prval () = pf_rgt := ()
+          prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                     {sizeof a, 0} ()
         in
+          left_is_done {i_rgt}
+                       (pf_lft, pf_between, pf_merged,
+                        pf_rgt, pf_cleared |
+                        bp_rgt)
         end
       else
         let
@@ -892,10 +1167,19 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
               prval () = pf_lft := pf_lft1
               prval () = pf_between := array_v_cons (pf_L,
                                                      pf_between1)
+              val count_lft = succ count_lft
+              and count_rgt = i2sz 0
             in
-              merge_runs (pf_lft, pf_between, pf_merged,
-                          pf_rgt, pf_cleared |
-                          bp_merged, bp_lft, bp_rgt)
+              if count_lft >= threshold then
+                galloping_merge (pf_lft, pf_between, pf_merged,
+                                 pf_rgt, pf_cleared |
+                                 bp_merged, bp_lft, bp_rgt,
+                                 count_lft, count_rgt, threshold)
+              else
+                merge_runs (pf_lft, pf_between, pf_merged,
+                            pf_rgt, pf_cleared |
+                            bp_merged, bp_lft, bp_rgt,
+                            count_lft, count_rgt, threshold)
             end
           else
             let                 (* R >= L. Take R. *)
@@ -908,10 +1192,259 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
               prval () = pf_rgt := pf_rgt1
               prval () = pf_cleared := array_v_cons (pf_R, pf_cleared)
               prval () = pf_between := pf_between1
+              val count_lft = i2sz 0
+              and count_rgt = succ count_rgt
             in
-              merge_runs (pf_lft, pf_between, pf_merged,
-                          pf_rgt, pf_cleared |
-                          bp_merged, bp_lft, bp_rgt)
+              if count_rgt >= threshold then
+                galloping_merge (pf_lft, pf_between, pf_merged,
+                                 pf_rgt, pf_cleared |
+                                 bp_merged, bp_lft, bp_rgt,
+                                 count_lft, count_rgt, threshold)
+              else
+                merge_runs (pf_lft, pf_between, pf_merged,
+                            pf_rgt, pf_cleared |
+                            bp_merged, bp_lft, bp_rgt,
+                            count_lft, count_rgt, threshold)
+            end
+        end
+    and
+    galloping_merge
+              {i_merged : nat | i_merged <= n}
+              {i_lft    : nat | i_lft <= i_merged}
+              {i_rgt    : nat | i_merged - i_lft == i_rgt}
+              .<i_merged>.
+              (pf_lft     : !array_v (a, p_arr, i_lft) >> void,
+               pf_between : !array_v (a?, pntr (p_arr, i_lft),
+                                      i_merged - i_lft) >> void,
+               pf_merged  : !array_v (a, pntr (p_arr, i_merged),
+                                      n - i_merged)
+                              >> array_v (a, p_arr, n),
+               pf_rgt     : !array_v (a, p_temp, i_rgt) >> void,
+               pf_cleared : !array_v (a?!, pntr (p_temp, i_rgt),
+                                      tempsz - i_rgt)
+                              >> array_v (a?, p_temp, tempsz) |
+               bp_merged  : bptr (a?, p_arr, i_merged),
+               bp_lft     : bptr (a, p_arr, i_lft),
+               bp_rgt     : bptr (a, p_temp, i_rgt),
+               count_lft0 : Size_t,
+               count_rgt0 : Size_t,
+               threshold  : &Size_t >> _)
+        :<!wrt> void =
+      if bp_rgt = bp_temp then
+        let
+          prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                     {sizeof a, i_merged} ()
+          prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                     {sizeof a, 0} ()
+        in
+          right_is_done {i_lft}
+                        (pf_lft, pf_between, pf_merged, pf_rgt | )
+        end
+      else if bp_lft = bp_arr then
+        let
+          prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                     {sizeof a, i_merged} ()
+          prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                     {sizeof a, 0} ()
+        in
+          left_is_done {i_rgt}
+                       (pf_lft, pf_between, pf_merged,
+                        pf_rgt, pf_cleared |
+                        bp_rgt)
+        end
+      else
+        let
+          prval () = prop_verify {i_lft < n} ()
+
+          prval () = lemma_mul_commutes {sizeof a, i_lft - 1} ()
+          and () = lemma_mul_commutes {sizeof a, i_rgt - 1} ()
+          and () = lemma_mul_commutes {sizeof a, i_merged - 1} ()
+
+          (* Find a position within the right side data. *)
+          val [count_rgt0 : int] bp =
+            find_1st_position_past_lt_x
+              {p_temp} {i_rgt} {i_rgt - 1}
+              {p_arr} {i_lft} {i_lft - 1}
+              (pf_rgt, pf_lft | bp_temp, bp_rgt,
+                                pred bp_rgt - bp_temp,
+                                pred bp_lft)
+          stadef count_rgt = i_rgt - count_rgt0
+
+          (* This is how much to copy. *)
+          val count_rgt : size_t count_rgt = bp_rgt - bp
+
+          (* This is the total run length. *)
+          val total_rgt = count_rgt0 + count_rgt
+
+          (* Copy the data. *)
+          prval @(pf_between1, pf_between2) =
+            array_v_split {a?} {pntr (p_arr, i_lft)}
+                          {i_merged - i_lft}
+                          {i_merged - i_lft - count_rgt}
+                          pf_between
+          prval @(pf_rgt1, pf_rgt2) =
+            array_v_split {a} {p_temp} {i_rgt} {i_rgt - count_rgt}
+                          pf_rgt
+          stadef i_merged = i_merged - count_rgt
+          stadef i_rgt = i_rgt - count_rgt
+          val bp_merged = bp_merged - count_rgt
+          and bp_rgt = bp_rgt - count_rgt
+          val () = copy<a> (pf_between2, pf_rgt2 |
+                            bptr_reanchor bp_merged,
+                            bptr_reanchor bp, count_rgt)
+          prval () = pf_merged :=
+            array_v_unsplit (pf_between2, pf_merged)
+          prval () = pf_between := pf_between1
+          prval () = pf_cleared :=
+            array_v_unsplit (pf_rgt2, pf_cleared)
+          prval () = pf_rgt := pf_rgt1
+
+          prval () = lemma_mul_commutes {sizeof a, count_rgt} ()
+        in
+          if bp_rgt = bp_temp then
+            let
+              prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                         {sizeof a, i_merged} ()
+              prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                         {sizeof a, 0} ()
+            in
+              if (bp_lft - bp_arr >= threshold)
+                    + (total_rgt >= threshold) then
+                lower_gallop_threshold threshold;
+
+              right_is_done {i_lft}
+                            (pf_lft, pf_between, pf_merged, pf_rgt | )
+            end
+          else
+            let
+              (* Copy the left side element whose position has been
+                 found. *)
+              prval @(pf_between1, pf_taken) =
+                array_v_unextend pf_between
+              prval @(pf_lft1, pf_L) = array_v_unextend pf_lft
+              stadef i_lft = i_lft - 1
+              stadef i_merged = i_merged - 1
+              val bp_lft = pred bp_lft
+              and bp_merged = pred bp_merged
+              val x = bptr_get<a> (pf_L | bp_lft)
+              val () = ptr_set<a> (pf_taken | bptr2ptr bp_merged, x)
+              prval () = pf_merged :=
+                array_v_cons (pf_taken, pf_merged)
+              and () = pf_between :=
+                array_v_cons (pf_L, pf_between1)
+              and () = pf_lft := pf_lft1
+            in
+              if bp_lft = bp_arr then
+                let
+                  prval () = lemma_mul_isfun {sizeof a, i_rgt}
+                                             {sizeof a, i_merged} ()
+                  prval () = lemma_mul_isfun {sizeof a, i_lft}
+                                             {sizeof a, 0} ()
+                in
+                  if total_rgt >= threshold then
+                    lower_gallop_threshold threshold;
+
+                  left_is_done {i_rgt}
+                               (pf_lft, pf_between, pf_merged,
+                                pf_rgt, pf_cleared |
+                                bp_rgt)
+                end
+              else
+                let
+                  (* Find a position within the left side data. *)
+                  val [count_lft0 : int] bp =
+                    find_1st_position_past_lte_x
+                      {p_arr} {i_lft} {i_lft - 1}
+                      {p_temp} {i_rgt} {i_rgt - 1}
+                      (pf_lft, pf_rgt | bp_arr, bp_lft,
+                                        pred (bp_lft - bp_arr),
+                                        pred bp_rgt)
+                  stadef count_lft = i_lft - count_lft0
+
+                  (* This is how much to copy. *)
+                  val count_lft : size_t count_lft = bp_lft - bp
+
+                  prval () =
+                    lemma_mul_commutes {sizeof a, count_lft} ()
+
+                  (* This is the run length. *)
+                  val total_lft =
+                    begin
+                      if total_rgt = i2sz 0 then
+                        succ (count_lft0 + count_lft)
+                      else
+                        count_lft
+                    end : Size_t
+
+                  (* Copy the data. *)
+                  prval @(pf_lft1, pf_lft2) =
+                    array_v_split {a} {p_arr} {i_lft}
+                                  {i_lft - count_lft}
+                                  pf_lft
+                  stadef i_lft = i_lft - count_lft
+                  stadef i_merged = i_merged - count_lft
+                  val bp_lft = bp_lft - count_lft
+                  and bp_merged = bp_merged - count_lft
+                  val bp0 = bptr_reanchor bp_lft
+                  val bp1 = ptr2bptr_anchor (bptr2ptr bp0)
+                                + (bp_merged - bp_lft)
+                  val () =
+                    move_right<a> {pntr (p_arr, i_lft)}
+                                  {i_merged - i_lft} {count_lft}
+                                  (pf_between, pf_lft2 |
+                                   bp1, bp0, count_lft)
+                  prval () = pf_merged :=
+                    array_v_unsplit (pf_between, pf_merged)
+                  and () = pf_between := pf_lft2
+                  and () = pf_lft := pf_lft1
+
+                  prval () =
+                    lemma_mul_commutes {sizeof a, i_lft - 1} ()
+                  and () =
+                    lemma_mul_commutes {sizeof a, i_rgt - 1} ()
+                  and () =
+                    lemma_mul_commutes {sizeof a, i_merged - 1} ()
+
+                  (* Copy the right side element whose position has
+                     been found. *)
+                  prval @(pf_between1, pf_taken) =
+                    array_v_unextend pf_between
+                  prval @(pf_rgt1, pf_R) = array_v_unextend pf_rgt
+                  stadef i_rgt = i_rgt - 1
+                  stadef i_merged = i_merged - 1
+                  val bp_rgt = pred bp_rgt
+                  and bp_merged = pred bp_merged
+                  val x = bptr_get<a> (pf_R | bp_rgt)
+                  val () = ptr_set<a> (pf_taken |
+                                       bptr2ptr bp_merged, x)
+                  prval () = pf_merged :=
+                    array_v_cons (pf_taken, pf_merged)
+                  and () = pf_between := pf_between1
+                  and () = pf_cleared :=
+                    array_v_cons (pf_R, pf_cleared)
+                  and () = pf_rgt := pf_rgt1
+                in
+                  if (total_lft >= threshold)
+                        + (total_rgt >= threshold) then
+                    begin
+                      (* Lower the gallop threshold and continue
+                         galloping. *)
+                      lower_gallop_threshold threshold;
+                      galloping_merge (pf_lft, pf_between, pf_merged,
+                                       pf_rgt, pf_cleared |
+                                       bp_merged, bp_lft, bp_rgt,
+                                       i2sz 0, i2sz 1, threshold)
+                    end
+                  else
+                    begin
+                      (* Raise the gallop threshold and stop galloping. *)
+                      raise_gallop_threshold threshold;
+                      merge_runs (pf_lft, pf_between, pf_merged,
+                                  pf_rgt, pf_cleared |
+                                  bp_merged, bp_lft, bp_rgt,
+                                  i2sz 0, i2sz 1, threshold)
+                    end
+                end
             end
         end
 
@@ -923,7 +1456,8 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                          pf_temp, pf_cleared |
                          ptr2bptr_anchor (bptr2ptr bp_arr)
                             + (bp_n - bp_arr),
-                         bp_i, bp_tempsz)
+                         bp_i, bp_tempsz,
+                         i2sz 0, i2sz 0, gallop_threshold)
 
     prval () = pf_arr := pf_merged
     prval () = pf_work := array_v_unsplit (pf_cleared, pf_unused)
