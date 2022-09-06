@@ -560,8 +560,8 @@ lower_gallop_thresholds
     val stop_threshold0 = params.gallop_stop_threshold
     val stop_threshold1 = max (i2sz 1, pred stop_threshold0)
   in
-    params.gallop_start_threshold := start_threshold0;
-    params.gallop_stop_threshold := stop_threshold0
+    params.gallop_start_threshold := start_threshold1;
+    params.gallop_stop_threshold := stop_threshold1
   end
 
 fn {}
@@ -574,8 +574,8 @@ raise_gallop_thresholds
     val stop_threshold0 = params.gallop_stop_threshold
     val stop_threshold1 = succ stop_threshold0
   in
-    params.gallop_start_threshold := start_threshold0;
-    params.gallop_stop_threshold := stop_threshold0
+    params.gallop_start_threshold := start_threshold1;
+    params.gallop_stop_threshold := stop_threshold1
   end
 
 extern fn {a : vt@ype}
