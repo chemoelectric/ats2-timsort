@@ -598,7 +598,7 @@ implement {a}
 merge_left {p_arr} {n} {i} {p_work} {worksz}
            (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params) =
   let
-    stadef pntr (p : addr, i : int) = p + (sizeof a * i)
+    stadef pntr (p : addr, i : int) = p + (i * sizeof a)
 
     (* Split the array into left and right, and copy the left to
        workspace. *)
@@ -631,7 +631,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
            been written as a prfn. *)
         let
           (* Any remaining right entries already are in place. *)
-          prval () = lemma_mul_commutes {sizeof a, i_rgt} ()
           prval () = pf_lft := array_v_unnil pf_lft
           prval () = pf_between := array_v_unnil pf_between
           prval () = pf_merged := array_v_unsplit (pf_merged, pf_rgt)
@@ -656,8 +655,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_lft     : bptr (a, p_temp, i_lft))
           :<!wrt> void =
         let                   (* Copy any remaining left entries. *)
-          prval () = lemma_mul_commutes {sizeof a, i_between} ()
-          prval () = lemma_mul_commutes {sizeof a, i_lft} ()
           prval () = pf_rgt := array_v_unnil pf_rgt
           val () = copy<a> (pf_between, pf_lft |
                             bptr_reanchor bp_between,
@@ -698,18 +695,18 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
         :<!wrt> void =
       if bp_lft = bp_tempsz then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_between}
-                                     {sizeof a, i_rgt} ()
-          prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                     {sizeof a, tempsz} ()
+          prval () = lemma_mul_isfun {i_between, sizeof a}
+                                     {i_rgt, sizeof a} ()
+          prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                     {tempsz, sizeof a} ()
         in
           left_is_done {i_rgt}
                        (pf_merged, pf_between, pf_rgt, pf_lft | )
         end
       else if bp_rgt = bp_n then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                     {sizeof a, n} ()
+          prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                     {n, sizeof a} ()
         in
           right_is_done {i_between} {i_lft}
                         (pf_merged, pf_between, pf_rgt,
@@ -718,9 +715,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
         end
       else
         let
-          prval () = lemma_mul_commutes {sizeof a, i_rgt} ()
-          prval () = lemma_mul_commutes {sizeof a, i_lft} ()
-          prval () = lemma_mul_commutes {sizeof a, i_between} ()
           prval @(pf_taken, pf_between1) = array_v_uncons pf_between
           prval @(pf_R, pf_rgt1) = array_v_uncons pf_rgt
           prval @(pf_L, pf_lft1) = array_v_uncons pf_lft
@@ -801,18 +795,18 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
         :<!wrt> void =
       if bp_lft = bp_tempsz then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_between}
-                                     {sizeof a, i_rgt} ()
-          prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                     {sizeof a, tempsz} ()
+          prval () = lemma_mul_isfun {i_between, sizeof a}
+                                     {i_rgt, sizeof a} ()
+          prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                     {tempsz, sizeof a} ()
         in
           left_is_done {i_rgt}
                        (pf_merged, pf_between, pf_rgt, pf_lft | )
         end
       else if bp_rgt = bp_n then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                     {sizeof a, n} ()
+          prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                     {n, sizeof a} ()
         in
           right_is_done {i_between} {i_lft}
                         (pf_merged, pf_between, pf_rgt,
@@ -823,10 +817,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
         let
           prval () = prop_verify {i_between < i_rgt} ()
           prval () = prop_verify {i_rgt < n} ()
-
-          prval () = lemma_mul_commutes {sizeof a, i_lft} ()
-          and () = lemma_mul_commutes {sizeof a, i_rgt} ()
-          and () = lemma_mul_commutes {sizeof a, i_between} ()
 
           (* Find a position within the left side data. *)
           val bp_lft0 = bptr_reanchor bp_lft
@@ -864,15 +854,13 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
           stadef i_lft = i_lft + count_lft
           val bp_between = bp_between + count_lft
           and bp_lft = bp_lft + count_lft
-
-          prval () = lemma_mul_commutes {sizeof a, count_lft} ()
         in
           if bp_lft = bp_tempsz then
             let
-              prval () = lemma_mul_isfun {sizeof a, i_between}
-                                         {sizeof a, i_rgt} ()
-              prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                         {sizeof a, tempsz} ()
+              prval () = lemma_mul_isfun {i_between, sizeof a}
+                                         {i_rgt, sizeof a} ()
+              prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                         {tempsz, sizeof a} ()
             in
               if (count_lft >= (params.gallop_stop_threshold))
                     + (succ (bp_n - bp_rgt)
@@ -906,8 +894,8 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
             in
               if bp_rgt = bp_n then
                 let
-                  prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                             {sizeof a, n} ()
+                  prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                             {n, sizeof a} ()
                 in
                   if count_lft >= (params.gallop_stop_threshold) then
                     lower_gallop_thresholds params
@@ -960,10 +948,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   val bp_between = bp_between + count_rgt
                   and bp_rgt = bp_rgt + count_rgt
 
-                  prval () = lemma_mul_commutes {sizeof a, i_lft} ()
-                  and () = lemma_mul_commutes {sizeof a, i_rgt} ()
-                  and () = lemma_mul_commutes {sizeof a, i_between} ()
-
                   (* Copy the left side element whose position has been
                      found. *)
                   prval @(pf_taken, pf_between1) =
@@ -1013,7 +997,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
     prval pf_merged = array_v_nil {a} {p_arr} ()
     prval pf_between = pf_left
     prval pf_cleared = array_v_nil {a?} {p_temp} ()
-    prval () = lemma_mul_commutes {sizeof a, tempsz} ()
     val () = merge_runs (pf_merged, pf_between, pf_right,
                          pf_cleared, pf_temp |
                          ptr2bptr_anchor (bptr2ptr bp_arr),
@@ -1044,7 +1027,7 @@ implement {a}
 merge_right {p_arr} {n} {i} {p_work} {worksz}
             (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params) =
   let
-    stadef pntr (p : addr, i : int) = p + (sizeof a * i)
+    stadef pntr (p : addr, i : int) = p + (i * sizeof a)
 
     (* Split the array into left and right, and copy the right to
        workspace. *)
@@ -1076,7 +1059,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
          been written as a prfn. *)
       let
         (* Any remaining left entries already are in place. *)
-        prval () = lemma_mul_commutes {sizeof a, i_lft} ()
         prval () = pf_rgt := array_v_unnil pf_rgt
         prval () = pf_between := array_v_unnil pf_between
         prval () = pf_merged := array_v_unsplit (pf_lft,
@@ -1100,7 +1082,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                bp_rgt     : bptr (a, p_temp, i_rgt))
         :<!wrt> void =
       let                      (* Copy any remaining right entries. *)
-        prval () = lemma_mul_commutes {sizeof a, i_rgt} ()
         prval () = pf_lft := array_v_unnil pf_lft
         val () = copy<a> (pf_between, pf_rgt |
                           ptr2bptr_anchor (bptr2ptr bp_arr),
@@ -1139,20 +1120,20 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
         :<!wrt> void =
       if bp_rgt = bp_temp then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                     {sizeof a, i_merged} ()
-          prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                     {sizeof a, 0} ()
+          prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                     {i_merged, sizeof a} ()
+          prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                     {0, sizeof a} ()
         in
           right_is_done {i_lft}
                         (pf_lft, pf_between, pf_merged, pf_rgt | )
         end
       else if bp_lft = bp_arr then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                     {sizeof a, i_merged} ()
-          prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                     {sizeof a, 0} ()
+          prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                     {i_merged, sizeof a} ()
+          prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                     {0, sizeof a} ()
         in
           left_is_done {i_rgt}
                        (pf_lft, pf_between, pf_merged,
@@ -1161,9 +1142,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
         end
       else
         let
-          prval () = lemma_mul_commutes {sizeof a, i_lft - 1} ()
-          prval () = lemma_mul_commutes {sizeof a, i_rgt - 1} ()
-          prval () = lemma_mul_commutes {sizeof a, i_merged - 1} ()
           prval @(pf_between1, pf_taken) = array_v_unextend pf_between
           prval @(pf_lft1, pf_L) = array_v_unextend pf_lft
           prval @(pf_rgt1, pf_R) = array_v_unextend pf_rgt
@@ -1241,20 +1219,20 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
         :<!wrt> void =
       if bp_rgt = bp_temp then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                     {sizeof a, i_merged} ()
-          prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                     {sizeof a, 0} ()
+          prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                     {i_merged, sizeof a} ()
+          prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                     {0, sizeof a} ()
         in
           right_is_done {i_lft}
                         (pf_lft, pf_between, pf_merged, pf_rgt | )
         end
       else if bp_lft = bp_arr then
         let
-          prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                     {sizeof a, i_merged} ()
-          prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                     {sizeof a, 0} ()
+          prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                     {i_merged, sizeof a} ()
+          prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                     {0, sizeof a} ()
         in
           left_is_done {i_rgt}
                        (pf_lft, pf_between, pf_merged,
@@ -1264,10 +1242,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
       else
         let
           prval () = prop_verify {i_lft < n} ()
-
-          prval () = lemma_mul_commutes {sizeof a, i_lft - 1} ()
-          and () = lemma_mul_commutes {sizeof a, i_rgt - 1} ()
-          and () = lemma_mul_commutes {sizeof a, i_merged - 1} ()
 
           (* Find a position within the right side data. *)
           val [count_rgt0 : int] bp =
@@ -1304,15 +1278,13 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
           prval () = pf_cleared :=
             array_v_unsplit (pf_rgt2, pf_cleared)
           prval () = pf_rgt := pf_rgt1
-
-          prval () = lemma_mul_commutes {sizeof a, count_rgt} ()
         in
           if bp_rgt = bp_temp then
             let
-              prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                         {sizeof a, i_merged} ()
-              prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                         {sizeof a, 0} ()
+              prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                         {i_merged, sizeof a} ()
+              prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                         {0, sizeof a} ()
             in
               if ((succ (bp_lft - bp_arr))
                       >= (params.gallop_stop_threshold))
@@ -1346,10 +1318,10 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
             in
               if bp_lft = bp_arr then
                 let
-                  prval () = lemma_mul_isfun {sizeof a, i_rgt}
-                                             {sizeof a, i_merged} ()
-                  prval () = lemma_mul_isfun {sizeof a, i_lft}
-                                             {sizeof a, 0} ()
+                  prval () = lemma_mul_isfun {i_rgt, sizeof a}
+                                             {i_merged, sizeof a} ()
+                  prval () = lemma_mul_isfun {i_lft, sizeof a}
+                                             {0, sizeof a} ()
                 in
                   if count_rgt >= (params.gallop_stop_threshold) then
                     lower_gallop_thresholds params
@@ -1376,9 +1348,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                   (* This is how much to copy. *)
                   val count_lft : size_t count_lft = bp_lft - bp
 
-                  prval () =
-                    lemma_mul_commutes {sizeof a, count_lft} ()
-
                   (* Copy the data. *)
                   prval @(pf_lft1, pf_lft2) =
                     array_v_split {a} {p_arr} {i_lft}
@@ -1400,13 +1369,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                     array_v_unsplit (pf_between, pf_merged)
                   and () = pf_between := pf_lft2
                   and () = pf_lft := pf_lft1
-
-                  prval () =
-                    lemma_mul_commutes {sizeof a, i_lft - 1} ()
-                  and () =
-                    lemma_mul_commutes {sizeof a, i_rgt - 1} ()
-                  and () =
-                    lemma_mul_commutes {sizeof a, i_merged - 1} ()
 
                   (* Copy the right side element whose position has
                      been found. *)
@@ -1455,7 +1417,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
     prval pf_merged = array_v_nil {a} {pntr (p_arr, n)} ()
     prval pf_between = pf_right
     prval pf_cleared = array_v_nil {a?!} {pntr (p_temp, tempsz)} ()
-    prval () = lemma_mul_commutes {sizeof a, i} ()
     val () = merge_runs (pf_left, pf_between, pf_merged,
                          pf_temp, pf_cleared |
                          ptr2bptr_anchor (bptr2ptr bp_arr)

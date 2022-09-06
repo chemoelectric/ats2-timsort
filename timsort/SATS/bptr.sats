@@ -304,8 +304,8 @@ move_left_bptr_bptr_size :
   {i   : nat}
   {n   : int}
   (!array_v (a?, dst, i) >> array_v (a, dst, n),
-   !array_v (a, dst + (sizeof a * i), n)
-      >> array_v (a?!, dst + (sizeof a * n), i) |
+   !array_v (a, dst + (i * sizeof a), n)
+      >> array_v (a?!, dst + (n * sizeof a), i) |
    bptr_anchor (a?, dst),
    bptr (a, dst, i),
    size_t n) -< !wrt >
@@ -318,8 +318,8 @@ move_left_bptr_bptr_bptr :
   {i   : nat}
   {n   : nat}
   (!array_v (a?, dst, i) >> array_v (a, dst, n),
-   !array_v (a, dst + (sizeof a * i), n)
-      >> array_v (a?!, dst + (sizeof a * n), i) |
+   !array_v (a, dst + (i * sizeof a), n)
+      >> array_v (a?!, dst + (n * sizeof a), i) |
    bptr_anchor (a?, dst),
    bptr (a, dst, i),
    bptr (a, dst, i + n)) -< !wrt >
@@ -331,8 +331,8 @@ move_right_bptr_bptr_size :
   {src : addr}
   {i   : nat}
   {n   : int}
-  (!array_v (a?, src + (sizeof a * n), i)
-      >> array_v (a, src + (sizeof a * i), n),
+  (!array_v (a?, src + (n * sizeof a), i)
+      >> array_v (a, src + (i * sizeof a), n),
    !array_v (a, src, n) >> array_v (a?!, src, i) |
    bptr (a?, src, i),
    bptr_anchor (a, src),
@@ -345,8 +345,8 @@ move_right_bptr_bptr_bptr :
   {src : addr}
   {i   : nat}
   {n   : nat}
-  (!array_v (a?, src + (sizeof a * n), i)
-      >> array_v (a, src + (sizeof a * i), n),
+  (!array_v (a?, src + (n * sizeof a), i)
+      >> array_v (a, src + (i * sizeof a), n),
    !array_v (a, src, n) >> array_v (a?!, src, i) |
    bptr (a?, src, i),
    bptr_anchor (a, src),

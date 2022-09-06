@@ -469,8 +469,8 @@ move_left_bptr_bptr_size {dst} {i} {n}
                                  {array_v (a?, dst, i)}
                                  pf_dst
     prval () =
-      $UN.castview2void {array_v (a?!, dst + (sizeof a * n), i)}
-                        {array_v (a, dst + (sizeof a * i), n)}
+      $UN.castview2void {array_v (a?!, dst + (n * sizeof a), i)}
+                        {array_v (a, dst + (i * sizeof a), n)}
                         pf_src
   in
   end
@@ -503,8 +503,8 @@ move_right_bptr_bptr_size {src} {i} {n}
                       sizeof<a> * n)
 
     prval () =
-      $UN.castview2void {array_v (a, src + (sizeof a * i), n)}
-                        {array_v (a?, src + (sizeof a * n), i)}
+      $UN.castview2void {array_v (a, src + (i * sizeof a), n)}
+                        {array_v (a?, src + (n * sizeof a), i)}
                         pf_dst
     prval () = $UN.castview2void {array_v (a?!, src, i)}
                                  {array_v (a, src, n)}
