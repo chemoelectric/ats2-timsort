@@ -1467,6 +1467,78 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
   in
   end
 
+extern fn {a : vt@ype}
+merge_adjacent_runs :
+  {p_arr  : addr}
+  {n      : int}
+  {i      : nat | 1 <= i; i <= n - 1}
+  {p_work : addr}
+  {worksz : int | min (i, n - i) <= worksz}
+  (!array_v (a, p_arr, n),
+   !array_v (a?, p_work, worksz) |
+   bptr_anchor (a, p_arr),
+   bptr (a, p_arr, i),
+   bptr (a, p_arr, n),
+   bptr_anchor (a?, p_work),
+   &merge_params_vt >> _) -< !wrt >
+    void
+
+implement {a}
+merge_adjacent_runs {p_arr} {n} {i} {p_work} {worksz}
+                    (pf_arr, pf_work |
+                     bp_arr, bp_i, bp_n, bp_work, params) =
+  let
+    (* Find any prefix that already is in place. *)
+    prval @(pf_lft, pf_rgt) =
+      array_v_split {a} {p_arr} {n} {i} pf_arr
+    val [n_pfx : int] bp_past_prefix =
+      find_1st_position_past_lte_x
+        (pf_lft, pf_rgt | bp_arr, bp_i, i2sz 0, bptr_reanchor bp_i)
+    prval () = pf_arr := array_v_unsplit (pf_lft, pf_rgt)
+  in
+    if bp_past_prefix = bp_i then
+      ()                        (* The array is already sorted. *)
+    else
+      let
+        (* Find any suffix that already is in place. *)
+        prval @(pf_lft, pf_rgt) =
+          array_v_split {a} {p_arr} {n} {i} pf_arr
+        val bp_i0 = bptr_reanchor bp_i
+        val bp_n0 = bp_i0 + (bp_n - bp_i)
+        val [n_sfx0 : int] bp_at_suffix =
+          find_1st_position_past_lt_x
+            (pf_rgt, pf_lft | bp_i0, bp_n0, pred (bp_n0 - bp_i0),
+                              pred bp_i)
+        stadef n_sfx = n - i - n_sfx0
+        prval () = pf_arr := array_v_unsplit (pf_lft, pf_rgt)
+
+        prval @(pf_prefix, pf_arr1) =
+          array_v_split {a} {p_arr} {n} {n_pfx} pf_arr
+        prval @(pf_middle, pf_suffix) =
+          array_v_split {a} {p_arr + (n_pfx * sizeof a)}
+                        {n - n_pfx} {n - n_pfx - n_sfx}
+                        pf_arr1
+
+        val bp0 = bptr_reanchor bp_past_prefix
+        val bp1 = bp0 + (bp_i - bp_past_prefix)
+        val bp2 = bp1 + (bp_at_suffix - bp_i0)
+
+        val () =
+          begin
+            if bp1 - bp0 <= bp2 - bp1 then
+              merge_left (pf_middle, pf_work |
+                          bp0, bp1, bp2, bp_work, params)
+            else
+              merge_right (pf_middle, pf_work |
+                           bp0, bp1, bp2, bp_work, params)
+          end
+
+        prval () = pf_arr1 := array_v_unsplit (pf_middle, pf_suffix)
+        prval () = pf_arr := array_v_unsplit (pf_prefix, pf_arr1)
+      in
+      end
+  end
+
 (*------------------------------------------------------------------*)
 
 fn {a : vt@ype}

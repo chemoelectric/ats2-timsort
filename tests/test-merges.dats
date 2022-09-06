@@ -259,10 +259,92 @@ test_merge_right_with_primes () : void =
   in
   end
 
+fn
+test_an_example_pair
+          (lst_L : List1 entry_t,
+           lst_R : List1 entry_t)
+    : void =
+  let
+    val lst = lst_L + lst_R
+
+    val n_L = length lst_L
+    and n_R = length lst_R
+    val np = n_L + n_R
+    val nq = min (n_L, n_R)
+
+    val expected =
+      list_vt2t (list_mergesort<entry_t> lst)
+
+    val @(pf, pfgc | p) = array_ptr_alloc<entry_t> (i2sz np)
+    and @(qf, qfgc | q) = array_ptr_alloc<entry_t> (i2sz nq)
+
+    val () = array_initize_list (!p, np, lst)
+
+    val bp_p = ptr2bptr_anchor p
+    and bp_q = ptr2bptr_anchor q
+
+    var params : merge_params_vt
+    val () = initialize_gallop_thresholds params
+    val () =
+      merge_adjacent_runs<entry_t>
+        (pf, qf | bp_p, bp_p + n_L, bp_p + np, bp_q, params)
+
+    val gotten = list_vt2t (array2list (!p, i2sz np))
+  in
+    assertloc (gotten = expected);
+    array_ptr_free (pf, pfgc | p);
+    array_ptr_free (qf, qfgc | q)
+  end
+
+fn
+test_merge_adjacent_runs () : void =
+  let
+    macdef x (k, v) = @{key = ,(k), value = ,(v)}
+  in
+    test_an_example_pair ($list (x (1, 1), x (2, 2), x (4, 4),
+                                 x (5, 5), x (6, 6), x (7, 7),
+                                 x (9, 9)),
+                          $list (x (10, 10), x (11, 11),
+                                 x (12, 12)));
+    test_an_example_pair ($list (x (1, 1), x (2, 2), x (2, 3),
+                                 x (4, 4), x (5, 5), x (6, 6),
+                                 x (9, 9)),
+                          $list (x (3, 3), x (8, 8), x (10, 10),
+                                 x (11, 11)));
+    test_an_example_pair ($list (x (1, 1), x (3, 2), x (3, 3),
+                                 x (4, 4), x (5, 5), x (6, 6),
+                                 x (9, 9)),
+                          $list (x (3, 3), x (8, 8), x (9, 9),
+                                 x (9, 10), x (10, 10), x (11, 11)));
+    test_an_example_pair ($list (x (1, 1), x (3, 4), x (3, 2),
+                                 x (4, 4), x (5, 5), x (6, 6),
+                                 x (9, 9)),
+                          $list (x (3, 3), x (8, 8), x (9, 8),
+                                 x (9, 30), x (9, 10), x (10, 10),
+                                 x (11, 11)));
+    test_an_example_pair ($list (x (1, 1), x (3, 4), x (3, 2),
+                                 x (4, 4), x (5, 5), x (6, 6),
+                                 x (9, 9)),
+                          $list (x (8, 8), x (9, 8),
+                                 x (9, 30), x (9, 10), x (10, 10),
+                                 x (11, 11)));
+    test_an_example_pair ($list (x (1, 1), x (3, 4), x (3, 2),
+                                 x (4, 4), x (5, 5), x (6, 6)),
+                          $list (x (3, 3), x (8, 8), x (9, 8),
+                                 x (9, 30), x (9, 10), x (10, 10),
+                                 x (11, 11)));
+    test_an_example_pair ($list (x (1, 1), x (3, 4), x (3, 2),
+                                 x (4, 4), x (5, 5), x (6, 6)),
+                          $list (x (8, 8), x (9, 8),
+                                 x (9, 30), x (9, 10), x (10, 10),
+                                 x (11, 11)));
+  end
+
 implement
 main () =
   begin
     test_merge_left_with_primes ();
     test_merge_right_with_primes ();
+    test_merge_adjacent_runs ();
     0
   end
