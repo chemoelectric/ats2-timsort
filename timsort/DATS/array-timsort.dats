@@ -720,7 +720,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
                                  bp_between, bp_rgt, bp_lft,
-                                 count_lft, count_rgt, threshold)
+                                 threshold)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
@@ -747,7 +747,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
                                  bp_between, bp_rgt, bp_lft,
-                                 count_lft, count_rgt, threshold)
+                                 threshold)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
@@ -775,8 +775,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_between : bptr (a?, p_arr, i_between),
                bp_rgt     : bptr (a, p_arr, i_rgt),
                bp_lft     : bptr (a, p_temp, i_lft),
-               count_lft0 : Size_t,
-               count_rgt0 : Size_t,
                threshold  : &Size_t >> _)
         :<!wrt> void =
       if bp_lft = bp_tempsz then
@@ -821,9 +819,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
           (* This is how much to copy. *)
           val count_lft : size_t count_lft = bp - bp_lft0
 
-          (* This is the total run length. *)
-          val total_lft = count_lft0 + count_lft
-
           (* Copy the data. *)
           prval @(pf_between1, pf_between2) =
             array_v_split {a?} {pntr (p_arr, i_between)}
@@ -857,7 +852,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               prval () = lemma_mul_isfun {sizeof a, i_lft}
                                          {sizeof a, tempsz} ()
             in
-              if (total_lft >= threshold)
+              if (count_lft >= threshold)
                     + (bp_n - bp_rgt >= threshold) then
                 lower_gallop_threshold threshold;
 
@@ -889,7 +884,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   prval () = lemma_mul_isfun {sizeof a, i_rgt}
                                              {sizeof a, n} ()
                 in
-                  if total_lft >= threshold then
+                  if count_lft >= threshold then
                     lower_gallop_threshold threshold;
 
                   right_is_done {i_between} {i_lft}
@@ -913,15 +908,6 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   (* This is how much to copy. *)
                   val count_rgt : size_t count_rgt =
                     bp - bptr_reanchor bp_rgt0
-
-                  (* This is the run length. *)
-                  val total_rgt =
-                    begin
-                      if total_lft = i2sz 0 then
-                        succ (count_rgt0 + count_rgt)
-                      else
-                        count_rgt
-                    end : Size_t
 
                   (* Copy the data. *)
                   prval @(pf_rgt1, pf_rgt2) =
@@ -971,8 +957,8 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   val bp_between = succ bp_between
                   and bp_lft = succ bp_lft
                 in
-                  if (total_lft >= threshold)
-                        + (total_rgt >= threshold) then
+                  if (count_lft >= threshold)
+                        + (count_rgt >= threshold) then
                     begin
                       (* Lower the gallop threshold and continue
                          galloping. *)
@@ -980,7 +966,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                       galloping_merge (pf_merged, pf_between, pf_rgt,
                                        pf_cleared, pf_lft |
                                        bp_between, bp_rgt, bp_lft,
-                                       i2sz 1, i2sz 0, threshold)
+                                       threshold)
                     end
                   else
                     begin
@@ -1174,7 +1160,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                 galloping_merge (pf_lft, pf_between, pf_merged,
                                  pf_rgt, pf_cleared |
                                  bp_merged, bp_lft, bp_rgt,
-                                 count_lft, count_rgt, threshold)
+                                 threshold)
               else
                 merge_runs (pf_lft, pf_between, pf_merged,
                             pf_rgt, pf_cleared |
@@ -1199,7 +1185,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                 galloping_merge (pf_lft, pf_between, pf_merged,
                                  pf_rgt, pf_cleared |
                                  bp_merged, bp_lft, bp_rgt,
-                                 count_lft, count_rgt, threshold)
+                                 threshold)
               else
                 merge_runs (pf_lft, pf_between, pf_merged,
                             pf_rgt, pf_cleared |
@@ -1226,8 +1212,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                bp_merged  : bptr (a?, p_arr, i_merged),
                bp_lft     : bptr (a, p_arr, i_lft),
                bp_rgt     : bptr (a, p_temp, i_rgt),
-               count_lft0 : Size_t,
-               count_rgt0 : Size_t,
                threshold  : &Size_t >> _)
         :<!wrt> void =
       if bp_rgt = bp_temp then
@@ -1273,9 +1257,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
           (* This is how much to copy. *)
           val count_rgt : size_t count_rgt = bp_rgt - bp
 
-          (* This is the total run length. *)
-          val total_rgt = count_rgt0 + count_rgt
-
           (* Copy the data. *)
           prval @(pf_between1, pf_between2) =
             array_v_split {a?} {pntr (p_arr, i_lft)}
@@ -1309,7 +1290,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                                          {sizeof a, 0} ()
             in
               if (bp_lft - bp_arr >= threshold)
-                    + (total_rgt >= threshold) then
+                    + (count_rgt >= threshold) then
                 lower_gallop_threshold threshold;
 
               right_is_done {i_lft}
@@ -1341,7 +1322,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                   prval () = lemma_mul_isfun {sizeof a, i_lft}
                                              {sizeof a, 0} ()
                 in
-                  if total_rgt >= threshold then
+                  if count_rgt >= threshold then
                     lower_gallop_threshold threshold;
 
                   left_is_done {i_rgt}
@@ -1366,15 +1347,6 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
 
                   prval () =
                     lemma_mul_commutes {sizeof a, count_lft} ()
-
-                  (* This is the run length. *)
-                  val total_lft =
-                    begin
-                      if total_rgt = i2sz 0 then
-                        succ (count_lft0 + count_lft)
-                      else
-                        count_lft
-                    end : Size_t
 
                   (* Copy the data. *)
                   prval @(pf_lft1, pf_lft2) =
@@ -1424,8 +1396,8 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                     array_v_cons (pf_R, pf_cleared)
                   and () = pf_rgt := pf_rgt1
                 in
-                  if (total_lft >= threshold)
-                        + (total_rgt >= threshold) then
+                  if (count_lft >= threshold)
+                        + (count_rgt >= threshold) then
                     begin
                       (* Lower the gallop threshold and continue
                          galloping. *)
@@ -1433,7 +1405,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                       galloping_merge (pf_lft, pf_between, pf_merged,
                                        pf_rgt, pf_cleared |
                                        bp_merged, bp_lft, bp_rgt,
-                                       i2sz 0, i2sz 1, threshold)
+                                       threshold)
                     end
                   else
                     begin
