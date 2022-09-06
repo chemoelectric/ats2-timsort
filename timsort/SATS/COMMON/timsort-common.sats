@@ -171,14 +171,31 @@ g1uint_clz_size :
     int i = "mac#%"
 
 (*------------------------------------------------------------------*)
+(* Node power for the powersort merge strategy.                     *)
+
+fn
+nodepower {n      : int}
+          {i      : nat | i <= n - 2}
+          {n1, n2 : pos | n1 + n2 == n - i}
+          (n      : size_t n,
+           i      : size_t i,
+           n1     : size_t n1,
+           n2     : size_t n2)
+    :<> [power : int]
+        int power = "mac#%"
+
+(*------------------------------------------------------------------*)
 (* A stack of subarray boundaries.                                  *)
 
-typedef stk_entry_t (p : addr, n : int) =
-  [p == null || 0 < n] @(ptr p, size_t n)
-typedef stk_entry_t (n : int) =
-  [p : addr] stk_entry_t (p, n)
+typedef stk_entry_t (index : int, size : int, power : int) =
+  @{
+    index = size_t index,      (* The subarray begins at this index.*)
+    size = size_t size,        (* The subarray has this length. *)
+    power = int power   (* The node power, if it has been computed. *)
+  }
 typedef stk_entry_t =
-  [n : int] stk_entry_t n
+  [index, size, power : int]
+  stk_entry_t (index, size, power)
 
 vtypedef stk_vt (p        : addr,
                  depth    : int,
@@ -199,14 +216,18 @@ stk_vt_make :
 
 fn {a : vt@ype}
 stk_vt_push :
-  {p_stk    : addr}
-  {stk_max  : int}
-  {depth    : nat | depth < stk_max}
-  {p_entry  : addr}
-  {size     : pos}
-  (!array_v (a, p_entry, size) |
-   ptr p_entry,
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : nat | depth < stk_max}
+  {p_arr   : addr}
+  {index   : nat}
+  {size    : pos}
+  {power   : int}
+  (!array_v (a, p_arr + (index * sizeof a), size) |
+   ptr p_arr,
+   size_t index,
    size_t size,
+   int power,
    &stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth + 1, stk_max)) -< !wrt >
     void
@@ -216,12 +237,10 @@ stk_vt_pop :
   {p_stk   : addr}
   {stk_max : int}
   {depth   : pos | depth < stk_max}
-  {p_entry : addr}
   (&stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
-    [size : pos]
-    @(P2tr1 (array (a, size)),
-      size_t size)
+    [index, size, power : int]
+    stk_entry_t (index, size, power)
 
 (*------------------------------------------------------------------*)
 

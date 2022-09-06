@@ -1552,7 +1552,12 @@ timsort_providing_stk
           ||| (iseqz (n >> STK_MAX_THRESHOLD)) then
       let                       (* Put stk on the system stack. *)
         var stk_storage =
-          @[stk_entry_t][STK_MAX_THRESHOLD] (@(the_null_ptr, i2sz 0))
+          @[stk_entry_t][STK_MAX_THRESHOLD]
+            (@{
+               index = i2sz 0,
+               size = i2sz 0,
+               power = 0
+             })
         var stk = stk_vt_make (view@ stk_storage |
                                addr@ stk_storage,
                                i2sz STK_MAX_THRESHOLD)
@@ -1565,9 +1570,15 @@ timsort_providing_stk
         val () = $effmask_exn assertloc (i2sz 1 <= sizeof<size_t>)
         val @(pf_stk_storage, pfgc_stk_storage | p_stk_storage) =
           array_ptr_alloc<stk_entry_t> (sizeof<size_t>)
+        val entry =
+          @{
+            index = i2sz 0,
+            size = i2sz 0,
+            power = 0
+          }
         val () =
           array_initize_elt<stk_entry_t>
-            (!p_stk_storage, sizeof<size_t>, @(the_null_ptr, i2sz 0))
+            (!p_stk_storage, sizeof<size_t>, entry)
         var stk = stk_vt_make (pf_stk_storage |
                                p_stk_storage, sizeof<size_t>)
         val () = sort_main (pf_arr, pf_work | p_arr, n, p_work, stk)
