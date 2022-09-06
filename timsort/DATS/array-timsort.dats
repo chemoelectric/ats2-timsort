@@ -535,23 +535,48 @@ find_1st_position_past_lte_x
 (*------------------------------------------------------------------*)
 (* Merges.                                                          *)
 
-fn {}
-lower_gallop_threshold
-          {threshold : int}
-          (threshold : &size_t threshold
-                          >> size_t (max (1, threshold - 1)))
-    :<!wrt> void =
-  if threshold <= i2sz 1 then
-    threshold := i2sz 1
-  else
-    threshold := pred threshold
+vtypedef merge_params_vt =
+  @{
+    gallop_start_threshold = [t : pos] size_t t,
+    gallop_stop_threshold = [t : pos] size_t t
+  }
 
 fn {}
-raise_gallop_threshold
-          {threshold : int}
-          (threshold : &size_t threshold >> size_t (threshold + 1))
+initialize_gallop_thresholds
+          (params : &merge_params_vt? >> merge_params_vt)
     :<!wrt> void =
-  threshold := succ threshold
+  begin
+    params.gallop_start_threshold := i2sz 7;
+    params.gallop_stop_threshold := i2sz 7
+  end
+
+fn {}
+lower_gallop_thresholds
+          (params : &merge_params_vt)
+    :<!wrt> void =
+  let
+    val start_threshold0 = params.gallop_start_threshold
+    val start_threshold1 = max (i2sz 1, pred start_threshold0)
+    val stop_threshold0 = params.gallop_stop_threshold
+    val stop_threshold1 = max (i2sz 1, pred stop_threshold0)
+  in
+    params.gallop_start_threshold := start_threshold0;
+    params.gallop_stop_threshold := stop_threshold0
+  end
+
+fn {}
+raise_gallop_thresholds
+          (params : &merge_params_vt)
+    :<!wrt> void =
+  let
+    val start_threshold0 = params.gallop_start_threshold
+    val start_threshold1 = succ start_threshold0
+    val stop_threshold0 = params.gallop_stop_threshold
+    val stop_threshold1 = succ stop_threshold0
+  in
+    params.gallop_start_threshold := start_threshold0;
+    params.gallop_stop_threshold := stop_threshold0
+  end
 
 extern fn {a : vt@ype}
 merge_left :
@@ -566,13 +591,12 @@ merge_left :
    bptr (a, p_arr, i),
    bptr (a, p_arr, n),
    bptr_anchor (a?, p_work),
-   &Size_t >> _ (* gallop threshold *)) -< !wrt >
+   &merge_params_vt >> _) -< !wrt >
     void
 
 implement {a}
 merge_left {p_arr} {n} {i} {p_work} {worksz}
-           (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work,
-                              gallop_threshold) =
+           (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params) =
   let
     stadef pntr (p : addr, i : int) = p + (sizeof a * i)
 
@@ -670,7 +694,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_lft     : bptr (a, p_temp, i_lft),
                count_lft  : Size_t,
                count_rgt  : Size_t,
-               threshold  : &Size_t >> _)
+               params     : &merge_params_vt >> _)
         :<!wrt> void =
       if bp_lft = bp_tempsz then
         let
@@ -716,16 +740,15 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               and count_lft = i2sz 0
               and count_rgt = succ count_rgt
             in
-              if count_rgt >= threshold then
+              if count_rgt >= (params.gallop_start_threshold) then
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
-                                 bp_between, bp_rgt, bp_lft,
-                                 threshold)
+                                 bp_between, bp_rgt, bp_lft, params)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
                             bp_between, bp_rgt, bp_lft,
-                            count_lft, count_rgt, threshold)
+                            count_lft, count_rgt, params)
             end
           else
             let                 (* L <= R. Take L. *)
@@ -743,16 +766,15 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               and count_lft = succ count_lft
               and count_rgt = i2sz 0
             in
-              if count_lft >= threshold then
+              if count_lft >= (params.gallop_start_threshold) then
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
-                                 bp_between, bp_rgt, bp_lft,
-                                 threshold)
+                                 bp_between, bp_rgt, bp_lft, params)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
                             bp_between, bp_rgt, bp_lft,
-                            count_lft, count_rgt, threshold)
+                            count_lft, count_rgt, params)
             end
         end
     and
@@ -775,7 +797,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_between : bptr (a?, p_arr, i_between),
                bp_rgt     : bptr (a, p_arr, i_rgt),
                bp_lft     : bptr (a, p_temp, i_lft),
-               threshold  : &Size_t >> _)
+               params     : &merge_params_vt >> _)
         :<!wrt> void =
       if bp_lft = bp_tempsz then
         let
@@ -852,9 +874,12 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               prval () = lemma_mul_isfun {sizeof a, i_lft}
                                          {sizeof a, tempsz} ()
             in
-              if (count_lft >= threshold)
-                    + (bp_n - bp_rgt >= threshold) then
-                lower_gallop_threshold threshold;
+              if (count_lft >= (params.gallop_stop_threshold))
+                    + (succ (bp_n - bp_rgt)
+                          >= (params.gallop_stop_threshold)) then
+                lower_gallop_thresholds params
+              else
+                raise_gallop_thresholds params;
 
               left_is_done {i_rgt}
                            (pf_merged, pf_between, pf_rgt, pf_lft | )
@@ -884,8 +909,10 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   prval () = lemma_mul_isfun {sizeof a, i_rgt}
                                              {sizeof a, n} ()
                 in
-                  if count_lft >= threshold then
-                    lower_gallop_threshold threshold;
+                  if count_lft >= (params.gallop_stop_threshold) then
+                    lower_gallop_thresholds params
+                  else
+                    raise_gallop_thresholds params;
 
                   right_is_done {i_between} {i_lft}
                                 (pf_merged, pf_between, pf_rgt,
@@ -957,25 +984,27 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   val bp_between = succ bp_between
                   and bp_lft = succ bp_lft
                 in
-                  if (count_lft >= threshold)
-                        + (count_rgt >= threshold) then
+                  if (count_lft >= (params.gallop_stop_threshold))
+                        + (count_rgt
+                              >= (params.gallop_stop_threshold)) then
                     begin
-                      (* Lower the gallop threshold and continue
+                      (* Lower the gallop thresholds and continue
                          galloping. *)
-                      lower_gallop_threshold threshold;
+                      lower_gallop_thresholds params;
                       galloping_merge (pf_merged, pf_between, pf_rgt,
                                        pf_cleared, pf_lft |
                                        bp_between, bp_rgt, bp_lft,
-                                       threshold)
+                                       params)
                     end
                   else
                     begin
-                      (* Raise the gallop threshold and stop galloping. *)
-                      raise_gallop_threshold threshold;
+                      (* Raise the gallop thresholds and stop
+                         galloping. *)
+                      raise_gallop_thresholds params;
                       merge_runs (pf_merged, pf_between, pf_rgt,
                                   pf_cleared, pf_lft |
                                   bp_between, bp_rgt, bp_lft,
-                                  i2sz 0, i2sz 0, threshold)
+                                  i2sz 0, i2sz 0, params)
                     end
                 end
             end
@@ -988,8 +1017,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
     val () = merge_runs (pf_merged, pf_between, pf_right,
                          pf_cleared, pf_temp |
                          ptr2bptr_anchor (bptr2ptr bp_arr),
-                         bp_i, bp_temp, i2sz 0, i2sz 0,
-                         gallop_threshold)
+                         bp_i, bp_temp, i2sz 0, i2sz 0, params)
 
     prval () = pf_arr := pf_merged
     prval () = pf_work := array_v_unsplit (pf_cleared, pf_unused)
@@ -1009,13 +1037,12 @@ merge_right :
    bptr (a, p_arr, i),
    bptr (a, p_arr, n),
    bptr_anchor (a?, p_work),
-   &Size_t >> _ (* gallop threshold *)) -< !wrt >
+   &merge_params_vt >> _) -< !wrt >
     void
 
 implement {a}
 merge_right {p_arr} {n} {i} {p_work} {worksz}
-            (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work,
-                               gallop_threshold) =
+            (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params) =
   let
     stadef pntr (p : addr, i : int) = p + (sizeof a * i)
 
@@ -1108,7 +1135,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                bp_rgt     : bptr (a, p_temp, i_rgt),
                count_lft  : Size_t,
                count_rgt  : Size_t,
-               threshold  : &Size_t >> _)
+               params     : &merge_params_vt >> _)
         :<!wrt> void =
       if bp_rgt = bp_temp then
         let
@@ -1156,16 +1183,15 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
               val count_lft = succ count_lft
               and count_rgt = i2sz 0
             in
-              if count_lft >= threshold then
+              if count_lft >= (params.gallop_start_threshold) then
                 galloping_merge (pf_lft, pf_between, pf_merged,
                                  pf_rgt, pf_cleared |
-                                 bp_merged, bp_lft, bp_rgt,
-                                 threshold)
+                                 bp_merged, bp_lft, bp_rgt, params)
               else
                 merge_runs (pf_lft, pf_between, pf_merged,
                             pf_rgt, pf_cleared |
                             bp_merged, bp_lft, bp_rgt,
-                            count_lft, count_rgt, threshold)
+                            count_lft, count_rgt, params)
             end
           else
             let                 (* R >= L. Take R. *)
@@ -1181,16 +1207,15 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
               val count_lft = i2sz 0
               and count_rgt = succ count_rgt
             in
-              if count_rgt >= threshold then
+              if count_rgt >= (params.gallop_start_threshold) then
                 galloping_merge (pf_lft, pf_between, pf_merged,
                                  pf_rgt, pf_cleared |
-                                 bp_merged, bp_lft, bp_rgt,
-                                 threshold)
+                                 bp_merged, bp_lft, bp_rgt, params)
               else
                 merge_runs (pf_lft, pf_between, pf_merged,
                             pf_rgt, pf_cleared |
                             bp_merged, bp_lft, bp_rgt,
-                            count_lft, count_rgt, threshold)
+                            count_lft, count_rgt, params)
             end
         end
     and
@@ -1212,7 +1237,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                bp_merged  : bptr (a?, p_arr, i_merged),
                bp_lft     : bptr (a, p_arr, i_lft),
                bp_rgt     : bptr (a, p_temp, i_rgt),
-               threshold  : &Size_t >> _)
+               params     : &merge_params_vt >> _)
         :<!wrt> void =
       if bp_rgt = bp_temp then
         let
@@ -1289,9 +1314,13 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
               prval () = lemma_mul_isfun {sizeof a, i_rgt}
                                          {sizeof a, 0} ()
             in
-              if (bp_lft - bp_arr >= threshold)
-                    + (count_rgt >= threshold) then
-                lower_gallop_threshold threshold;
+              if ((succ (bp_lft - bp_arr))
+                      >= (params.gallop_stop_threshold))
+                    + (count_rgt
+                          >= (params.gallop_stop_threshold)) then
+                lower_gallop_thresholds params
+              else
+                raise_gallop_thresholds params;
 
               right_is_done {i_lft}
                             (pf_lft, pf_between, pf_merged, pf_rgt | )
@@ -1322,8 +1351,10 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                   prval () = lemma_mul_isfun {sizeof a, i_lft}
                                              {sizeof a, 0} ()
                 in
-                  if count_rgt >= threshold then
-                    lower_gallop_threshold threshold;
+                  if count_rgt >= (params.gallop_stop_threshold) then
+                    lower_gallop_thresholds params
+                  else
+                    raise_gallop_thresholds params;
 
                   left_is_done {i_rgt}
                                (pf_lft, pf_between, pf_merged,
@@ -1396,25 +1427,26 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                     array_v_cons (pf_R, pf_cleared)
                   and () = pf_rgt := pf_rgt1
                 in
-                  if (count_lft >= threshold)
-                        + (count_rgt >= threshold) then
+                  if (count_lft >= (params.gallop_stop_threshold))
+                        + (count_rgt
+                              >= (params.gallop_stop_threshold)) then
                     begin
                       (* Lower the gallop threshold and continue
                          galloping. *)
-                      lower_gallop_threshold threshold;
+                      lower_gallop_thresholds params;
                       galloping_merge (pf_lft, pf_between, pf_merged,
                                        pf_rgt, pf_cleared |
                                        bp_merged, bp_lft, bp_rgt,
-                                       threshold)
+                                       params)
                     end
                   else
                     begin
                       (* Raise the gallop threshold and stop galloping. *)
-                      raise_gallop_threshold threshold;
+                      raise_gallop_thresholds params;
                       merge_runs (pf_lft, pf_between, pf_merged,
                                   pf_rgt, pf_cleared |
                                   bp_merged, bp_lft, bp_rgt,
-                                  i2sz 0, i2sz 0, threshold)
+                                  i2sz 0, i2sz 0, params)
                     end
                 end
             end
@@ -1428,8 +1460,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                          pf_temp, pf_cleared |
                          ptr2bptr_anchor (bptr2ptr bp_arr)
                             + (bp_n - bp_arr),
-                         bp_i, bp_tempsz,
-                         i2sz 0, i2sz 0, gallop_threshold)
+                         bp_i, bp_tempsz, i2sz 0, i2sz 0, params)
 
     prval () = pf_arr := pf_merged
     prval () = pf_work := array_v_unsplit (pf_cleared, pf_unused)

@@ -175,12 +175,12 @@ test_merge_left_with_primes () : void =
     val bp_i = bp_arr + n_left
     and bp_n = bp_arr + n
 
-    var gallop_threshold : Size_t = i2sz 7
+    var params : merge_params_vt
+    val () = initialize_gallop_thresholds params
     val () =
       merge_left<entry_t>
         {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}
-        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work,
-                           gallop_threshold)
+        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params)
 
     val gotten =
       list_vt2t (array_copy_to_list_vt<entry_t> (!p_arr, i2sz n))
@@ -237,12 +237,12 @@ test_merge_right_with_primes () : void =
     val bp_i = bp_arr + n_left
     and bp_n = bp_arr + n
 
-    var gallop_threshold : Size_t = i2sz 7
+    var params : merge_params_vt
+    val () = initialize_gallop_thresholds params
     val () =
       merge_right<entry_t>
         {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}
-        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work,
-                           gallop_threshold)
+        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params)
 
     val gotten =
       list_vt2t (array_copy_to_list_vt<entry_t> (!p_arr, i2sz n))
