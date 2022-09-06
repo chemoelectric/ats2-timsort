@@ -1501,6 +1501,148 @@ merge_adjacent_runs {p_arr} {n} {i} {p_work} {worksz}
   end
 
 (*------------------------------------------------------------------*)
+(* Powersort strategy.                                              *)
+
+extern fn {a : vt@ype}
+include_new_run
+          {p_arr   : addr}
+          {n       : int}
+          {index   : nat}
+          {size    : pos | index + size <= n}
+          {p_work  : addr}
+          {worksz  : int | n <= 2 * worksz}
+          {p_stk   : addr}
+          {stk_max : int}
+          {depth0  : nat | depth0 < stk_max - 1}
+          (pf_arr  : !array_v (a, p_arr, n),
+           pf_work : !array_v (a?, p_work, worksz) |
+           p_arr   : ptr p_arr,
+           n       : size_t n,
+           index   : size_t index,
+           size    : size_t size,
+           p_work  : ptr p_work,
+           params  : &merge_params_vt >> _,
+           stk     : &stk_vt (p_stk, depth0, stk_max)
+                      >> stk_vt (p_stk, depth1, stk_max))
+    :<!wrt> #[depth1 : pos | depth1 <= depth0 + 1]
+            void
+
+#define ARBITRARY_POWER 0
+
+implement {a}
+include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
+                (pf_arr, pf_work | p_arr, n, index, size,
+                                   p_work, params, stk) =
+  if stk_vt_depth stk = 0 then
+    stk_vt_push (index, size, ARBITRARY_POWER, stk)
+  else
+    let
+      val @{
+            index = index0,
+            size = size0,
+            power = _
+          } = stk_vt_peek (stk, 0)
+
+      prval [index0 : int] EQINT () = eqint_make_guint index0
+      prval [size0 : int] EQINT () = eqint_make_guint size0
+
+      prval () = lemma_g1uint_param index0
+      val () = $effmask_exn assertloc (i2sz 0 < size0)
+      val () = $effmask_exn assertloc (index0 + size0 = index)
+      prval () = prop_verify {index0 + size0 + size <= n} ()
+
+      val power = nodepower (n, index0, size0, size)
+
+      fun
+      merge_subarrays
+                {p_stk   : addr}
+                {stk_max : int}
+                {depth1  : pos | depth1 < stk_max - 1}
+                .<depth1>.
+                (pf_arr  : !array_v (a, p_arr, n),
+                 pf_work : !array_v (a?, p_work, worksz) |
+                 params  : &merge_params_vt >> _,
+                 stk     : &stk_vt (p_stk, depth1, stk_max)
+                            >> stk_vt (p_stk, depth2, stk_max))
+          :<!wrt> #[depth2 : pos | depth2 <= depth1]
+                  void =
+        if stk_vt_depth stk = 1 then
+          ()
+        else if ((stk_vt_peek (stk, 1)).power) >= power then
+          ()
+        else
+          let
+            val @{
+                  index = index1,
+                  size = size1,
+                  power = _
+                } = stk_vt_peek (stk, 1)
+
+            prval [index1 : int] EQINT () = eqint_make_guint index1
+            prval [size1 : int] EQINT () = eqint_make_guint size1
+
+            prval () = lemma_g1uint_param index1
+            val () = $effmask_exn assertloc (i2sz 0 < size1)
+            val () = $effmask_exn assertloc (index1 + size1 = index0)
+            prval () =
+              prop_verify {index1 + size1 + size0 + size <= n} ()
+
+            prval @(pf_before, pf_arr1) =
+              array_v_split {a} {p_arr} {n} {index1} pf_arr
+            prval @(pf_middle, pf_after) =
+              array_v_split {a} {p_arr + (index1 * sizeof a)}
+                            {n - index1} {size1 + size0}
+                            pf_arr1
+
+            val bp_arr = ptr2bptr_anchor p_arr
+            and bp_work = ptr2bptr_anchor p_work
+
+            val bp_middle = bptr_reanchor (bp_arr + index1)
+            val bp_middle_i = bp_middle + size1
+            val bp_middle_n = bp_middle_i + size0
+
+            val () =
+              merge_adjacent_runs<a>
+                {p_arr + (index1 * sizeof a)}
+                {size1 + size0} {size1} {p_work} {worksz}
+                (pf_middle, pf_work |
+                 bp_middle, bp_middle_i, bp_middle_n, bp_work, params)
+
+            prval () = pf_arr1 :=
+              array_v_unsplit (pf_middle, pf_after)
+            prval () = pf_arr :=
+              array_v_unsplit (pf_before, pf_arr1)
+          in
+            stk_vt_drop stk;
+            stk_vt_drop stk;
+            stk_vt_push (index1, size1 + size0, power, stk);
+            merge_subarrays (pf_arr, pf_work | params, stk)
+          end
+    in
+      merge_subarrays (pf_arr, pf_work | params, stk);
+      stk_vt_push (index, size, ARBITRARY_POWER, stk)
+    end
+
+extern fn {a : vt@ype}
+merge_remaining_runs
+          {p_arr   : addr}
+          {n       : int}
+          {p_work  : addr}
+          {worksz  : int | n <= 2 * worksz}
+          {p_stk   : addr}
+          {stk_max : int}
+          {depth0  : pos | depth0 < stk_max - 1}
+          (pf_arr  : !array_v (a, p_arr, n),
+           pf_work : !array_v (a?, p_work, worksz) |
+           p_arr   : ptr p_arr,
+           n       : size_t n,
+           p_work  : ptr p_work,
+           params  : &merge_params_vt >> _,
+           stk     : &stk_vt (p_stk, depth0, stk_max)
+                      >> stk_vt (p_stk, 1, stk_max))
+    :<!wrt> void
+
+(*------------------------------------------------------------------*)
 
 fn {a : vt@ype}
 timsort_main

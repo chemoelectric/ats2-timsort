@@ -175,8 +175,8 @@ g1uint_clz_size :
 
 fn
 nodepower {n      : int}
-          {i      : nat | i <= n - 2}
-          {n1, n2 : pos | n1 + n2 == n - i}
+          {i      : nat}
+          {n1, n2 : pos | i + n1 + n2 <= n}
           (n      : size_t n,
            i      : size_t i,
            n1     : size_t n1,
@@ -214,33 +214,59 @@ stk_vt_make :
   (array_v (stk_entry_t, p, stk_max) | ptr p, size_t stk_max) -<>
     stk_vt (p, 0, stk_max)
 
-fn {a : vt@ype}
+fn {}
+stk_vt_depth :
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : nat}
+  (&stk_vt (p_stk, depth, stk_max)) -<> int depth
+
+fn {}
 stk_vt_push :
   {p_stk   : addr}
   {stk_max : int}
   {depth   : nat | depth < stk_max}
-  {p_arr   : addr}
   {index   : nat}
   {size    : pos}
   {power   : int}
-  (!array_v (a, p_arr + (index * sizeof a), size) |
-   ptr p_arr,
-   size_t index,
+  (size_t index,
    size_t size,
    int power,
    &stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth + 1, stk_max)) -< !wrt >
     void
 
-fn {a : vt@ype}
-stk_vt_pop :
+fn {}
+stk_vt_peek :
+  {p_stk     : addr}
+  {stk_max   : int}
+  {depth     : int | depth < stk_max}
+  {entry_num : nat | entry_num < depth}
+  (&stk_vt (p_stk, depth, stk_max),
+   int entry_num) -< !wrt >
+    [index, size, power : int]
+    stk_entry_t (index, size, power)
+
+fn {}
+stk_vt_set_power :
+  {power     : int}
+  {p_stk     : addr}
+  {stk_max   : int}
+  {depth     : int | depth < stk_max}
+  {entry_num : nat | entry_num < depth}
+  (int power,
+   &stk_vt (p_stk, depth, stk_max),
+   int entry_num) -< !wrt >
+    void
+
+fn {}
+stk_vt_drop :
   {p_stk   : addr}
   {stk_max : int}
   {depth   : pos | depth < stk_max}
   (&stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
-    [index, size, power : int]
-    stk_entry_t (index, size, power)
+    void
 
 (*------------------------------------------------------------------*)
 

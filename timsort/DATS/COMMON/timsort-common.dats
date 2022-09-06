@@ -124,8 +124,12 @@ stk_vt_make (pf | p, stk_max) =
     stk_max = stk_max
   }
 
-implement {a}
-stk_vt_push (pf_entry | p_addr, index, size, power, stk) =
+implement {}
+stk_vt_depth stk =
+  stk.depth
+
+implement {}
+stk_vt_push (index, size, power, stk) =
   let
     macdef storage = !(stk.p)
   in
@@ -138,15 +142,35 @@ stk_vt_push (pf_entry | p_addr, index, size, power, stk) =
       }
   end
 
-implement {a}
-stk_vt_pop stk =
+implement {}
+stk_vt_peek (stk, entry_num) =
   let
     macdef storage = !(stk.p)
-    val entry = storage[stk.stk_max - stk.depth]
-    val () = stk.depth := pred (stk.depth)
   in
-    entry
+    storage[stk.stk_max - (stk.depth - entry_num)]
   end
+
+implement {}
+stk_vt_set_power (power, stk, entry_num) =
+  let
+    macdef storage = !(stk.p)
+    val @{
+          index = index,
+          size = size,
+          power = _
+        } = storage[stk.stk_max - (stk.depth - entry_num)]
+  in
+    storage[stk.stk_max - (stk.depth - entry_num)] :=
+      @{
+        index = index,
+        size = size,
+        power = power
+      }
+  end
+
+implement {}
+stk_vt_drop stk =
+  stk.depth := pred (stk.depth)
 
 (*------------------------------------------------------------------*)
 
