@@ -975,7 +975,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                       merge_runs (pf_merged, pf_between, pf_rgt,
                                   pf_cleared, pf_lft |
                                   bp_between, bp_rgt, bp_lft,
-                                  i2sz 1, i2sz 0, threshold)
+                                  i2sz 0, i2sz 0, threshold)
                     end
                 end
             end
@@ -1414,7 +1414,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                       merge_runs (pf_lft, pf_between, pf_merged,
                                   pf_rgt, pf_cleared |
                                   bp_merged, bp_lft, bp_rgt,
-                                  i2sz 0, i2sz 1, threshold)
+                                  i2sz 0, i2sz 0, threshold)
                     end
                 end
             end
