@@ -1513,7 +1513,7 @@ include_new_run
           {worksz  : int | n <= 2 * worksz}
           {p_stk   : addr}
           {stk_max : int}
-          {depth0  : nat | depth0 < stk_max - 1}
+          {depth0  : nat | depth0 <= stk_max - 1}
           (pf_arr  : !array_v (a, p_arr, n),
            pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
@@ -1557,7 +1557,7 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
       merge_subarrays
                 {p_stk   : addr}
                 {stk_max : int}
-                {depth1  : pos | depth1 < stk_max - 1}
+                {depth1  : pos | depth1 <= stk_max - 1}
                 .<depth1>.
                 (pf_arr  : !array_v (a, p_arr, n),
                  pf_work : !array_v (a?, p_work, worksz) |
@@ -1631,7 +1631,7 @@ merge_remaining_runs
           {worksz  : int | n <= 2 * worksz}
           {p_stk   : addr}
           {stk_max : int}
-          {depth0  : pos | depth0 < stk_max - 1}
+          {depth0  : pos | depth0 < stk_max}
           (pf_arr  : !array_v (a, p_arr, n),
            pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
@@ -1639,8 +1639,190 @@ merge_remaining_runs
            p_work  : ptr p_work,
            params  : &merge_params_vt >> _,
            stk     : &stk_vt (p_stk, depth0, stk_max)
-                      >> stk_vt (p_stk, 1, stk_max))
+                      >> stk_vt (p_stk, 0, stk_max))
     :<!wrt> void
+
+implement {a}
+merge_remaining_runs {p_arr} {n} {p_work} {worksz}
+                     (pf_arr, pf_work | p_arr, n, p_work,
+                                        params, stk) =
+  let
+    fn
+    merge_1_with_0
+              {p_stk   : addr}
+              {stk_max : int}
+              {depth   : int | 2 <= depth; depth <= stk_max}
+              (pf_arr  : !array_v (a, p_arr, n),
+               pf_work : !array_v (a?, p_work, worksz) |
+               params  : &merge_params_vt >> _,
+               stk     : &stk_vt (p_stk, depth, stk_max)
+                          >> stk_vt (p_stk, depth - 1, stk_max))
+        :<!wrt> void =
+      let
+        val @{
+              index = index1,
+              size = size1,
+              power = _
+            } = stk_vt_peek (stk, 1)
+        and @{
+              index = index0,
+              size = size0,
+              power = _
+            } = stk_vt_peek (stk, 0)
+
+        prval [index1 : int] EQINT () = eqint_make_guint index1
+        prval [size1 : int] EQINT () = eqint_make_guint size1
+        prval [index0 : int] EQINT () = eqint_make_guint index0
+        prval [size0 : int] EQINT () = eqint_make_guint size0
+
+        prval () = lemma_g1uint_param index1
+        and () = lemma_g1uint_param index0
+        val () = $effmask_exn
+          assertloc ((i2sz 0 < size1) * (i2sz 0 < size0))
+        val () = $effmask_exn assertloc (index1 + size1 = index0)
+        val () = $effmask_exn assertloc (index0 + size0 = n)
+
+        prval @(pf_before, pf_arr1) =
+          array_v_split {a} {p_arr} {n} {index1} pf_arr
+        prval @(pf_middle, pf_after) =
+          array_v_split {a} {p_arr + (index1 * sizeof a)}
+                        {n - index1} {size1 + size0}
+                        pf_arr1
+
+        val bp_arr = ptr2bptr_anchor p_arr
+        and bp_work = ptr2bptr_anchor p_work
+
+        val bp_middle = bptr_reanchor (bp_arr + index1)
+        val bp_middle_i = bp_middle + size1
+        val bp_middle_n = bp_middle_i + size0
+
+        val () =
+          merge_adjacent_runs<a>
+            {p_arr + (index1 * sizeof a)}
+            {size1 + size0} {size1} {p_work} {worksz}
+            (pf_middle, pf_work |
+             bp_middle, bp_middle_i, bp_middle_n, bp_work, params)
+
+        prval () = pf_arr1 :=
+          array_v_unsplit (pf_middle, pf_after)
+        prval () = pf_arr :=
+          array_v_unsplit (pf_before, pf_arr1)
+      in
+        stk_vt_drop stk;
+        stk_vt_drop stk;
+        stk_vt_push (index1, size1 + size0, ARBITRARY_POWER, stk)
+      end
+
+    fn
+    merge_2_with_1
+              {p_stk   : addr}
+              {stk_max : int}
+              {depth   : int | 3 <= depth; depth <= stk_max}
+              (pf_arr  : !array_v (a, p_arr, n),
+               pf_work : !array_v (a?, p_work, worksz) |
+               params  : &merge_params_vt >> _,
+               stk     : &stk_vt (p_stk, depth, stk_max)
+                          >> stk_vt (p_stk, depth - 1, stk_max))
+        :<!wrt> void =
+      let
+        val @{
+              index = index2,
+              size = size2,
+              power = _
+            } = stk_vt_peek (stk, 2)
+        and @{
+              index = index1,
+              size = size1,
+              power = _
+            } = stk_vt_peek (stk, 1)
+        and @{
+              index = index0,
+              size = size0,
+              power = _
+            } = stk_vt_peek (stk, 0)
+
+        prval [index2 : int] EQINT () = eqint_make_guint index2
+        prval [size2 : int] EQINT () = eqint_make_guint size2
+        prval [index1 : int] EQINT () = eqint_make_guint index1
+        prval [size1 : int] EQINT () = eqint_make_guint size1
+        prval [index0 : int] EQINT () = eqint_make_guint index0
+        prval [size0 : int] EQINT () = eqint_make_guint size0
+
+        prval () = lemma_g1uint_param index2
+        and () = lemma_g1uint_param index1
+        and () = lemma_g1uint_param index0
+        val () = $effmask_exn
+          assertloc ((i2sz 0 < size2) * (i2sz 0 < size1)
+                        * (i2sz 0 < size0))
+        val () = $effmask_exn assertloc (index2 + size2 = index1)
+        val () = $effmask_exn assertloc (index1 + size1 = index0)
+        val () = $effmask_exn assertloc (index0 + size0 = n)
+
+        prval @(pf_before, pf_arr1) =
+          array_v_split {a} {p_arr} {n} {index2} pf_arr
+        prval @(pf_middle, pf_after) =
+          array_v_split {a} {p_arr + (index2 * sizeof a)}
+                        {n - index2} {size2 + size1}
+                        pf_arr1
+
+        val bp_arr = ptr2bptr_anchor p_arr
+        and bp_work = ptr2bptr_anchor p_work
+
+        val bp_middle = bptr_reanchor (bp_arr + index2)
+        val bp_middle_i = bp_middle + size2
+        val bp_middle_n = bp_middle_i + size1
+
+        val () =
+          merge_adjacent_runs<a>
+            {p_arr + (index2 * sizeof a)}
+            {size2 + size1} {size2} {p_work} {worksz}
+            (pf_middle, pf_work |
+             bp_middle, bp_middle_i, bp_middle_n, bp_work, params)
+
+        prval () = pf_arr1 :=
+          array_v_unsplit (pf_middle, pf_after)
+        prval () = pf_arr :=
+          array_v_unsplit (pf_before, pf_arr1)
+      in
+        stk_vt_drop stk;
+        stk_vt_drop stk;
+        stk_vt_drop stk;
+        stk_vt_push (index2, size2 + size1, ARBITRARY_POWER, stk);
+        stk_vt_push (index0, size0, ARBITRARY_POWER, stk)
+      end
+
+    fun
+    loop {p_stk   : addr}
+         {stk_max : int}
+         {depth   : pos | depth <= stk_max}
+         .<depth>.
+         (pf_arr  : !array_v (a, p_arr, n),
+          pf_work : !array_v (a?, p_work, worksz) |
+          params  : &merge_params_vt >> _,
+          stk     : &stk_vt (p_stk, depth, stk_max)
+                     >> stk_vt (p_stk, 0, stk_max))
+        :<!wrt> void =
+      if stk_vt_depth stk = 1 then
+        stk_vt_drop stk
+      else if stk_vt_depth stk = 2 then
+        begin
+          merge_1_with_0 (pf_arr, pf_work | params, stk);
+          loop (pf_arr, pf_work | params, stk)
+        end
+      else if ((stk_vt_peek (stk, 0)).size)
+                  <= ((stk_vt_peek (stk, 2)).size) then
+        begin
+          merge_1_with_0 (pf_arr, pf_work | params, stk);
+          loop (pf_arr, pf_work | params, stk)
+        end
+      else
+        begin
+          merge_2_with_1 (pf_arr, pf_work | params, stk);
+          loop (pf_arr, pf_work | params, stk)
+        end
+  in
+    loop (pf_arr, pf_work | params, stk)
+  end
 
 (*------------------------------------------------------------------*)
 

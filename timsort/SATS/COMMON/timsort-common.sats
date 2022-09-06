@@ -218,7 +218,7 @@ fn {}
 stk_vt_depth :
   {p_stk   : addr}
   {stk_max : int}
-  {depth   : nat}
+  {depth   : int}
   (&stk_vt (p_stk, depth, stk_max)) -<> int depth
 
 fn {}
@@ -240,7 +240,7 @@ fn {}
 stk_vt_peek :
   {p_stk     : addr}
   {stk_max   : int}
-  {depth     : int | depth < stk_max}
+  {depth     : int | depth <= stk_max}
   {entry_num : nat | entry_num < depth}
   (&stk_vt (p_stk, depth, stk_max),
    int entry_num) -< !wrt >
@@ -252,7 +252,7 @@ stk_vt_set_power :
   {power     : int}
   {p_stk     : addr}
   {stk_max   : int}
-  {depth     : int | depth < stk_max}
+  {depth     : int | depth <= stk_max}
   {entry_num : nat | entry_num < depth}
   (int power,
    &stk_vt (p_stk, depth, stk_max),
@@ -263,7 +263,7 @@ fn {}
 stk_vt_drop :
   {p_stk   : addr}
   {stk_max : int}
-  {depth   : pos | depth < stk_max}
+  {depth   : pos | depth <= stk_max}
   (&stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
     void
