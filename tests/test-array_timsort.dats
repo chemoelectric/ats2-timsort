@@ -165,6 +165,18 @@ fill_array_randomly
     loop (pf_arr | i2sz 0)
   end
 
+fun
+display {n : nat}
+        (p : list (entry_t, n))
+    : void =
+  case+ p of
+  | NIL => ()
+  | head :: tail =>
+    begin
+      println! (head.key, " -> ", head.value);
+      display tail
+    end
+
 fn
 test_array_of_size
           {n : nat}
@@ -180,6 +192,7 @@ test_array_of_size
 
     val () = array_timsort<entry_t> (!p_arr, n)
     val gotten = list_vt2t (array2list (!p_arr, n))
+    //val () = display gotten
 
     val () = assertloc (gotten = expected)
 
