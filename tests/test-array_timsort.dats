@@ -191,6 +191,15 @@ implement
 main () =
   begin
     test_array_of_size (i2sz 0);
+    test_array_of_size (i2sz 1);
+    test_array_of_size (i2sz 2);
+    test_array_of_size (i2sz 3);
+    test_array_of_size (i2sz 4);
+    test_array_of_size (i2sz 5);
+    test_array_of_size (i2sz 6);
+    test_array_of_size (i2sz 7);
+    test_array_of_size (i2sz 8);
+    test_array_of_size (i2sz 9);
     test_array_of_size (i2sz 10);
     test_array_of_size (i2sz 100);
     test_array_of_size (i2sz 1000);
