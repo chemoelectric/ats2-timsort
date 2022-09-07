@@ -254,6 +254,7 @@ test_random_array_of_size
 implement
 main () =
   begin
+    println! "Random arrays";
     test_random_array_of_size (i2sz 0);
     test_random_array_of_size (i2sz 1);
     test_random_array_of_size (i2sz 2);
