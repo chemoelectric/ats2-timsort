@@ -24,10 +24,15 @@ staload UN = "prelude/SATS/unsafe.sats"
 #define NIL list_nil ()
 #define ::  list_cons
 
-(*------------------------------------------------------------------*)
-(* A simple linear congruential generator.                          *)
-
 %{^
+
+#include <time.h>
+
+atstype_ldouble
+get_clock (void)
+{
+  return ((atstype_ldouble) clock ()) / CLOCKS_PER_SEC;
+}
 
 static inline atstype_uint64
 g1uint_mod_uint64 (atstype_uint64 x, atstype_uint64 y)
@@ -61,6 +66,12 @@ g1uint_mod_uint64 (atstype_uint64 x, atstype_uint64 y)
 
 static uint64_t seed;
 
+static void
+set_seed (uint64_t s)
+{
+  seed = s;
+}
+
 static inline atstype_uint64
 random_uint64 (void)
 {
@@ -76,7 +87,32 @@ random_uint64 (void)
   return BSWAP64 (old_seed);
 }
 
+typedef struct {
+  atstype_int key;
+  atstype_int value;
+} entry_t;
+
+static int
+entry_t_cmp (const void *x, const void *y)
+{
+  const entry_t *px = x;
+  const entry_t *py = y;
+
+  int result;
+  if (px->key < py->key)
+    result = -1;
+  else if (px->key > py->key)
+    result = 1;
+  else
+    result = 0;
+  return result;
+}
+
 %}
+
+extern fn
+get_clock :
+  () -<> ldouble = "mac#"
 
 extern fn
 g1uint_mod_uint64 :
@@ -86,6 +122,12 @@ g1uint_mod_uint64 :
 implement
 g1uint_mod<uint64_kind> (x, y) =
   g1uint_mod_uint64 (x, y)
+
+(*------------------------------------------------------------------*)
+(* A simple linear congruential generator.                          *)
+
+extern fn
+set_seed (s : uint64) :<!wrt> void = "mac#set_seed"
 
 extern fn
 random_uint64 () :<!wrt> uint64 = "mac#random_uint64"
@@ -117,15 +159,6 @@ typedef entry_t =
 implement
 list_equal$eqfn<entry_t> (x, y) =
   ((x.key) = (y.key)) * ((x.value) = (y.value))
-
-implement
-list_vt_mergesort$cmp<entry_t> (x, y) =
-  if (x.key) < (y.key) then
-    ~1
-  else if (x.key) > (y.key) then
-    1
-  else
-    0
 
 implement
 array_timsort$lt<entry_t> (x, y) =
@@ -178,46 +211,65 @@ display {n : nat}
     end
 
 fn
-test_array_of_size
+test_random_array_of_size
           {n : nat}
           (n : size_t n)
     : void =
   let
     val @(pf_arr, pfgc_arr | p_arr) = array_ptr_alloc<entry_t> n
     val () = array_initize_elt (!p_arr, n, @{key = 0, value = 0})
+
+    val seed_val = 1234
+
+    val () = set_seed ($UN.cast seed_val)
     val () = fill_array_randomly (pf_arr | p_arr, n)
+    val t11 = get_clock ()
+    val () = $extfcall (void, "qsort", p_arr, n, sizeof<entry_t>,
+                        $extval (ptr, "&entry_t_cmp"))
+    val t12 = get_clock ()
+    val t1 = t12 - t11
+    val expected = list_vt2t (array2list (!p_arr, n))
 
-    val expected =
-      list_vt2t (list_vt_mergesort<entry_t> (array2list (!p_arr, n)))
-
+    val () = set_seed ($UN.cast seed_val)
+    val () = fill_array_randomly (pf_arr | p_arr, n)
+    val t21 = get_clock ()
     val () = array_timsort<entry_t> (!p_arr, n)
+    val t22 = get_clock ()
+    val t2 = t22 - t21
     val gotten = list_vt2t (array2list (!p_arr, n))
-    //val () = display gotten
 
     val () = assertloc (gotten = expected)
 
     val () = array_ptr_free (pf_arr, pfgc_arr | p_arr)
   in
+    print! "  qsort:";
+    print! t1;
+    print! "  timsort:";
+    print! t2;
+    print! "  ";
+    print! n;
+    println! ()
   end
 
 implement
 main () =
   begin
-    test_array_of_size (i2sz 0);
-    test_array_of_size (i2sz 1);
-    test_array_of_size (i2sz 2);
-    test_array_of_size (i2sz 3);
-    test_array_of_size (i2sz 4);
-    test_array_of_size (i2sz 5);
-    test_array_of_size (i2sz 6);
-    test_array_of_size (i2sz 7);
-    test_array_of_size (i2sz 8);
-    test_array_of_size (i2sz 9);
-    test_array_of_size (i2sz 10);
-    test_array_of_size (i2sz 100);
-    test_array_of_size (i2sz 1000);
-    test_array_of_size (i2sz 10000);
-    test_array_of_size (i2sz 100000);
-    test_array_of_size (i2sz 1000000);
+    test_random_array_of_size (i2sz 0);
+    test_random_array_of_size (i2sz 1);
+    test_random_array_of_size (i2sz 2);
+    test_random_array_of_size (i2sz 3);
+    test_random_array_of_size (i2sz 4);
+    test_random_array_of_size (i2sz 5);
+    test_random_array_of_size (i2sz 6);
+    test_random_array_of_size (i2sz 7);
+    test_random_array_of_size (i2sz 8);
+    test_random_array_of_size (i2sz 9);
+    test_random_array_of_size (i2sz 10);
+    test_random_array_of_size (i2sz 100);
+    test_random_array_of_size (i2sz 1000);
+    test_random_array_of_size (i2sz 10000);
+    test_random_array_of_size (i2sz 100000);
+    test_random_array_of_size (i2sz 1000000);
+    test_random_array_of_size (i2sz 10000000);
     0
   end

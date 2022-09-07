@@ -116,10 +116,12 @@ bin_PROGRAMS =
 EXTRA_PROGRAMS = tests/test-clz$(EXEEXT) tests/test-minrun$(EXEEXT) \
 	tests/test-nodepower$(EXEEXT) tests/test-galloping$(EXEEXT) \
 	tests/test-merges$(EXEEXT) tests/test-array_timsort$(EXEEXT) \
+	tests/test-timing-array_timsort$(EXEEXT) \
 	list-ats-dependencies$(EXEEXT)
 TESTS = tests/test-clz$(EXEEXT) tests/test-minrun$(EXEEXT) \
 	tests/test-nodepower$(EXEEXT) tests/test-galloping$(EXEEXT) \
-	tests/test-merges$(EXEEXT) tests/test-array_timsort$(EXEEXT)
+	tests/test-merges$(EXEEXT) tests/test-array_timsort$(EXEEXT) \
+	tests/test-timing-array_timsort$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_ac_append_to_file.m4 \
@@ -214,6 +216,9 @@ tests_test_minrun_OBJECTS = $(am_tests_test_minrun_OBJECTS)
 am_tests_test_nodepower_OBJECTS =  \
 	tests/test_nodepower-test-nodepower_tests.$(OBJEXT)
 tests_test_nodepower_OBJECTS = $(am_tests_test_nodepower_OBJECTS)
+am_tests_test_timing_array_timsort_OBJECTS = tests/test_timing_array_timsort-test-timing-array_timsort_tests.$(OBJEXT)
+tests_test_timing_array_timsort_OBJECTS =  \
+	$(am_tests_test_timing_array_timsort_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -236,6 +241,7 @@ am__depfiles_remade = ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_de
 	tests/$(DEPDIR)/test_merges-test-merges_tests.Po \
 	tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po \
 	tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po \
+	tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po \
 	timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo \
 	timsort/DATS/$(DEPDIR)/bptr_dats.Plo \
 	timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo \
@@ -265,11 +271,13 @@ SOURCES = $(nodist_libats2_timsort_la_SOURCES) \
 	$(nodist_list_ats_dependencies_SOURCES) \
 	$(tests_test_array_timsort_SOURCES) $(tests_test_clz_SOURCES) \
 	$(tests_test_galloping_SOURCES) $(tests_test_merges_SOURCES) \
-	$(tests_test_minrun_SOURCES) $(tests_test_nodepower_SOURCES)
+	$(tests_test_minrun_SOURCES) $(tests_test_nodepower_SOURCES) \
+	$(tests_test_timing_array_timsort_SOURCES)
 DIST_SOURCES = $(tests_test_array_timsort_SOURCES) \
 	$(tests_test_clz_SOURCES) $(tests_test_galloping_SOURCES) \
 	$(tests_test_merges_SOURCES) $(tests_test_minrun_SOURCES) \
-	$(tests_test_nodepower_SOURCES)
+	$(tests_test_nodepower_SOURCES) \
+	$(tests_test_timing_array_timsort_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -673,6 +681,7 @@ EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
 	tests/test-clz.dats tests/test-minrun.dats \
 	tests/test-nodepower.dats tests/test-galloping.dats \
 	tests/test-merges.dats tests/test-array_timsort.dats \
+	tests/test-timing-array_timsort.dats \
 	list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
 CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
@@ -683,7 +692,9 @@ CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
 	tests/test-galloping tests/test-galloping_tests.c \
 	tests/test-merges tests/test-merges_tests.c \
 	tests/test-array_timsort tests/test-array_timsort_tests.c \
-	list-ats-dependencies list-ats-dependencies_depsprog.c
+	tests/test-timing-array_timsort \
+	tests/test-timing-array_timsort_tests.c list-ats-dependencies \
+	list-ats-dependencies_depsprog.c
 DISTCLEANFILES = Makefile GNUmakefile
 BUILT_SOURCES = 
 AM_CPPFLAGS = -I$(builddir) -I$(srcdir) -I$(PATSHOME) \
@@ -761,6 +772,14 @@ tests_test_array_timsort_DEPENDENCIES = tests/test-array_timsort.dats \
 	timsort/CATS/timsort.cats libats2-timsort.la
 tests_test_array_timsort_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
 tests_test_array_timsort_LDADD = libats2-timsort.la
+tests_test_timing_array_timsort_SOURCES =  \
+	tests/test-timing-array_timsort_tests.c
+tests_test_timing_array_timsort_DEPENDENCIES =  \
+	tests/test-timing-array_timsort.dats timsort/CATS/timsort.cats \
+	libats2-timsort.la
+tests_test_timing_array_timsort_CPPFLAGS = $(AM_CPPFLAGS) \
+	-DATS_MEMALLOC_LIBC
+tests_test_timing_array_timsort_LDADD = libats2-timsort.la
 nodist_list_ats_dependencies_SOURCES =  \
 	list-ats-dependencies_depsprog.c
 list_ats_dependencies_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
@@ -979,6 +998,12 @@ tests/test_nodepower-test-nodepower_tests.$(OBJEXT):  \
 tests/test-nodepower$(EXEEXT): $(tests_test_nodepower_OBJECTS) $(tests_test_nodepower_DEPENDENCIES) $(EXTRA_tests_test_nodepower_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test-nodepower$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_nodepower_OBJECTS) $(tests_test_nodepower_LDADD) $(LIBS)
+tests/test_timing_array_timsort-test-timing-array_timsort_tests.$(OBJEXT):  \
+	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test-timing-array_timsort$(EXEEXT): $(tests_test_timing_array_timsort_OBJECTS) $(tests_test_timing_array_timsort_DEPENDENCIES) $(EXTRA_tests_test_timing_array_timsort_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test-timing-array_timsort$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_timing_array_timsort_OBJECTS) $(tests_test_timing_array_timsort_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -1002,6 +1027,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_merges-test-merges_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/bptr_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo@am__quote@ # am--include-marker
@@ -1136,6 +1162,20 @@ tests/test_nodepower-test-nodepower_tests.obj: tests/test-nodepower_tests.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-nodepower_tests.c' object='tests/test_nodepower-test-nodepower_tests.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_nodepower_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_nodepower-test-nodepower_tests.obj `if test -f 'tests/test-nodepower_tests.c'; then $(CYGPATH_W) 'tests/test-nodepower_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-nodepower_tests.c'; fi`
+
+tests/test_timing_array_timsort-test-timing-array_timsort_tests.o: tests/test-timing-array_timsort_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_timing_array_timsort-test-timing-array_timsort_tests.o -MD -MP -MF tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Tpo -c -o tests/test_timing_array_timsort-test-timing-array_timsort_tests.o `test -f 'tests/test-timing-array_timsort_tests.c' || echo '$(srcdir)/'`tests/test-timing-array_timsort_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Tpo tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-timing-array_timsort_tests.c' object='tests/test_timing_array_timsort-test-timing-array_timsort_tests.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_timing_array_timsort-test-timing-array_timsort_tests.o `test -f 'tests/test-timing-array_timsort_tests.c' || echo '$(srcdir)/'`tests/test-timing-array_timsort_tests.c
+
+tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj: tests/test-timing-array_timsort_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj -MD -MP -MF tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Tpo -c -o tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj `if test -f 'tests/test-timing-array_timsort_tests.c'; then $(CYGPATH_W) 'tests/test-timing-array_timsort_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-timing-array_timsort_tests.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Tpo tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-timing-array_timsort_tests.c' object='tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj `if test -f 'tests/test-timing-array_timsort_tests.c'; then $(CYGPATH_W) 'tests/test-timing-array_timsort_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-timing-array_timsort_tests.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1462,6 +1502,13 @@ tests/test-array_timsort.log: tests/test-array_timsort$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+tests/test-timing-array_timsort.log: tests/test-timing-array_timsort$(EXEEXT)
+	@p='tests/test-timing-array_timsort$(EXEEXT)'; \
+	b='tests/test-timing-array_timsort'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -1724,6 +1771,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_merges-test-merges_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
+	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
 	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
@@ -1786,6 +1834,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_merges-test-merges_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
+	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
 	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
@@ -2001,6 +2050,7 @@ tests/test-nodepower_tests.c: tests/test-nodepower.dats
 tests/test-galloping_tests.c: tests/test-galloping.dats
 tests/test-merges_tests.c: tests/test-merges.dats
 tests/test-array_timsort_tests.c: tests/test-array_timsort.dats
+tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
