@@ -108,6 +108,12 @@ entry_t_cmp (const void *x, const void *y)
   return result;
 }
 
+static int
+entry_t_revcmp (const void *x, const void *y)
+{
+  return entry_t_cmp (y, x);
+}
+
 %}
 
 extern fn
@@ -188,7 +194,10 @@ fill_array_randomly
           val entry =
             @{
               key = g1u2i (randint<uintknd> 1000U),
-              value = succ (sz2i i)
+
+              (* Make value a constant, because qsort might not be
+                 stable. *)
+              value = 12345
             }
         in
           arr[i] := entry;
@@ -251,6 +260,96 @@ test_random_array_of_size
     println! ()
   end
 
+fn
+test_sorted_array_of_size
+          {n : nat}
+          (n : size_t n)
+    : void =
+  let
+    val @(pf_arr, pfgc_arr | p_arr) = array_ptr_alloc<entry_t> n
+    val () = array_initize_elt (!p_arr, n, @{key = 0, value = 0})
+
+    val seed_val = 1234
+
+    val () = set_seed ($UN.cast seed_val)
+    val () = fill_array_randomly (pf_arr | p_arr, n)
+    val () = $extfcall (void, "qsort", p_arr, n, sizeof<entry_t>,
+                        $extval (ptr, "&entry_t_cmp"))
+    val t11 = get_clock ()
+    val () = $extfcall (void, "qsort", p_arr, n, sizeof<entry_t>,
+                        $extval (ptr, "&entry_t_cmp"))
+    val t12 = get_clock ()
+    val t1 = t12 - t11
+    val expected = list_vt2t (array2list (!p_arr, n))
+
+    val () = set_seed ($UN.cast seed_val)
+    val () = fill_array_randomly (pf_arr | p_arr, n)
+    val () = $extfcall (void, "qsort", p_arr, n, sizeof<entry_t>,
+                        $extval (ptr, "&entry_t_cmp"))
+    val t21 = get_clock ()
+    val () = array_timsort<entry_t> (!p_arr, n)
+    val t22 = get_clock ()
+    val t2 = t22 - t21
+    val gotten = list_vt2t (array2list (!p_arr, n))
+
+    val () = assertloc (gotten = expected)
+
+    val () = array_ptr_free (pf_arr, pfgc_arr | p_arr)
+  in
+    print! "  qsort:";
+    print! t1;
+    print! "  timsort:";
+    print! t2;
+    print! "  ";
+    print! n;
+    println! ()
+  end
+
+fn
+test_reverse_sorted_array_of_size
+          {n : nat}
+          (n : size_t n)
+    : void =
+  let
+    val @(pf_arr, pfgc_arr | p_arr) = array_ptr_alloc<entry_t> n
+    val () = array_initize_elt (!p_arr, n, @{key = 0, value = 0})
+
+    val seed_val = 1234
+
+    val () = set_seed ($UN.cast seed_val)
+    val () = fill_array_randomly (pf_arr | p_arr, n)
+    val () = $extfcall (void, "qsort", p_arr, n, sizeof<entry_t>,
+                        $extval (ptr, "&entry_t_revcmp"))
+    val t11 = get_clock ()
+    val () = $extfcall (void, "qsort", p_arr, n, sizeof<entry_t>,
+                        $extval (ptr, "&entry_t_cmp"))
+    val t12 = get_clock ()
+    val t1 = t12 - t11
+    val expected = list_vt2t (array2list (!p_arr, n))
+
+    val () = set_seed ($UN.cast seed_val)
+    val () = fill_array_randomly (pf_arr | p_arr, n)
+    val () = $extfcall (void, "qsort", p_arr, n, sizeof<entry_t>,
+                        $extval (ptr, "&entry_t_revcmp"))
+    val t21 = get_clock ()
+    val () = array_timsort<entry_t> (!p_arr, n)
+    val t22 = get_clock ()
+    val t2 = t22 - t21
+    val gotten = list_vt2t (array2list (!p_arr, n))
+
+    val () = assertloc (gotten = expected)
+
+    val () = array_ptr_free (pf_arr, pfgc_arr | p_arr)
+  in
+    print! "  qsort:";
+    print! t1;
+    print! "  timsort:";
+    print! t2;
+    print! "  ";
+    print! n;
+    println! ()
+  end
+
 implement
 main () =
   begin
@@ -271,6 +370,45 @@ main () =
     test_random_array_of_size (i2sz 10000);
     test_random_array_of_size (i2sz 100000);
     test_random_array_of_size (i2sz 1000000);
-    test_random_array_of_size (i2sz 10000000);
+    //test_random_array_of_size (i2sz 10000000);
+
+    println! "Sorted arrays";
+    test_sorted_array_of_size (i2sz 0);
+    test_sorted_array_of_size (i2sz 1);
+    test_sorted_array_of_size (i2sz 2);
+    test_sorted_array_of_size (i2sz 3);
+    test_sorted_array_of_size (i2sz 4);
+    test_sorted_array_of_size (i2sz 5);
+    test_sorted_array_of_size (i2sz 6);
+    test_sorted_array_of_size (i2sz 7);
+    test_sorted_array_of_size (i2sz 8);
+    test_sorted_array_of_size (i2sz 9);
+    test_sorted_array_of_size (i2sz 10);
+    test_sorted_array_of_size (i2sz 100);
+    test_sorted_array_of_size (i2sz 1000);
+    test_sorted_array_of_size (i2sz 10000);
+    test_sorted_array_of_size (i2sz 100000);
+    test_sorted_array_of_size (i2sz 1000000);
+    //test_sorted_array_of_size (i2sz 10000000);
+
+    println! "Reverse sorted arrays";
+    test_reverse_sorted_array_of_size (i2sz 0);
+    test_reverse_sorted_array_of_size (i2sz 1);
+    test_reverse_sorted_array_of_size (i2sz 2);
+    test_reverse_sorted_array_of_size (i2sz 3);
+    test_reverse_sorted_array_of_size (i2sz 4);
+    test_reverse_sorted_array_of_size (i2sz 5);
+    test_reverse_sorted_array_of_size (i2sz 6);
+    test_reverse_sorted_array_of_size (i2sz 7);
+    test_reverse_sorted_array_of_size (i2sz 8);
+    test_reverse_sorted_array_of_size (i2sz 9);
+    test_reverse_sorted_array_of_size (i2sz 10);
+    test_reverse_sorted_array_of_size (i2sz 100);
+    test_reverse_sorted_array_of_size (i2sz 1000);
+    test_reverse_sorted_array_of_size (i2sz 10000);
+    test_reverse_sorted_array_of_size (i2sz 100000);
+    test_reverse_sorted_array_of_size (i2sz 1000000);
+    //test_reverse_sorted_array_of_size (i2sz 10000000);
+
     0
   end
