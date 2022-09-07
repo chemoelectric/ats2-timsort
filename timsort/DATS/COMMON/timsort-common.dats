@@ -137,34 +137,41 @@ stk_vt_push (index, size, power, stk) =
   let
     macdef storage = !(stk.p)
   in
-    stk.depth := succ (stk.depth);
-    storage[stk.stk_max - stk.depth] :=
+    storage[stk.depth] :=
       @{
         index = index,
         size = size,
         power = power
-      }
+      };
+    stk.depth := succ (stk.depth)
+  end
+
+implement {}
+stk_vt_pop stk =
+  let
+    val entry = stk_vt_peek (stk, 0)
+  in
+    stk_vt_drop stk;
+    entry
   end
 
 implement {}
 stk_vt_peek (stk, entry_num) =
   let
     macdef storage = !(stk.p)
+    val entry = storage[pred ((stk.depth) - entry_num)]
+    prval () = lemma_g1uint_param (entry.index)
+    val () = $effmask_exn assertloc (i2sz 0 < (entry.size))
   in
-    storage[stk.stk_max - (stk.depth - entry_num)]
+    entry
   end
 
 implement {}
-stk_vt_set_power (power, stk, entry_num) =
+stk_vt_overwrite (index, size, power, stk, entry_num) =
   let
     macdef storage = !(stk.p)
-    val @{
-          index = index,
-          size = size,
-          power = _
-        } = storage[stk.stk_max - (stk.depth - entry_num)]
   in
-    storage[stk.stk_max - (stk.depth - entry_num)] :=
+    storage[pred ((stk.depth) - entry_num)] :=
       @{
         index = index,
         size = size,

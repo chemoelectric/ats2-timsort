@@ -230,18 +230,28 @@ stk_vt_depth :
 
 fn {}
 stk_vt_push :
-  {p_stk   : addr}
-  {stk_max : int}
-  {depth   : nat | depth < stk_max}
   {index   : nat}
   {size    : pos}
   {power   : int}
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : nat | depth < stk_max}
   (size_t index,
    size_t size,
    int power,
    &stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth + 1, stk_max)) -< !wrt >
     void
+
+fn {}
+stk_vt_pop :
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : pos | depth <= stk_max}
+  (&stk_vt (p_stk, depth, stk_max)
+        >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
+    [index, size, power : int | 0 <= index; 0 < size]
+    stk_entry_t (index, size, power)
 
 fn {}
 stk_vt_peek :
@@ -251,17 +261,21 @@ stk_vt_peek :
   {entry_num : nat | entry_num < depth}
   (&stk_vt (p_stk, depth, stk_max),
    int entry_num) -< !wrt >
-    [index, size, power : int]
+    [index, size, power : int | 0 <= index; 0 < size]
     stk_entry_t (index, size, power)
 
 fn {}
-stk_vt_set_power :
-  {power     : int}
+stk_vt_overwrite :
+  {index   : nat}
+  {size    : pos}
+  {power   : int}
   {p_stk     : addr}
   {stk_max   : int}
   {depth     : int | depth <= stk_max}
   {entry_num : nat | entry_num < depth}
-  (int power,
+  (size_t index,
+   size_t size,
+   int power,
    &stk_vt (p_stk, depth, stk_max),
    int entry_num) -< !wrt >
     void

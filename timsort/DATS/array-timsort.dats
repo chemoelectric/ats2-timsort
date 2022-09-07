@@ -1529,7 +1529,7 @@ include_new_run
     :<!wrt> #[depth1 : pos | depth1 <= depth0 + 1]
             void
 
-#define ARBITRARY_POWER 0
+#define ARBITRARY_POWER ~1234
 
 implement {a}
 include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
@@ -1548,8 +1548,6 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
       prval [index0 : int] EQINT () = eqint_make_guint index0
       prval [size0 : int] EQINT () = eqint_make_guint size0
 
-      prval () = lemma_g1uint_param index0
-      val () = $effmask_exn assertloc (i2sz 0 < size0)
       val () = $effmask_exn assertloc (index0 + size0 = index)
       prval () = prop_verify {index0 + size0 + size <= n} ()
 
@@ -1575,17 +1573,23 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
         else
           let
             val @{
+                  index = index0,
+                  size = size0,
+                  power = _
+                } = stk_vt_peek (stk, 0)
+            and @{
                   index = index1,
                   size = size1,
                   power = _
                 } = stk_vt_peek (stk, 1)
 
+            prval [index0 : int] EQINT () = eqint_make_guint index0
+            prval [size0 : int] EQINT () = eqint_make_guint size0
             prval [index1 : int] EQINT () = eqint_make_guint index1
             prval [size1 : int] EQINT () = eqint_make_guint size1
 
-            prval () = lemma_g1uint_param index1
-            val () = $effmask_exn assertloc (i2sz 0 < size1)
             val () = $effmask_exn assertloc (index1 + size1 = index0)
+            val () = $effmask_exn assertloc (index0 + size0 = index)
             prval () =
               prop_verify {index1 + size1 + size0 + size <= n} ()
 
@@ -1596,8 +1600,10 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
                             {n - index1} {size1 + size0}
                             pf_arr1
 
-            val bp_arr = ptr2bptr_anchor p_arr
-            and bp_work = ptr2bptr_anchor p_work
+            val bp_arr : bptr_anchor (a, p_arr) =
+              ptr2bptr_anchor p_arr
+            and bp_work : bptr_anchor (a?, p_work) =
+              ptr2bptr_anchor p_work
 
             val bp_middle = bptr_reanchor (bp_arr + index1)
             val bp_middle_i = bp_middle + size1
@@ -1615,13 +1621,16 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
             prval () = pf_arr :=
               array_v_unsplit (pf_before, pf_arr1)
           in
+            stk_vt_overwrite (index1, size1 + size0, ARBITRARY_POWER,
+                              stk, 1);
             stk_vt_drop stk;
-            stk_vt_drop stk;
-            stk_vt_push (index1, size1 + size0, power, stk);
             merge_subarrays (pf_arr, pf_work | params, stk)
           end
     in
       merge_subarrays (pf_arr, pf_work | params, stk);
+      stk_vt_overwrite ((stk_vt_peek (stk, 0)).index,
+                        (stk_vt_peek (stk, 0)).size,
+                        power, stk, 0);
       stk_vt_push (index, size, ARBITRARY_POWER, stk)
     end
 
@@ -1662,13 +1671,13 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
         :<!wrt> void =
       let
         val @{
-              index = index1,
-              size = size1,
-              power = _
-            } = stk_vt_peek (stk, 1)
-        and @{
               index = index0,
               size = size0,
+              power = _
+            } = stk_vt_pop stk
+        val @{
+              index = index1,
+              size = size1,
               power = _
             } = stk_vt_peek (stk, 0)
 
@@ -1677,10 +1686,6 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
         prval [index0 : int] EQINT () = eqint_make_guint index0
         prval [size0 : int] EQINT () = eqint_make_guint size0
 
-        prval () = lemma_g1uint_param index1
-        and () = lemma_g1uint_param index0
-        val () = $effmask_exn
-          assertloc ((i2sz 0 < size1) * (i2sz 0 < size0))
         val () = $effmask_exn assertloc (index1 + size1 = index0)
         val () = $effmask_exn assertloc (index0 + size0 = n)
 
@@ -1710,9 +1715,8 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
         prval () = pf_arr :=
           array_v_unsplit (pf_before, pf_arr1)
       in
-        stk_vt_drop stk;
-        stk_vt_drop stk;
-        stk_vt_push (index1, size1 + size0, ARBITRARY_POWER, stk)
+        stk_vt_overwrite (index1, size1 + size0, ARBITRARY_POWER,
+                          stk, 0)
       end
 
     fn
@@ -1728,20 +1732,20 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
         :<!wrt> void =
       let
         val @{
-              index = index2,
-              size = size2,
-              power = _
-            } = stk_vt_peek (stk, 2)
-        and @{
-              index = index1,
-              size = size1,
-              power = _
-            } = stk_vt_peek (stk, 1)
-        and @{
               index = index0,
               size = size0,
               power = _
-            } = stk_vt_peek (stk, 0)
+            } = stk_vt_pop stk
+        val @{
+              index = index1,
+              size = size1,
+              power = _
+            } = stk_vt_pop stk
+        val @{
+              index = index2,
+              size = size2,
+              power = _
+            } = stk_vt_pop stk
 
         prval [index2 : int] EQINT () = eqint_make_guint index2
         prval [size2 : int] EQINT () = eqint_make_guint size2
@@ -1750,12 +1754,6 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
         prval [index0 : int] EQINT () = eqint_make_guint index0
         prval [size0 : int] EQINT () = eqint_make_guint size0
 
-        prval () = lemma_g1uint_param index2
-        and () = lemma_g1uint_param index1
-        and () = lemma_g1uint_param index0
-        val () = $effmask_exn
-          assertloc ((i2sz 0 < size2) * (i2sz 0 < size1)
-                        * (i2sz 0 < size0))
         val () = $effmask_exn assertloc (index2 + size2 = index1)
         val () = $effmask_exn assertloc (index1 + size1 = index0)
         val () = $effmask_exn assertloc (index0 + size0 = n)
@@ -1786,9 +1784,6 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
         prval () = pf_arr :=
           array_v_unsplit (pf_before, pf_arr1)
       in
-        stk_vt_drop stk;
-        stk_vt_drop stk;
-        stk_vt_drop stk;
         stk_vt_push (index2, size2 + size1, ARBITRARY_POWER, stk);
         stk_vt_push (index0, size0, ARBITRARY_POWER, stk)
       end
@@ -1846,7 +1841,7 @@ timsort_main
   let
     prval () = lemma_array_v_param pf_arr
 
-    val minrun = minimum_run_length<> n
+    val minrun = minimum_run_length n
     and bp_arr = ptr2bptr_anchor p_arr
     val bp_n = bp_arr + n
 
