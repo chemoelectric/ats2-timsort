@@ -1631,7 +1631,7 @@ merge_remaining_runs
           {worksz  : int | n <= 2 * worksz}
           {p_stk   : addr}
           {stk_max : int}
-          {depth0  : pos | depth0 < stk_max}
+          {depth0  : pos | depth0 <= stk_max}
           (pf_arr  : !array_v (a, p_arr, n),
            pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
@@ -1841,7 +1841,55 @@ timsort_main
            p_work  : ptr p_work,
            stk     : &stk_vt (p_stk, 0, stk_max))
     :<!wrt> void =
-  ()                            (* FIXME *)
+  let
+    prval () = lemma_array_v_param pf_arr
+
+    val minrun = minimum_run_length n
+    and bp_arr = ptr2bptr_anchor p_arr
+    val bp_n = bp_arr + n
+
+    fun
+    loop {i      : nat | i <= n}
+         {depth0 : nat | depth0 <= stk_max;
+                         i == n || depth0 < stk_max}
+         .<n - i>.
+         (pf_arr  : !array_v (a, p_arr, n),
+          pf_work : !array_v (a?, p_work, worksz) |
+          i       : size_t i,
+          params  : &merge_params_vt >> _,
+          stk     : &stk_vt (p_stk, depth0, stk_max)
+                     >> stk_vt (p_stk, depth1, stk_max))
+        :<!wrt> #[depth1 : pos | depth1 <= stk_max]
+                void =
+      if i = n then
+        $effmask_exn assertloc (0 < stk_vt_depth stk)
+      else
+        let
+          val bp_i = bp_arr + i
+          val bp_j =
+            provide_a_sorted_run<a> (pf_arr | bp_i, bp_n, minrun)
+          val j = bp_j - bp_arr
+        in
+          include_new_run (pf_arr, pf_work |
+                           p_arr, n, i, j - i, p_work,
+                           params, stk);
+          let
+            val () = $effmask_exn
+              assertloc
+                ((j = n) +
+                  (i2sz (stk_vt_depth stk) < stk_vt_stk_max stk));
+          in
+            loop (pf_arr, pf_work | j, params, stk)
+          end
+        end
+
+    var params : merge_params_vt
+    val () = initialize_gallop_thresholds params
+  in
+    loop (pf_arr, pf_work | i2sz 0, params, stk);
+    merge_remaining_runs<a> (pf_arr, pf_work |
+                             p_arr, n, p_work, params, stk)
+  end
 
 fn {a : vt@ype}
 timsort_providing_stk

@@ -215,6 +215,13 @@ stk_vt_make :
     stk_vt (p, 0, stk_max)
 
 fn {}
+stk_vt_stk_max :
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : int}
+  (&stk_vt (p_stk, depth, stk_max)) -<> size_t stk_max
+
+fn {}
 stk_vt_depth :
   {p_stk   : addr}
   {stk_max : int}

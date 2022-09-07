@@ -125,6 +125,10 @@ stk_vt_make (pf | p, stk_max) =
   }
 
 implement {}
+stk_vt_stk_max stk =
+  stk.stk_max
+
+implement {}
 stk_vt_depth stk =
   stk.depth
 
