@@ -25,8 +25,10 @@
 staload UN = "prelude/SATS/unsafe.sats"
 
 staload "timsort/SATS/array-timsort.sats"
+
 staload "timsort/SATS/COMMON/timsort-common.sats"
 staload _ = "timsort/DATS/COMMON/timsort-common.dats"
+
 staload "timsort/SATS/bptr.sats"
 staload _ = "timsort/DATS/bptr.dats"
 
@@ -1568,7 +1570,7 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
                   void =
         if stk_vt_depth stk = 1 then
           ()
-        else if ((stk_vt_peek (stk, 1)).power) >= power then
+        else if ((stk_vt_peek (stk, 1)).power) <= power then
           ()
         else
           let
@@ -1844,7 +1846,7 @@ timsort_main
   let
     prval () = lemma_array_v_param pf_arr
 
-    val minrun = minimum_run_length n
+    val minrun = minimum_run_length<> n
     and bp_arr = ptr2bptr_anchor p_arr
     val bp_n = bp_arr + n
 

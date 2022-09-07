@@ -58,7 +58,7 @@ array_v_takeout2 :     (* Get views for two distinct array elements.*)
 
 fn
 char_bit :
-  () -<> [char_bit : pos] size_t char_bit
+  () -<> [char_bit : pos] size_t char_bit = "mac#%"
 
 (*------------------------------------------------------------------*)
 

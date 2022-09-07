@@ -155,7 +155,7 @@ ARRAY_TIMSORT_SATS_C = timsort/SATS/array-timsort_sats.c
 ARRAY_TIMSORT_DATS_C = timsort/DATS/array-timsort_dats.c
 CLEANFILES += $(ARRAY_TIMSORT_SATS_C)
 CLEANFILES += $(ARRAY_TIMSORT_DATS_C)
-# ARRAY_TIMSORT_HATS = timsort/HATS/array-timsort.hats
+ARRAY_TIMSORT_HATS = timsort/HATS/array-timsort.hats
 
 TIMSORT_COMMON_SATS = timsort/SATS/COMMON/timsort-common.sats
 TIMSORT_COMMON_DATS = timsort/DATS/COMMON/timsort-common.dats
@@ -174,7 +174,7 @@ nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_SATS)
 nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_DATS)
 nobase_dist_pkginclude_HEADERS += $(TIMSORT_COMMON_SATS)
 nobase_dist_pkginclude_HEADERS += $(TIMSORT_COMMON_DATS)
-# nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_HATS)
+nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_HATS)
 nobase_dist_pkginclude_HEADERS += $(TIMSORT_CATS)
 
 nodist_libats2_timsort_la_SOURCES =
@@ -206,6 +206,37 @@ tests_test_clz_CPPFLAGS =
 tests_test_clz_CPPFLAGS += $(AM_CPPFLAGS)
 tests_test_clz_LDADD =
 tests/test-clz_tests.c: tests/test-clz.dats
+
+TESTS += tests/test-minrun
+EXTRA_PROGRAMS += tests/test-minrun
+CLEANFILES += tests/test-minrun
+CLEANFILES += tests/test-minrun_tests.c
+EXTRA_DIST += tests/test-minrun.dats
+tests_test_minrun_SOURCES =
+tests_test_minrun_SOURCES += tests/test-minrun_tests.c
+tests_test_minrun_DEPENDENCIES =
+tests_test_minrun_DEPENDENCIES += tests/test-minrun.dats
+tests_test_minrun_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_minrun_CPPFLAGS =
+tests_test_minrun_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_minrun_LDADD =
+tests/test-minrun_tests.c: tests/test-minrun.dats
+
+TESTS += tests/test-nodepower
+EXTRA_PROGRAMS += tests/test-nodepower
+CLEANFILES += tests/test-nodepower
+CLEANFILES += tests/test-nodepower_tests.c
+EXTRA_DIST += tests/test-nodepower.dats
+tests_test_nodepower_SOURCES =
+tests_test_nodepower_SOURCES += tests/test-nodepower_tests.c
+tests_test_nodepower_DEPENDENCIES =
+tests_test_nodepower_DEPENDENCIES += tests/test-nodepower.dats
+tests_test_nodepower_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_nodepower_CPPFLAGS =
+tests_test_nodepower_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_nodepower_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_nodepower_LDADD =
+tests/test-nodepower_tests.c: tests/test-nodepower.dats
 
 TESTS += tests/test-galloping
 EXTRA_PROGRAMS += tests/test-galloping
@@ -239,36 +270,23 @@ tests_test_merges_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_merges_LDADD =
 tests/test-merges_tests.c: tests/test-merges.dats
 
-TESTS += tests/test-minrun
-EXTRA_PROGRAMS += tests/test-minrun
-CLEANFILES += tests/test-minrun
-CLEANFILES += tests/test-minrun_tests.c
-EXTRA_DIST += tests/test-minrun.dats
-tests_test_minrun_SOURCES =
-tests_test_minrun_SOURCES += tests/test-minrun_tests.c
-tests_test_minrun_DEPENDENCIES =
-tests_test_minrun_DEPENDENCIES += tests/test-minrun.dats
-tests_test_minrun_DEPENDENCIES += timsort/CATS/timsort.cats
-tests_test_minrun_CPPFLAGS =
-tests_test_minrun_CPPFLAGS += $(AM_CPPFLAGS)
-tests_test_minrun_LDADD =
-tests/test-minrun_tests.c: tests/test-minrun.dats
-
-TESTS += tests/test-nodepower
-EXTRA_PROGRAMS += tests/test-nodepower
-CLEANFILES += tests/test-nodepower
-CLEANFILES += tests/test-nodepower_tests.c
-EXTRA_DIST += tests/test-nodepower.dats
-tests_test_nodepower_SOURCES =
-tests_test_nodepower_SOURCES += tests/test-nodepower_tests.c
-tests_test_nodepower_DEPENDENCIES =
-tests_test_nodepower_DEPENDENCIES += tests/test-nodepower.dats
-tests_test_nodepower_DEPENDENCIES += timsort/CATS/timsort.cats
-tests_test_nodepower_CPPFLAGS =
-tests_test_nodepower_CPPFLAGS += $(AM_CPPFLAGS)
-tests_test_nodepower_CPPFLAGS += -DATS_MEMALLOC_LIBC
-tests_test_nodepower_LDADD =
-tests/test-nodepower_tests.c: tests/test-nodepower.dats
+TESTS += tests/test-array_timsort
+EXTRA_PROGRAMS += tests/test-array_timsort
+CLEANFILES += tests/test-array_timsort
+CLEANFILES += tests/test-array_timsort_tests.c
+EXTRA_DIST += tests/test-array_timsort.dats
+tests_test_array_timsort_SOURCES =
+tests_test_array_timsort_SOURCES += tests/test-array_timsort_tests.c
+tests_test_array_timsort_DEPENDENCIES =
+tests_test_array_timsort_DEPENDENCIES += tests/test-array_timsort.dats
+tests_test_array_timsort_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_array_timsort_DEPENDENCIES += libats2-timsort.la
+tests_test_array_timsort_CPPFLAGS =
+tests_test_array_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_array_timsort_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_array_timsort_LDADD =
+tests_test_array_timsort_LDADD = libats2-timsort.la
+tests/test-array_timsort_tests.c: tests/test-array_timsort.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)

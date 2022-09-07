@@ -178,79 +178,77 @@ stk_vt_drop stk =
 
 (*------------------------------------------------------------------*)
 
-#if 1 #then
+implement {}
+minimum_run_length {n} n =
+  if n < i2sz 64 then
+    n                         (* The array is very small. *)
+  else
+    (* Divide n into a number of minimum-length runs that either is a
+       power of two or is close to but less than a power of two.
 
-  implement {}
-  minimum_run_length {n} n =
-    if n < i2sz 64 then
-      n                         (* The array is very small. *)
-    else
-      (* Divide n into a number of minimum-length runs that either is
-         a power of two or is close to but less than a power of two.
+       The routine isolates and shifts the six most significant bits
+       of n. If any of the bits less significant than those was set,
+       then one is added to the result. *)
+    let
+      prval () = prop_verify {0x3F < n} () (* Six one-digits. *)
 
-         The routine isolates and shifts the six most significant bits
-         of n. If any of the bits less significant than those was set,
-         then one is added to the result. *)
-      let
-        prval () = prop_verify {0x3F < n} () (* Six one-digits. *)
+      val bitsz =
+        $extval (Size_t, "(CHAR_BIT * sizeof (atstype_size))")
 
-        val bitsz =
-          $extval (Size_t, "(CHAR_BIT * sizeof (atstype_size))")
+      val leading0 = i2sz (clz n)
+      val () = $effmask_exn assertloc (leading0 + i2sz 6 <= bitsz)
+      val shift = sz2i (bitsz - leading0 - i2sz 6)
+      val result = g1ofg0 (n >> shift)
+      val () = $effmask_exn
+        assertloc ((i2sz 32 <= result) * (result < i2sz 64))
+    in
+      if (result << shift) <> n then
+        succ result
+      else
+        result
+    end
 
-        val leading0 = i2sz (clz n)
-        val () = $effmask_exn assertloc (leading0 + i2sz 6 <= bitsz)
-        val shift = sz2i (bitsz - leading0 - i2sz 6)
-        val result = g1ofg0 (n >> shift)
-        val () = $effmask_exn
-          assertloc ((i2sz 32 <= result) * (result < i2sz 64))
-      in
-        if (result << shift) <> n then
-          succ result
+#if 0 #then
+
+(* Another possible implementation of minimum_run_length. *)
+implement {}
+minimum_run_length n =
+  if n < i2sz 64 then
+    n                         (* The array is very small. *)
+  else
+    (* Divide n into a number of minimum-length runs that either is a
+       power of two or is close to but less than a power of two.
+
+       The routine isolates and shifts the six most significant bits
+       of n. If any of the bits less significant than those was set,
+       then one is added to the result. *)
+    let
+      fun
+      loop1 {q : int | 32 <= q}
+            .<q>.
+            (q : size_t q)
+          :<> [minrun : int | 32 <= minrun; minrun <= 64]
+              size_t minrun =
+        if q < i2sz 64 then
+          succ q
         else
-          result
-      end
+          loop1 (half q)
 
-#else
-
-  (* Another possible implementation of minimum_run_length. *)
-  implement {}
-  minimum_run_length n =
-    if n < i2sz 64 then
-      n                         (* The array is very small. *)
-    else
-      (* Divide n into a number of minimum-length runs that either is
-         a power of two or is close to but less than a power of two.
-
-         The routine isolates and shifts the six most significant bits
-         of n. If any of the bits less significant than those was set,
-         then one is added to the result. *)
-      let
-        fun
-        loop1 {q : int | 32 <= q}
-              .<q>.
-              (q : size_t q)
-            :<> [minrun : int | 32 <= minrun; minrun <= 64]
-                size_t minrun =
-          if q < i2sz 64 then
-            succ q
-          else
-            loop1 (half q)
-
-        fun
-        loop0 {q : int | 32 <= q}
-              .<q>.
-              (q : size_t q)
-            :<> [minrun : int | 32 <= minrun; minrun <= 64]
-                size_t minrun =
-          if q < i2sz 64 then
-            q
-          else if is_even q then
-            loop0 (half q)
-          else
-            loop1 (half q)
-      in
-        loop0 n
-      end
+      fun
+      loop0 {q : int | 32 <= q}
+            .<q>.
+            (q : size_t q)
+          :<> [minrun : int | 32 <= minrun; minrun <= 64]
+              size_t minrun =
+        if q < i2sz 64 then
+          q
+        else if is_even q then
+          loop0 (half q)
+        else
+          loop1 (half q)
+    in
+      loop0 n
+    end
 
 #endif
       
