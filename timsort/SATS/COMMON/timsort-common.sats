@@ -204,7 +204,7 @@ vtypedef stk_vt (p        : addr,
     pf       = array_v (stk_entry_t, p, stk_max) |
     p        = ptr p,
     depth    = int depth,
-    stk_max  = size_t stk_max
+    stk_max  = int stk_max
   }
 
 fn {}
@@ -213,13 +213,6 @@ stk_vt_make :
   {stk_max : int}
   (array_v (stk_entry_t, p, stk_max) | ptr p, size_t stk_max) -<>
     stk_vt (p, 0, stk_max)
-
-fn {}
-stk_vt_stk_max :
-  {p_stk   : addr}
-  {stk_max : int}
-  {depth   : int}
-  (&stk_vt (p_stk, depth, stk_max)) -<> size_t stk_max
 
 fn {}
 stk_vt_depth :
@@ -235,7 +228,7 @@ stk_vt_push :
   {power   : int}
   {p_stk   : addr}
   {stk_max : int}
-  {depth   : nat | depth < stk_max}
+  {depth   : nat}
   (size_t index,
    size_t size,
    int power,
@@ -247,7 +240,7 @@ fn {}
 stk_vt_pop :
   {p_stk   : addr}
   {stk_max : int}
-  {depth   : pos | depth <= stk_max}
+  {depth   : pos}
   (&stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
     [index, size, power : int | 0 <= index; 0 < size]
@@ -257,7 +250,7 @@ fn {}
 stk_vt_peek :
   {p_stk     : addr}
   {stk_max   : int}
-  {depth     : int | depth <= stk_max}
+  {depth     : int}
   {entry_num : nat | entry_num < depth}
   (&stk_vt (p_stk, depth, stk_max),
    int entry_num) -< !wrt >
@@ -271,7 +264,7 @@ stk_vt_overwrite :
   {power   : int}
   {p_stk     : addr}
   {stk_max   : int}
-  {depth     : int | depth <= stk_max}
+  {depth     : int}
   {entry_num : nat | entry_num < depth}
   (size_t index,
    size_t size,
@@ -284,7 +277,7 @@ fn {}
 stk_vt_drop :
   {p_stk   : addr}
   {stk_max : int}
-  {depth   : pos | depth <= stk_max}
+  {depth   : pos}
   (&stk_vt (p_stk, depth, stk_max)
         >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
     void

@@ -121,12 +121,8 @@ stk_vt_make (pf | p, stk_max) =
     pf = pf |
     p = p,
     depth = 0,
-    stk_max = stk_max
+    stk_max = sz2i stk_max
   }
-
-implement {}
-stk_vt_stk_max stk =
-  stk.stk_max
 
 implement {}
 stk_vt_depth stk =
@@ -136,6 +132,7 @@ implement {}
 stk_vt_push (index, size, power, stk) =
   let
     macdef storage = !(stk.p)
+    val () = $effmask_exn assertloc ((stk.depth) < (stk.stk_max))
   in
     storage[stk.depth] :=
       @{
@@ -159,6 +156,7 @@ implement {}
 stk_vt_peek (stk, entry_num) =
   let
     macdef storage = !(stk.p)
+    val () = $effmask_exn assertloc ((stk.depth) <= (stk.stk_max))
     val entry = storage[pred ((stk.depth) - entry_num)]
     prval () = lemma_g1uint_param (entry.index)
     val () = $effmask_exn assertloc (i2sz 0 < (entry.size))
@@ -170,6 +168,7 @@ implement {}
 stk_vt_overwrite (index, size, power, stk, entry_num) =
   let
     macdef storage = !(stk.p)
+    val () = $effmask_exn assertloc ((stk.depth) <= (stk.stk_max))
   in
     storage[pred ((stk.depth) - entry_num)] :=
       @{
