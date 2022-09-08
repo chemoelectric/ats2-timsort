@@ -1936,20 +1936,19 @@ timsort_providing_stk
       end
     else
       let                       (* Put stk in the heap. *)
-        val () = $effmask_exn assertloc (i2sz 1 <= sizeof<size_t>)
+        val bitsz = char_bit () * sizeof<size_t>
+        val () = $effmask_exn assertloc (i2sz 1 <= bitsz)
         val @(pf_stk_storage, pfgc_stk_storage | p_stk_storage) =
-          array_ptr_alloc<stk_entry_t> (sizeof<size_t>)
+          array_ptr_alloc<stk_entry_t> bitsz
         val entry =
           @{
             index = i2sz 0,
             size = i2sz 0,
             power = 0
           }
-        val () =
-          array_initize_elt<stk_entry_t>
-            (!p_stk_storage, sizeof<size_t>, entry)
-        var stk = stk_vt_make (pf_stk_storage |
-                               p_stk_storage, sizeof<size_t>)
+        val () = array_initize_elt<stk_entry_t> (!p_stk_storage,
+                                                 bitsz, entry)
+        var stk = stk_vt_make (pf_stk_storage | p_stk_storage, bitsz)
         val () = sort_main (pf_arr, pf_work | p_arr, n, p_work, stk)
         val () = pf_stk_storage := stk.pf
         val () = array_ptr_free (pf_stk_storage, pfgc_stk_storage |
