@@ -289,19 +289,31 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
     val bp_arr1 = bptr_reanchor<a> bp_i
     val bp_minrun = bp_arr1 + minrun
 
-    (* The actual sorting. *)
     val bp_runlen =
-      sort_a_monotonic_run<a>
-        (pf_arr1 | bp_arr1, bp_minrun)
-    val () =
-      insertion_sort_given_initial_sorted_run<a>
-        (pf_arr1 | bp_arr1, bp_runlen, bp_minrun)
-
-    (* Reconstruct the array. *)
-    prval () = pf_arr :=
-      array_v_unsplit (pf_arr0, array_v_unsplit (pf_arr1, pf_arr2))
+      sort_a_monotonic_run<a> (pf_arr1 | bp_arr1, bp_minrun)
   in
-    bp_i + minrun
+    if minrun <= bp_runlen - bp_arr1 then
+      let
+        (* Reconstruct the array. *)
+        prval () = pf_arr :=
+          array_v_unsplit
+            (pf_arr0, array_v_unsplit (pf_arr1, pf_arr2))
+      in
+        bp_i + (bp_runlen - bp_arr1)
+      end
+    else
+      let
+        val () =
+          insertion_sort_given_initial_sorted_run<a>
+            (pf_arr1 | bp_arr1, bp_runlen, bp_minrun)
+
+        (* Reconstruct the array. *)
+        prval () = pf_arr :=
+          array_v_unsplit
+            (pf_arr0, array_v_unsplit (pf_arr1, pf_arr2))
+      in
+        bp_i + minrun
+      end
   end
 
 (*------------------------------------------------------------------*)
@@ -1515,7 +1527,7 @@ include_new_run
           {worksz  : int | n <= 2 * worksz}
           {p_stk   : addr}
           {stk_max : int}
-          {depth0  : nat} // | depth0 <= stk_max - 1}
+          {depth0  : nat}
           (pf_arr  : !array_v (a, p_arr, n),
            pf_work : !array_v (a?, p_work, worksz) |
            p_arr   : ptr p_arr,
