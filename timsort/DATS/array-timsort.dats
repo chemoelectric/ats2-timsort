@@ -278,40 +278,38 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
     val minrun = min (minrun, bp_n - bp_i)
     prval [minrun : int] EQINT () = eqint_make_guint minrun
 
-    (* Isolate the part of the array to be sorted. *)
-    prval @(pf_arr0, pf_arr1_) =
+    prval @(pf_arr0, pf_arr1) =
       array_v_split {a} {p_arr} {n} {i} pf_arr
-    prval @(pf_arr1, pf_arr2) =
-      array_v_split {a} {p_arr + (i * sizeof a)} {n - i} {minrun}
-                    pf_arr1_
 
-    (* We will sort from bp_i to bp_i + minrun. *)
     val bp_arr1 = bptr_reanchor<a> bp_i
-    val bp_minrun = bp_arr1 + minrun
+    val bp_n1 = bp_arr1 + (bp_n - bp_i)
 
-    val bp_runlen =
-      sort_a_monotonic_run<a> (pf_arr1 | bp_arr1, bp_minrun)
+    val bp_runlen = sort_a_monotonic_run<a> (pf_arr1 | bp_arr1, bp_n1)
+    val runlen = bp_runlen - bp_arr1
   in
-    if minrun <= bp_runlen - bp_arr1 then
+    if minrun <= runlen then
       let
-        (* Reconstruct the array. *)
-        prval () = pf_arr :=
-          array_v_unsplit
-            (pf_arr0, array_v_unsplit (pf_arr1, pf_arr2))
+        prval () = pf_arr := array_v_unsplit (pf_arr0, pf_arr1)
       in
-        bp_i + (bp_runlen - bp_arr1)
+        //$effmask_all println! ("Run length = ", runlen);
+        bp_i + runlen
       end
     else
       let
+        prval @(pf_arr2, pf_arr3) =
+          array_v_split {a} {p_arr + (i * sizeof a)} {n - i} {minrun}
+                        pf_arr1
+
+        val bp_minrun = bp_arr1 + minrun
         val () =
           insertion_sort_given_initial_sorted_run<a>
-            (pf_arr1 | bp_arr1, bp_runlen, bp_minrun)
+            (pf_arr2 | bp_arr1, bp_runlen, bp_minrun)
 
-        (* Reconstruct the array. *)
         prval () = pf_arr :=
           array_v_unsplit
-            (pf_arr0, array_v_unsplit (pf_arr1, pf_arr2))
+            (pf_arr0, array_v_unsplit (pf_arr2, pf_arr3))
       in
+        //$effmask_all println! ("Run length (minrun) = ", minrun);
         bp_i + minrun
       end
   end
