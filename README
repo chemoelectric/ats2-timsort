@@ -1,1 +1,8 @@
-THIS IS A WORK IN PROGRESS
+Timsort (powersort) for ATS2/Postiats
+-------------------------------------
+
+Currently there is just an array sort that supports linear types. The
+insertion sort uses binary search, and the merge supports galloping.
+
+I may add a sort for list_vt. This would have more conventional
+insertion sort and merge.
