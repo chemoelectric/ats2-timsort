@@ -6,8 +6,6 @@ host=@host@
 package=@PACKAGE@
 version=@VERSION@
 pkgincludedir="${includedir}/${package}"
-char_bit=@CHAR_BIT@
-bitsizeof_size_t=@BITSIZEOF_SIZE_T@
 
 # It is recommended you override this with
 # --define-variable=PATSHOME="${PATSHOME}"
