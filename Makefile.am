@@ -285,7 +285,7 @@ tests_test_array_timsort_CPPFLAGS =
 tests_test_array_timsort_CPPFLAGS += $(AM_CPPFLAGS)
 tests_test_array_timsort_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_array_timsort_LDADD =
-tests_test_array_timsort_LDADD = libats2-timsort.la
+tests_test_array_timsort_LDADD += libats2-timsort.la
 tests/test-array_timsort_tests.c: tests/test-array_timsort.dats
 
 TESTS += tests/test-timing-array_timsort
@@ -295,6 +295,9 @@ CLEANFILES += tests/test-timing-array_timsort_tests.c
 EXTRA_DIST += tests/test-timing-array_timsort.dats
 tests_test_timing_array_timsort_SOURCES =
 tests_test_timing_array_timsort_SOURCES += tests/test-timing-array_timsort_tests.c
+tests_test_timing_array_timsort_SOURCES += tests/Perry-Nadkarni/timsort.c
+tests_test_timing_array_timsort_SOURCES += tests/Perry-Nadkarni/timsort.h
+tests_test_timing_array_timsort_SOURCES += tests/Perry-Nadkarni/timsort-impl.h
 tests_test_timing_array_timsort_DEPENDENCIES =
 tests_test_timing_array_timsort_DEPENDENCIES += tests/test-timing-array_timsort.dats
 tests_test_timing_array_timsort_DEPENDENCIES += timsort/CATS/timsort.cats
@@ -303,7 +306,7 @@ tests_test_timing_array_timsort_CPPFLAGS =
 tests_test_timing_array_timsort_CPPFLAGS += $(AM_CPPFLAGS)
 tests_test_timing_array_timsort_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_timing_array_timsort_LDADD =
-tests_test_timing_array_timsort_LDADD = libats2-timsort.la
+tests_test_timing_array_timsort_LDADD += libats2-timsort.la
 tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
 
 tests-clean:

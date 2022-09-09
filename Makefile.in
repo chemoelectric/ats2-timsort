@@ -216,7 +216,8 @@ tests_test_minrun_OBJECTS = $(am_tests_test_minrun_OBJECTS)
 am_tests_test_nodepower_OBJECTS =  \
 	tests/test_nodepower-test-nodepower_tests.$(OBJEXT)
 tests_test_nodepower_OBJECTS = $(am_tests_test_nodepower_OBJECTS)
-am_tests_test_timing_array_timsort_OBJECTS = tests/test_timing_array_timsort-test-timing-array_timsort_tests.$(OBJEXT)
+am_tests_test_timing_array_timsort_OBJECTS = tests/test_timing_array_timsort-test-timing-array_timsort_tests.$(OBJEXT) \
+	tests/Perry-Nadkarni/test_timing_array_timsort-timsort.$(OBJEXT)
 tests_test_timing_array_timsort_OBJECTS =  \
 	$(am_tests_test_timing_array_timsort_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -242,6 +243,7 @@ am__depfiles_remade = ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_de
 	tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po \
 	tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po \
 	tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po \
+	tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po \
 	timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo \
 	timsort/DATS/$(DEPDIR)/bptr_dats.Plo \
 	timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo \
@@ -773,7 +775,9 @@ tests_test_array_timsort_DEPENDENCIES = tests/test-array_timsort.dats \
 tests_test_array_timsort_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
 tests_test_array_timsort_LDADD = libats2-timsort.la
 tests_test_timing_array_timsort_SOURCES =  \
-	tests/test-timing-array_timsort_tests.c
+	tests/test-timing-array_timsort_tests.c \
+	tests/Perry-Nadkarni/timsort.c tests/Perry-Nadkarni/timsort.h \
+	tests/Perry-Nadkarni/timsort-impl.h
 tests_test_timing_array_timsort_DEPENDENCIES =  \
 	tests/test-timing-array_timsort.dats timsort/CATS/timsort.cats \
 	libats2-timsort.la
@@ -1000,6 +1004,15 @@ tests/test-nodepower$(EXEEXT): $(tests_test_nodepower_OBJECTS) $(tests_test_node
 	$(AM_V_CCLD)$(LINK) $(tests_test_nodepower_OBJECTS) $(tests_test_nodepower_LDADD) $(LIBS)
 tests/test_timing_array_timsort-test-timing-array_timsort_tests.$(OBJEXT):  \
 	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+tests/Perry-Nadkarni/$(am__dirstamp):
+	@$(MKDIR_P) tests/Perry-Nadkarni
+	@: > tests/Perry-Nadkarni/$(am__dirstamp)
+tests/Perry-Nadkarni/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) tests/Perry-Nadkarni/$(DEPDIR)
+	@: > tests/Perry-Nadkarni/$(DEPDIR)/$(am__dirstamp)
+tests/Perry-Nadkarni/test_timing_array_timsort-timsort.$(OBJEXT):  \
+	tests/Perry-Nadkarni/$(am__dirstamp) \
+	tests/Perry-Nadkarni/$(DEPDIR)/$(am__dirstamp)
 
 tests/test-timing-array_timsort$(EXEEXT): $(tests_test_timing_array_timsort_OBJECTS) $(tests_test_timing_array_timsort_DEPENDENCIES) $(EXTRA_tests_test_timing_array_timsort_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test-timing-array_timsort$(EXEEXT)
@@ -1008,6 +1021,7 @@ tests/test-timing-array_timsort$(EXEEXT): $(tests_test_timing_array_timsort_OBJE
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 	-rm -f tests/*.$(OBJEXT)
+	-rm -f tests/Perry-Nadkarni/*.$(OBJEXT)
 	-rm -f timsort/DATS/*.$(OBJEXT)
 	-rm -f timsort/DATS/*.lo
 	-rm -f timsort/DATS/COMMON/*.$(OBJEXT)
@@ -1028,6 +1042,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/bptr_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo@am__quote@ # am--include-marker
@@ -1176,6 +1191,20 @@ tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj: tests/test-
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-timing-array_timsort_tests.c' object='tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_timing_array_timsort-test-timing-array_timsort_tests.obj `if test -f 'tests/test-timing-array_timsort_tests.c'; then $(CYGPATH_W) 'tests/test-timing-array_timsort_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-timing-array_timsort_tests.c'; fi`
+
+tests/Perry-Nadkarni/test_timing_array_timsort-timsort.o: tests/Perry-Nadkarni/timsort.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/Perry-Nadkarni/test_timing_array_timsort-timsort.o -MD -MP -MF tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Tpo -c -o tests/Perry-Nadkarni/test_timing_array_timsort-timsort.o `test -f 'tests/Perry-Nadkarni/timsort.c' || echo '$(srcdir)/'`tests/Perry-Nadkarni/timsort.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Tpo tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/Perry-Nadkarni/timsort.c' object='tests/Perry-Nadkarni/test_timing_array_timsort-timsort.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/Perry-Nadkarni/test_timing_array_timsort-timsort.o `test -f 'tests/Perry-Nadkarni/timsort.c' || echo '$(srcdir)/'`tests/Perry-Nadkarni/timsort.c
+
+tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj: tests/Perry-Nadkarni/timsort.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj -MD -MP -MF tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Tpo -c -o tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj `if test -f 'tests/Perry-Nadkarni/timsort.c'; then $(CYGPATH_W) 'tests/Perry-Nadkarni/timsort.c'; else $(CYGPATH_W) '$(srcdir)/tests/Perry-Nadkarni/timsort.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Tpo tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/Perry-Nadkarni/timsort.c' object='tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj `if test -f 'tests/Perry-Nadkarni/timsort.c'; then $(CYGPATH_W) 'tests/Perry-Nadkarni/timsort.c'; else $(CYGPATH_W) '$(srcdir)/tests/Perry-Nadkarni/timsort.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1743,6 +1772,8 @@ distclean-generic:
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
 	-rm -f tests/$(DEPDIR)/$(am__dirstamp)
 	-rm -f tests/$(am__dirstamp)
+	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/$(am__dirstamp)
+	-rm -f tests/Perry-Nadkarni/$(am__dirstamp)
 	-rm -f timsort/DATS/$(DEPDIR)/$(am__dirstamp)
 	-rm -f timsort/DATS/$(am__dirstamp)
 	-rm -f timsort/DATS/COMMON/$(DEPDIR)/$(am__dirstamp)
@@ -1772,6 +1803,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
+	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
 	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
@@ -1835,6 +1867,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
+	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
 	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
