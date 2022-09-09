@@ -102,7 +102,7 @@ AC_SUBST([GNU],[])
 StM_REQUIRE_GNU_MAKE_IN_PATH
 StM_CONFIG_MAKEFILES
 
-#AC_CONFIG_FILES([ats2-timsort.pc])
+AC_CONFIG_FILES([ats2-timsort.pc])
 AC_CONFIG_FILES([list-ats-dependencies.dats])
 
 AC_OUTPUT

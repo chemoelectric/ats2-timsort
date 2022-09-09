@@ -1,0 +1,28 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+host=@host@
+package=@PACKAGE@
+version=@VERSION@
+pkgincludedir="${includedir}/${package}"
+char_bit=@CHAR_BIT@
+bitsizeof_size_t=@BITSIZEOF_SIZE_T@
+
+# It is recommended you override this with
+# --define-variable=PATSHOME="${PATSHOME}"
+PATSHOME="@PKGCONFIG_PATSHOME@"
+
+CPPFLAGS="-I${pkgincludedir} -I${PATSHOME} -I${PATSHOME}/ccomp/runtime"
+
+# Options for patsopt.
+PATSOPTFLAGS="-IATS ${pkgincludedir}"
+
+# Options for patscc.
+PATSCCFLAGS="-IIATS ${pkgincludedir}"
+
+Name: ${package}
+Description: Timsort (powersort) for ATS2/Postiats
+Version: ${version}
+Libs: -L${libdir} -lats2-timsort
+Cflags: ${CPPFLAGS}
