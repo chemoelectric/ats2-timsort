@@ -103,7 +103,49 @@ StM_REQUIRE_GNU_MAKE_IN_PATH
 StM_CONFIG_MAKEFILES
 
 AC_CONFIG_FILES([ats2-timsort.pc])
+#AC_CONFIG_FILES([ats2-timsort-c.pc])
 AC_CONFIG_FILES([list-ats-dependencies.dats])
+
+AC_CONFIG_COMMANDS([timsort/DATS/typed-timsort-for-c.dats],
+  [for t in pointer \
+            int unsigned_int \
+            signed_char unsigned_char \
+            short unsigned_short \
+            long unsigned_long \
+            long_long unsigned_long_long \
+            float double long_double; do
+    funcname="${t}_timsort"
+    case "${t}" in
+      pointer) t_C="const void *" t_ATS="ptr" ;;
+
+      int) t_C="int" t_ATS="int" ;;
+      unsigned_int) t_C="unsigned int" t_ATS="uint" ;;
+
+      signed_char) t_C="signed char" t_ATS="schar" ;;
+      unsigned_char) t_C="unsigned char" t_ATS="uchar" ;;
+
+      short) t_C="short" t_ATS="sint" ;;
+      unsigned_short) t_C="unsigned short" t_ATS="usint" ;;
+
+      long) t_C="long" t_ATS="lint" ;;
+      unsigned_long) t_C="unsigned long" t_ATS="ulint" ;;
+
+      long_long) t_C="long long" t_ATS="llint" ;;
+      unsigned_long_long) t_C="unsigned long long" t_ATS="ullint" ;;
+
+      float) t_C="float" t_ATS="float" ;;
+      double) t_C="double" t_ATS="double" ;;
+      long_double) t_C="long double" t_ATS="ldouble" ;;
+    esac
+    ${SED} -e 's/@FUNCNAME@/'"${funcname}"'/g' \
+           -e 's/@CTYPE@/'"${t_C}"'/g' \
+           -e 's/@ATSTYPE@/'"${t_ATS}"'/g' \
+           "${srcdir}/timsort/DATS/typed-timsort-for-c.dats.in" \
+           > "${builddir}/timsort/DATS/${funcname}.dats"
+   done],
+   [SED="${SED}"
+    srcdir="${srcdir-.}"
+    builddir="${builddir-.}"])
 
 AC_OUTPUT
 

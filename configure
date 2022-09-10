@@ -19056,7 +19056,11 @@ printf "%s\n" "$as_me: WARNING: Please consider installing and using GNU Make:
 
 ac_config_files="$ac_config_files ats2-timsort.pc"
 
+#AC_CONFIG_FILES([ats2-timsort-c.pc])
 ac_config_files="$ac_config_files list-ats-dependencies.dats"
+
+
+ac_config_commands="$ac_config_commands timsort/DATS/typed-timsort-for-c.dats"
 
 
 cat >confcache <<\_ACEOF
@@ -20188,6 +20192,9 @@ fi
 
       __stm_config_makefiles_make_command="${_cv_gnu_make_command}"
 
+SED="${SED}"
+    srcdir="${srcdir-.}"
+    builddir="${builddir-.}"
 
 _ACEOF
 
@@ -20203,6 +20210,7 @@ do
     "GNUmakefile") CONFIG_FILES="$CONFIG_FILES GNUmakefile:Makefile.in" ;;
     "ats2-timsort.pc") CONFIG_FILES="$CONFIG_FILES ats2-timsort.pc" ;;
     "list-ats-dependencies.dats") CONFIG_FILES="$CONFIG_FILES list-ats-dependencies.dats" ;;
+    "timsort/DATS/typed-timsort-for-c.dats") CONFIG_COMMANDS="$CONFIG_COMMANDS timsort/DATS/typed-timsort-for-c.dats" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -21459,6 +21467,42 @@ _LT_EOF
 EOF
       fi
     ;;
+    "timsort/DATS/typed-timsort-for-c.dats":C) for t in pointer \
+            int unsigned_int \
+            signed_char unsigned_char \
+            short unsigned_short \
+            long unsigned_long \
+            long_long unsigned_long_long \
+            float double long_double; do
+    funcname="${t}_timsort"
+    case "${t}" in
+      pointer) t_C="const void *" t_ATS="ptr" ;;
+
+      int) t_C="int" t_ATS="int" ;;
+      unsigned_int) t_C="unsigned int" t_ATS="uint" ;;
+
+      signed_char) t_C="signed char" t_ATS="schar" ;;
+      unsigned_char) t_C="unsigned char" t_ATS="uchar" ;;
+
+      short) t_C="short" t_ATS="sint" ;;
+      unsigned_short) t_C="unsigned short" t_ATS="usint" ;;
+
+      long) t_C="long" t_ATS="lint" ;;
+      unsigned_long) t_C="unsigned long" t_ATS="ulint" ;;
+
+      long_long) t_C="long long" t_ATS="llint" ;;
+      unsigned_long_long) t_C="unsigned long long" t_ATS="ullint" ;;
+
+      float) t_C="float" t_ATS="float" ;;
+      double) t_C="double" t_ATS="double" ;;
+      long_double) t_C="long double" t_ATS="ldouble" ;;
+    esac
+    ${SED} -e 's/@FUNCNAME@/'"${funcname}"'/g' \
+           -e 's/@CTYPE@/'"${t_C}"'/g' \
+           -e 's/@ATSTYPE@/'"${t_ATS}"'/g' \
+           "${srcdir}/timsort/DATS/typed-timsort-for-c.dats.in" \
+           > "${builddir}/timsort/DATS/${funcname}.dats"
+   done ;;
 
   esac
 done # for ac_tag

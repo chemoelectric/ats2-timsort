@@ -189,6 +189,60 @@ libats2_timsort_la_DEPENDENCIES += $(TIMSORT_CATS)
 libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 
 #--------------------------------------------------------------------------
+#
+# The C library.
+#
+
+lib_LTLIBRARIES += libats2-timsort-c.la
+
+TIMSORT_ATS_SRC =
+TIMSORT_ATS_SRC += timsort/DATS/pointer_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/signed_char_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/unsigned_char_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/int_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/unsigned_int_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/short_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/unsigned_short_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/long_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/unsigned_long_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/long_long_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/unsigned_long_long_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/float_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/double_timsort.dats
+TIMSORT_ATS_SRC += timsort/DATS/long_double_timsort.dats
+CLEANFILES += $(TIMSORT_ATS_SRC)
+
+TIMSORT_C_SRC =
+TIMSORT_C_SRC += timsort/DATS/pointer_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/signed_char_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/unsigned_char_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/int_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/unsigned_int_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/short_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/unsigned_short_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/long_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/unsigned_long_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/long_long_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/unsigned_long_long_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/float_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/double_timsort_dats.c
+TIMSORT_C_SRC += timsort/DATS/long_double_timsort_dats.c
+CLEANFILES += $(TIMSORT_C_SRC)
+
+$(TIMSORT_C_SRC): config.status
+config.status: timsort/DATS/typed-timsort-for-c.dats.in
+
+nodist_libats2_timsort_c_la_SOURCES =
+nodist_libats2_timsort_c_la_SOURCES += $(TIMSORT_C_SRC)
+dist_libats2_timsort_c_la_SOURCES =
+dist_libats2_timsort_c_la_SOURCES += ats2-timsort.h
+dist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory.h
+
+nobase_dist_pkginclude_HEADERS += ats2-timsort.h
+
+EXTRA_DIST += timsort/DATS/typed-timsort-for-c.dats.in
+
+#--------------------------------------------------------------------------
 
 TESTS =
 
@@ -309,6 +363,19 @@ tests_test_timing_array_timsort_LDADD =
 tests_test_timing_array_timsort_LDADD += libats2-timsort.la
 tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
 
+TESTS += tests/test-int_timsort
+EXTRA_PROGRAMS += tests/test-int_timsort
+CLEANFILES += tests/test-int_timsort
+tests_test_int_timsort_SOURCES =
+tests_test_int_timsort_SOURCES += tests/test-int_timsort.c
+tests_test_int_timsort_SOURCES += ats2-timsort.h
+tests_test_int_timsort_DEPENDENCIES =
+tests_test_int_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_int_timsort_CPPFLAGS =
+tests_test_int_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_int_timsort_LDADD =
+tests_test_int_timsort_LDADD += libats2-timsort-c.la
+
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
 
@@ -336,6 +403,7 @@ list_ats_dependencies_LDADD += -latslib
 #--------------------------------------------------------------------------
 
 nodist_pkgconfig_DATA += ats2-timsort.pc
+#nodist_pkgconfig_DATA += ats2-timsort-c.pc
 
 #--------------------------------------------------------------------------
 # local variables:

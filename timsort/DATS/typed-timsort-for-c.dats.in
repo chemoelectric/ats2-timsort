@@ -1,0 +1,49 @@
+(*
+  Copyright © 2022 Barry Schwartz
+
+  This program is free software: you can redistribute it and/or
+  modify it under the terms of the GNU General Public License, as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+
+  You should have received copies of the GNU General Public License
+  along with this program. If not, see
+  <https://www.gnu.org/licenses/>.
+*)
+
+#define ATS_DYNLOADFLAG 0
+
+#define ATS_PACKNAME "ats2-timsort-c"
+#define ATS_EXTERN_PREFIX "ats2_timsort_c_"
+
+#include "share/atspre_staload.hats"
+#include "timsort/HATS/array-timsort.hats"
+
+%{^
+#include "ats2-timsort.h"
+#include "timsort-for-c-memory.h"
+%}
+
+extern fn
+ats2_timsort_c_@FUNCNAME@
+          {n         : int}
+          {arrsz     : int | n <= arrsz}
+          (arr       : &array (@ATSTYPE@, arrsz),
+           n         : size_t n,
+           less_than : (@ATSTYPE@, @ATSTYPE@) -<fun> int)
+    : void = "ext#ats2_timsort_c_@FUNCNAME@"
+
+implement
+ats2_timsort_c_@FUNCNAME@ (arr, n, less_than) =
+  let
+    implement
+    array_timsort$lt<@ATSTYPE@> (x, y) =
+      (x \less_than y) <> 0
+  in
+    array_timsort<@ATSTYPE@> (arr, n)
+  end
