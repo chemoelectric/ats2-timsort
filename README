@@ -9,7 +9,8 @@ insertion sort and merge.
 
 I may also add a qsort-like implementation for use from C code. (The
 essential difference from the basic implementation would be that qsort
-sorts blocks of memory, rather than array elements.)
+sorts arbitrarily sized blocks of memory, rather than fixed-size array
+elements.)
 
 
 References on the algorithms:
