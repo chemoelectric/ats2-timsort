@@ -7,9 +7,9 @@ insertion sort uses binary search, and the merge supports galloping.
 I may add a sort for list_vt. This would have more conventional
 insertion sort and merge.
 
-I may also add a qsort-like implementation for use from C code. (The
-essential difference from the basic implementation would be that qsort
-sorts arbitrarily sized blocks of memory, rather than fixed-size array
+I may also add a qsort-like implementation for use from C code. (One
+cannot simply use the main implementation, because qsort sorts
+arbitrarily sized blocks of memory, rather than fixed-size array
 elements.)
 
 
