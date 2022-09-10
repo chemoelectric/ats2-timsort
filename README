@@ -4,6 +4,9 @@ Timsort (powersort) for ATS2/Postiats
 Currently there is just an array sort that supports linear types. The
 insertion sort uses binary search, and the merge supports galloping.
 
+I will add C interfaces for sorting arrays of pointers and other
+built-in types.
+
 I may add a sort for list_vt. This would have more conventional
 insertion sort and merge.
 
