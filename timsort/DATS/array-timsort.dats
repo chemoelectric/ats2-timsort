@@ -1405,7 +1405,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                         + (count_rgt
                               >= (params.gallop_stop_threshold)) then
                     begin
-                      (* Lower the gallop threshold and continue
+                      (* Lower the gallop thresholds and continue
                          galloping. *)
                       lower_gallop_thresholds params;
                       galloping_merge (pf_lft, pf_between, pf_merged,
@@ -1415,7 +1415,8 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                     end
                   else
                     begin
-                      (* Raise the gallop threshold and stop galloping. *)
+                      (* Raise the gallop thresholds and stop
+                         galloping. *)
                       raise_gallop_thresholds params;
                       merge_runs (pf_lft, pf_between, pf_merged,
                                   pf_rgt, pf_cleared |
