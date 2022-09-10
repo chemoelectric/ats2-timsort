@@ -6,3 +6,23 @@ insertion sort uses binary search, and the merge supports galloping.
 
 I may add a sort for list_vt. This would have more conventional
 insertion sort and merge.
+
+I may also add a qsort-like implementation for use from C code. (The
+essential difference from the basic implementation would be that qsort
+sorts blocks of memory, rather than array elements.)
+
+
+References on the algorithms:
+
+  * listsort.txt (https://archive.ph/XWTy3)
+
+  * J. Ian Munro and Sebastian Wild, ‘Nearly-optimal mergesorts: fast,
+    practical sorting methods that optimally adapt to existing
+    runs’, 10 May 2018. arXiv:1805.04154v1.
+
+  * H. Bottenbruch, "Structure and use of ALGOL 60", Journal of the
+    ACM, Volume 9, Issue 2, April 1962, pp.161-221.
+    https://doi.org/10.1145/321119.321120 (Pages 214 and 215 describe
+    how to do a binary search.)
+
+  * https://en.wikipedia.org/w/index.php?title=Binary_search_algorithm&oldid=1062988272#Alternative_procedure
