@@ -56,6 +56,7 @@ AC_PROG_CC
 AC_PROG_CC_C_O
 AC_PROG_CXX
 AC_PROG_CXX_C_O
+AC_CHECK_PROGS([M4],[m4])
 AC_CHECK_PROGS([PATSOPT],[patsopt])
 AC_PROG_INSTALL
 AC_PROG_LN_S
@@ -85,6 +86,74 @@ PKG_INSTALLDIR
 #
 # Checks for typedefs, structures, and compiler characteristics.
 
+AC_CHECK_SIZEOF([int])
+AC_CHECK_SIZEOF([signed char])
+AC_CHECK_SIZEOF([short])
+AC_CHECK_SIZEOF([long])
+AC_CHECK_SIZEOF([long long])
+
+AC_CHECK_SIZEOF([unsigned int])
+AC_CHECK_SIZEOF([unsigned char])
+AC_CHECK_SIZEOF([unsigned short])
+AC_CHECK_SIZEOF([unsigned long])
+AC_CHECK_SIZEOF([unsigned long long])
+
+AC_CHECK_SIZEOF([float])
+AC_CHECK_SIZEOF([double])
+AC_CHECK_SIZEOF([long double])
+
+AC_CHECK_SIZEOF([ssize_t])
+AC_CHECK_SIZEOF([intptr_t])
+AC_CHECK_SIZEOF([intmax_t])
+
+AC_CHECK_SIZEOF([size_t])
+AC_CHECK_SIZEOF([uintptr_t])
+AC_CHECK_SIZEOF([uintmax_t])
+
+AC_CHECK_SIZEOF([int8_t])
+AC_CHECK_SIZEOF([int16_t])
+AC_CHECK_SIZEOF([int32_t])
+AC_CHECK_SIZEOF([int64_t])
+
+AC_CHECK_SIZEOF([uint8_t])
+AC_CHECK_SIZEOF([uint16_t])
+AC_CHECK_SIZEOF([uint32_t])
+AC_CHECK_SIZEOF([uint64_t])
+
+M4FLAGS="${M4FLAGS} -DSIZEOF_INT=${ac_cv_sizeof_int}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_SIGNED_CHAR=${ac_cv_sizeof_signed_char}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_SHORT=${ac_cv_sizeof_short}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_LONG=${ac_cv_sizeof_long}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_LONG_LONG=${ac_cv_sizeof_long_long}"
+
+M4FLAGS="${M4FLAGS} -DSIZEOF_UNSIGNED_INT=${ac_cv_sizeof_unsigned_int}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UNSIGNED_CHAR=${ac_cv_sizeof_unsigned_char}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UNSIGNED_SHORT=${ac_cv_sizeof_unsigned_short}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UNSIGNED_LONG=${ac_cv_sizeof_unsigned_long}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UNSIGNED_LONG_LONG=${ac_cv_sizeof_unsigned_long_long}"
+
+M4FLAGS="${M4FLAGS} -DSIZEOF_FLOAT=${ac_cv_sizeof_float}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_DOUBLE=${ac_cv_sizeof_double}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_LONG_DOUBLE=${ac_cv_sizeof_long_double}"
+
+M4FLAGS="${M4FLAGS} -DSIZEOF_SSIZE_T=${ac_cv_sizeof_ssize_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_INTPTR_T=${ac_cv_sizeof_intptr_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_INTMAX_T=${ac_cv_sizeof_intmax_t}"
+
+M4FLAGS="${M4FLAGS} -DSIZEOF_SIZE_T=${ac_cv_sizeof_size_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UINTPTR_T=${ac_cv_sizeof_uintptr_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UINTMAX_T=${ac_cv_sizeof_uintmax_t}"
+
+M4FLAGS="${M4FLAGS} -DSIZEOF_INT8_T=${ac_cv_sizeof_int8_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_INT16_T=${ac_cv_sizeof_int16_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_INT32_T=${ac_cv_sizeof_int32_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_INT64_T=${ac_cv_sizeof_int64_t}"
+
+M4FLAGS="${M4FLAGS} -DSIZEOF_UINT8_T=${ac_cv_sizeof_uint8_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UINT16_T=${ac_cv_sizeof_uint16_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UINT32_T=${ac_cv_sizeof_uint32_t}"
+M4FLAGS="${M4FLAGS} -DSIZEOF_UINT64_T=${ac_cv_sizeof_uint64_t}"
+
 #--------------------------------------------------------------------------
 #
 # Checks for library functions.
@@ -99,53 +168,15 @@ CFLAGS="${CFLAGS}${CFLAGS+ }\$(CODE_COVERAGE_CFLAGS)"
 # @GNU@ here may be better.)
 AC_SUBST([GNU],[])
 
+AC_SUBST([M4FLAGS])
+
 StM_REQUIRE_GNU_MAKE_IN_PATH
 StM_CONFIG_MAKEFILES
 
 AC_CONFIG_FILES([ats2-timsort.pc])
 #AC_CONFIG_FILES([ats2-timsort-c.pc])
 AC_CONFIG_FILES([list-ats-dependencies.dats])
-
-AC_CONFIG_COMMANDS([timsort/DATS/typed-timsort-for-c.dats],
-  [for t in pointer \
-            int unsigned_int \
-            signed_char unsigned_char \
-            short unsigned_short \
-            long unsigned_long \
-            long_long unsigned_long_long \
-            float double long_double; do
-    funcname="${t}_timsort"
-    case "${t}" in
-      pointer) t_C="const void *" t_ATS="ptr" ;;
-
-      int) t_C="int" t_ATS="int" ;;
-      unsigned_int) t_C="unsigned int" t_ATS="uint" ;;
-
-      signed_char) t_C="signed char" t_ATS="schar" ;;
-      unsigned_char) t_C="unsigned char" t_ATS="uchar" ;;
-
-      short) t_C="short" t_ATS="sint" ;;
-      unsigned_short) t_C="unsigned short" t_ATS="usint" ;;
-
-      long) t_C="long" t_ATS="lint" ;;
-      unsigned_long) t_C="unsigned long" t_ATS="ulint" ;;
-
-      long_long) t_C="long long" t_ATS="llint" ;;
-      unsigned_long_long) t_C="unsigned long long" t_ATS="ullint" ;;
-
-      float) t_C="float" t_ATS="float" ;;
-      double) t_C="double" t_ATS="double" ;;
-      long_double) t_C="long double" t_ATS="ldouble" ;;
-    esac
-    ${SED} -e 's/@FUNCNAME@/'"${funcname}"'/g' \
-           -e 's/@CTYPE@/'"${t_C}"'/g' \
-           -e 's/@ATSTYPE@/'"${t_ATS}"'/g' \
-           "${srcdir}/timsort/DATS/typed-timsort-for-c.dats.in" \
-           > "${builddir}/timsort/DATS/${funcname}.dats"
-   done],
-   [SED="${SED}"
-    srcdir="${srcdir-.}"
-    builddir="${builddir-.}"])
+AC_CONFIG_FILES([common-macros.m4])
 
 AC_OUTPUT
 

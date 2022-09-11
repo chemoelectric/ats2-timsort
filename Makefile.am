@@ -33,6 +33,7 @@ MOSTLYCLEANFILES =
 CLEANFILES =
 DISTCLEANFILES =
 BUILT_SOURCES =
+AM_M4FLAGS =
 AM_CPPFLAGS =
 AM_CFLAGS =
 AM_LDFLAGS =
@@ -67,6 +68,17 @@ CODE_COVERAGE_IGNORE_PATTERN += $(PATSHOME)/prelude/CATS/*
 
 clean-local: code-coverage-clean tests-clean
 distclean-local: code-coverage-dist-clean ats-includes-distclean
+
+#--------------------------------------------------------------------------
+
+TOTAL_M4FLAGS =
+TOTAL_M4FLAGS += $(AM_M4FLAGS)
+TOTAL_M4FLAGS += $(M4FLAGS)
+TOTAL_M4FLAGS += $(XM4FLAGS)
+
+%.dats: %.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) $(<) > $(@)
 
 #--------------------------------------------------------------------------
 
@@ -196,41 +208,15 @@ libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 lib_LTLIBRARIES += libats2-timsort-c.la
 
 TIMSORT_ATS_SRC =
-TIMSORT_ATS_SRC += timsort/DATS/pointer_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/signed_char_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/unsigned_char_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/int_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/unsigned_int_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/short_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/unsigned_short_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/long_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/unsigned_long_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/long_long_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/unsigned_long_long_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/float_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/double_timsort.dats
-TIMSORT_ATS_SRC += timsort/DATS/long_double_timsort.dats
+BUILT_SOURCES += $(TIMSORT_ATS_SRC)
 CLEANFILES += $(TIMSORT_ATS_SRC)
 
+$(TIMSORT_ATS_SRC): typed-timsort-for-c.dats.m4
+
 TIMSORT_C_SRC =
-TIMSORT_C_SRC += timsort/DATS/pointer_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/signed_char_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/unsigned_char_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/int_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/unsigned_int_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/short_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/unsigned_short_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/long_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/unsigned_long_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/long_long_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/unsigned_long_long_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/float_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/double_timsort_dats.c
-TIMSORT_C_SRC += timsort/DATS/long_double_timsort_dats.c
 CLEANFILES += $(TIMSORT_C_SRC)
 
-$(TIMSORT_C_SRC): config.status
-config.status: timsort/DATS/typed-timsort-for-c.dats.in
+include $(top_srcdir)/ats2-timsort-c.am
 
 nodist_libats2_timsort_c_la_SOURCES =
 nodist_libats2_timsort_c_la_SOURCES += $(TIMSORT_C_SRC)
@@ -245,7 +231,7 @@ timsort-for-c-memory_dats.$(OBJEXT): timsort-for-c-memory.include.c
 
 CLEANFILES += timsort-for-c-memory_dats.c
 
-EXTRA_DIST += timsort/DATS/typed-timsort-for-c.dats.in
+EXTRA_DIST += typed-timsort-for-c.dats.m4
 EXTRA_DIST += timsort-for-c-memory.dats
 EXTRA_DIST += timsort-for-c-memory.include.c
 

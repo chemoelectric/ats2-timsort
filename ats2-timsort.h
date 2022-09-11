@@ -20,6 +20,7 @@
 #define ATS2_TIMSORT_H__HEADER_GUARD__
 
 #include <stdlib.h>
+#include <stdint.h>
 
 typedef void ats2_timsort_c_timsort_t (void *, size_t, void *);
 typedef const void *ats2_timsort_c_pointer;
@@ -36,150 +37,81 @@ extern void *(*ats2_timsort_c_realloc_hook) (void *p,
 ats2_timsort_c_timsort_t ats2_timsort_c_pointer_timsort;
 
 ats2_timsort_c_timsort_t ats2_timsort_c_int_timsort;
-ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_int_timsort;
-
 ats2_timsort_c_timsort_t ats2_timsort_c_signed_char_timsort;
-ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_char_timsort;
-
 ats2_timsort_c_timsort_t ats2_timsort_c_short_timsort;
-ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_short_timsort;
-
 ats2_timsort_c_timsort_t ats2_timsort_c_long_timsort;
-ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_long_timsort;
-
 ats2_timsort_c_timsort_t ats2_timsort_c_long_long_timsort;
+
+ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_int_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_char_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_short_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_long_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_unsigned_long_long_timsort;
 
 ats2_timsort_c_timsort_t ats2_timsort_c_float_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_double_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_long_double_timsort;
 
-static inline void
-pointer_timsort (ats2_timsort_c_pointer *arr,
-                 size_t n,
-                 ats2_timsort_c_bool
-                 (*less_than) (ats2_timsort_c_pointer,
-                               ats2_timsort_c_pointer))
-{
-  ats2_timsort_c_pointer_timsort (arr, n, less_than);
-}
+ats2_timsort_c_timsort_t ats2_timsort_c_ssize_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_intptr_t_timsort;
+/* ats2_timsort_c_timsort_t ats2_timsort_c_intmax_t_timsort; */
 
-static inline void
-int_timsort (int *arr,
-             size_t n,
-             ats2_timsort_c_bool (*less_than) (int, int))
-{
-  ats2_timsort_c_int_timsort (arr, n, less_than);
-}
+ats2_timsort_c_timsort_t ats2_timsort_c_size_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_uintptr_t_timsort;
+/* ats2_timsort_c_timsort_t ats2_timsort_c_uintmax_t_timsort; */
 
-static inline void
-unsigned_int_timsort (unsigned int *arr,
-                      size_t n,
-                      ats2_timsort_c_bool (*less_than) (int, int))
-{
-  ats2_timsort_c_unsigned_int_timsort (arr, n, less_than);
-}
+ats2_timsort_c_timsort_t ats2_timsort_c_int8_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_int16_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_int32_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_int64_t_timsort;
 
-static inline void
-signed_char_timsort (signed char *arr,
-                     size_t n,
-                     ats2_timsort_c_bool
-                     (*less_than) (signed char,
-                                   signed char))
-{
-  ats2_timsort_c_signed_char_timsort (arr, n, less_than);
-}
+ats2_timsort_c_timsort_t ats2_timsort_c_uint8_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_uint16_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_uint32_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_uint64_t_timsort;
 
-static inline void
-unsigned_char_timsort (unsigned char *arr,
-                       size_t n,
-                       ats2_timsort_c_bool
-                       (*less_than) (unsigned char,
-                                     unsigned char))
-{
-  ats2_timsort_c_unsigned_char_timsort (arr, n, less_than);
-}
+#define ATS2_TIMSORT_C_DEFINE_FUNCTION(F, T)            \
+  static inline void                                    \
+  F##_timsort (T *arr, size_t n,                        \
+               ats2_timsort_c_bool (*less_than) (T, T)) \
+  {                                                     \
+    ats2_timsort_c_##F##_timsort (arr, n, less_than);   \
+  }
 
-static inline void
-short_timsort (short *arr,
-               size_t n,
-               ats2_timsort_c_bool (*less_than) (short, short))
-{
-  ats2_timsort_c_short_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (pointer, ats2_timsort_c_pointer)
 
-static inline void
-unsigned_short_timsort (unsigned short *arr,
-                        size_t n,
-                        ats2_timsort_c_bool
-                        (*less_than) (unsigned short,
-                                      unsigned short))
-{
-  ats2_timsort_c_unsigned_short_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (int, int)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (signed_char, signed char)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (short, short)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (long, long)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (long_long, long long)
 
-static inline void
-long_timsort (long *arr,
-              size_t n,
-              ats2_timsort_c_bool (*less_than) (long, long))
-{
-  ats2_timsort_c_long_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (unsigned_int, unsigned int)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (unsigned_char, unsigned char)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (unsigned_short, unsigned short)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (unsigned_long, unsigned long)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (unsigned_long_long, unsigned long long)
 
-static inline void
-unsigned_long_timsort (unsigned long *arr,
-                       size_t n,
-                       ats2_timsort_c_bool
-                       (*less_than) (unsigned long,
-                                     unsigned long))
-{
-  ats2_timsort_c_unsigned_long_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (float, float)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (double, double)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (long_double, long double)
 
-static inline void
-long_long_timsort (long long *arr,
-                   size_t n,
-                   ats2_timsort_c_bool
-                   (*less_than) (long long,
-                                 long long))
-{
-  ats2_timsort_c_long_long_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (ssize_t, ssize_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (intptr_t, intptr_t)
+/* ATS2_TIMSORT_C_DEFINE_FUNCTION (intmax_t, intmax_t) */
 
-static inline void
-unsigned_long_long_timsort (unsigned long long *arr,
-                            size_t n,
-                            ats2_timsort_c_bool
-                            (*less_than) (unsigned long long,
-                                          unsigned long long))
-{
-  ats2_timsort_c_unsigned_long_long_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (size_t, size_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (uintptr_t, uintptr_t)
+/* ATS2_TIMSORT_C_DEFINE_FUNCTION (uintmax_t, uintmax_t) */
 
-static inline void
-float_timsort (float *arr,
-               size_t n,
-               ats2_timsort_c_bool (*less_than) (float, float))
-{
-  ats2_timsort_c_float_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (int8_t, int8_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (int16_t, int16_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (int32_t, int32_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (int64_t, int64_t)
 
-static inline void
-double_timsort (double *arr,
-                size_t n,
-                ats2_timsort_c_bool (*less_than) (double, double))
-{
-  ats2_timsort_c_double_timsort (arr, n, less_than);
-}
-
-static inline void
-long_double_timsort (long double *arr,
-                     size_t n,
-                     ats2_timsort_c_bool
-                     (*less_than) (long double,
-                                   long double))
-{
-  ats2_timsort_c_long_double_timsort (arr, n, less_than);
-}
+ATS2_TIMSORT_C_DEFINE_FUNCTION (uint8_t, uint8_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (uint16_t, uint16_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (uint32_t, uint32_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (uint64_t, uint64_t)
 
 #endif /* ATS2_TIMSORT_H__HEADER_GUARD__ */

@@ -1,0 +1,130 @@
+TIMSORT_ATS_SRC += pointer_timsort.dats
+TIMSORT_C_SRC += pointer_timsort_dats.c
+pointer_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=pointer $(<) > $(@)
+TIMSORT_ATS_SRC += int_timsort.dats
+TIMSORT_C_SRC += int_timsort_dats.c
+int_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int $(<) > $(@)
+TIMSORT_ATS_SRC += unsigned_int_timsort.dats
+TIMSORT_C_SRC += unsigned_int_timsort_dats.c
+unsigned_int_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_int $(<) > $(@)
+TIMSORT_ATS_SRC += signed_char_timsort.dats
+TIMSORT_C_SRC += signed_char_timsort_dats.c
+signed_char_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=signed_char $(<) > $(@)
+TIMSORT_ATS_SRC += unsigned_char_timsort.dats
+TIMSORT_C_SRC += unsigned_char_timsort_dats.c
+unsigned_char_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_char $(<) > $(@)
+TIMSORT_ATS_SRC += short_timsort.dats
+TIMSORT_C_SRC += short_timsort_dats.c
+short_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=short $(<) > $(@)
+TIMSORT_ATS_SRC += unsigned_short_timsort.dats
+TIMSORT_C_SRC += unsigned_short_timsort_dats.c
+unsigned_short_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_short $(<) > $(@)
+TIMSORT_ATS_SRC += long_timsort.dats
+TIMSORT_C_SRC += long_timsort_dats.c
+long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long $(<) > $(@)
+TIMSORT_ATS_SRC += unsigned_long_timsort.dats
+TIMSORT_C_SRC += unsigned_long_timsort_dats.c
+unsigned_long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_long $(<) > $(@)
+TIMSORT_ATS_SRC += long_long_timsort.dats
+TIMSORT_C_SRC += long_long_timsort_dats.c
+long_long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long_long $(<) > $(@)
+TIMSORT_ATS_SRC += unsigned_long_long_timsort.dats
+TIMSORT_C_SRC += unsigned_long_long_timsort_dats.c
+unsigned_long_long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_long_long $(<) > $(@)
+TIMSORT_ATS_SRC += float_timsort.dats
+TIMSORT_C_SRC += float_timsort_dats.c
+float_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=float $(<) > $(@)
+TIMSORT_ATS_SRC += double_timsort.dats
+TIMSORT_C_SRC += double_timsort_dats.c
+double_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=double $(<) > $(@)
+TIMSORT_ATS_SRC += long_double_timsort.dats
+TIMSORT_C_SRC += long_double_timsort_dats.c
+long_double_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long_double $(<) > $(@)
+TIMSORT_ATS_SRC += ssize_t_timsort.dats
+TIMSORT_C_SRC += ssize_t_timsort_dats.c
+ssize_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=ssize_t $(<) > $(@)
+TIMSORT_ATS_SRC += size_t_timsort.dats
+TIMSORT_C_SRC += size_t_timsort_dats.c
+size_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=size_t $(<) > $(@)
+TIMSORT_ATS_SRC += intptr_t_timsort.dats
+TIMSORT_C_SRC += intptr_t_timsort_dats.c
+intptr_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=intptr_t $(<) > $(@)
+TIMSORT_ATS_SRC += uintptr_t_timsort.dats
+TIMSORT_C_SRC += uintptr_t_timsort_dats.c
+uintptr_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uintptr_t $(<) > $(@)
+TIMSORT_ATS_SRC += int8_t_timsort.dats
+TIMSORT_C_SRC += int8_t_timsort_dats.c
+int8_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int8_t $(<) > $(@)
+TIMSORT_ATS_SRC += uint8_t_timsort.dats
+TIMSORT_C_SRC += uint8_t_timsort_dats.c
+uint8_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint8_t $(<) > $(@)
+TIMSORT_ATS_SRC += int16_t_timsort.dats
+TIMSORT_C_SRC += int16_t_timsort_dats.c
+int16_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int16_t $(<) > $(@)
+TIMSORT_ATS_SRC += uint16_t_timsort.dats
+TIMSORT_C_SRC += uint16_t_timsort_dats.c
+uint16_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint16_t $(<) > $(@)
+TIMSORT_ATS_SRC += int32_t_timsort.dats
+TIMSORT_C_SRC += int32_t_timsort_dats.c
+int32_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int32_t $(<) > $(@)
+TIMSORT_ATS_SRC += uint32_t_timsort.dats
+TIMSORT_C_SRC += uint32_t_timsort_dats.c
+uint32_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint32_t $(<) > $(@)
+TIMSORT_ATS_SRC += int64_t_timsort.dats
+TIMSORT_C_SRC += int64_t_timsort_dats.c
+int64_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int64_t $(<) > $(@)
+TIMSORT_ATS_SRC += uint64_t_timsort.dats
+TIMSORT_C_SRC += uint64_t_timsort_dats.c
+uint64_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint64_t $(<) > $(@)

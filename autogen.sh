@@ -184,10 +184,38 @@ run_autoreconf() {
     autoreconf --force --install --verbose || exit $?
 }
 
+make_ats2_timsort_c_am() {
+    f='ats2-timsort-c.am'
+    echo "Creating ${f}"
+    rm -f "${f}"
+    touch "${f}"
+    for t in pointer \
+             int unsigned_int \
+             signed_char unsigned_char \
+             short unsigned_short \
+             long unsigned_long \
+             long_long unsigned_long_long \
+             float double long_double \
+             ssize_t size_t \
+             intptr_t uintptr_t \
+             int8_t uint8_t \
+             int16_t uint16_t \
+             int32_t uint32_t \
+             int64_t uint64_t; do
+        printf 'TIMSORT_ATS_SRC += %s_timsort.dats\n' "${t}" >> "${f}"
+        printf 'TIMSORT_C_SRC += %s_timsort_dats.c\n' "${t}" >> "${f}"
+        printf '%s_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4\n' "${t}" >> "${f}"
+	    printf '\t@$(MKDIR_P) $(@D)\n' >> "${f}"
+        printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' "${t}" >> "${f}"
+    done
+}
+
 # Run everything in a subshell, so the user does not get stuck in a
 # new directory if the process is interrupted.
 (
     cd "${srcdir}"
+
+    make_ats2_timsort_c_am
 
     need_sortsmill_tig && require_sortsmill_tig
     need_pkg_config && require_pkg_config
