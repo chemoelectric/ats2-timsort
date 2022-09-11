@@ -21,18 +21,6 @@ divert(-1)
 
 m4_define(`FUNCNAME',`TYPE`_timsort'')
 
-dnl m4_define(`CTYPE',
-dnl   `m4_if(TYPE,`pointer',`void *',
-dnl          TYPE,`unsigned_int',`unsigned int',
-dnl          TYPE,`signed_char',`signed char',
-dnl          TYPE,`unsigned_char',`unsigned char',
-dnl          TYPE,`unsigned_short',`unsigned short',
-dnl          TYPE,`unsigned_long',`unsigned long',
-dnl          TYPE,`long_long',`long long',
-dnl          TYPE,`unsigned_long_long',`unsigned long long',
-dnl          TYPE,`long_double',`long double',
-dnl          TYPE)')
-
 m4_define(`ATSTYPE',
   `m4_if(TYPE,`pointer',`ptr',
          TYPE,`unsigned_int',`uint',
@@ -57,23 +45,6 @@ m4_define(`ATSTYPE',
          TYPE,`uint64_t',`uint64',
          TYPE)')
 
-dnl m4_define(`IS_BUILTIN_TYPE',
-dnl   `m4_if(TYPE,`pointer',1,
-dnl          TYPE,`int',1,
-dnl          TYPE,`unsigned_int',1,
-dnl          TYPE,`signed_char',1,
-dnl          TYPE,`unsigned_char',1,
-dnl          TYPE,`short',1,
-dnl          TYPE,`unsigned_short',1,
-dnl          TYPE,`long',1,
-dnl          TYPE,`unsigned_long',1,
-dnl          TYPE,`long_long',1,
-dnl          TYPE,`unsigned_long_long',1,
-dnl          TYPE,`float',1,
-dnl          TYPE,`double',1,
-dnl          TYPE,`long_double',1,
-dnl          0)')
-
 m4_define(`IS_SIGNED_TYPE',
   `m4_if(TYPE,`int',1,
          TYPE,`signed_char',1,
@@ -87,31 +58,6 @@ m4_define(`IS_SIGNED_TYPE',
          TYPE,`int32_t',1,
          TYPE,`int64_t',1,
          0)')
-
-dnl m4_define(`SIZEOF',
-dnl   `m4_if(TYPE,`int',SIZEOF_INT,
-dnl          TYPE,`unsigned_int',SIZEOF_UNSIGNED_INT,
-dnl          TYPE,`signed_char',SIZEOF_SIGNED_CHAR,
-dnl          TYPE,`unsigned_char',SIZEOF_UNSIGNED_CHAR,
-dnl          TYPE,`short',SIZEOF_SHORT,
-dnl          TYPE,`unsigned_short',SIZEOF_UNSIGNED_SHORT,
-dnl          TYPE,`long',SIZEOF_LONG,
-dnl          TYPE,`unsigned_long',SIZEOF_UNSIGNED_LONG,
-dnl          TYPE,`long_long',SIZEOF_LONG_LONG,
-dnl          TYPE,`unsigned_long_long',SIZEOF_UNSIGNED_LONG_LONG,
-dnl          TYPE,`ssize_t',SIZEOF_SSIZE_T,
-dnl          TYPE,`size_t',SIZEOF_SIZE_T,
-dnl          TYPE,`intptr_t',SIZEOF_INTPTR_T
-dnl          TYPE,`uintptr_t',SIZEOF_UINTPTR_T,
-dnl          TYPE,`int8_t',SIZEOF_INT8_T,
-dnl          TYPE,`uint8_t',SIZEOF_UINT8_T,
-dnl          TYPE,`int16_t',SIZEOF_INT16_T,
-dnl          TYPE,`uint16_t',SIZEOF_UINT16_T,
-dnl          TYPE,`int32_t',SIZEOF_INT32_T,
-dnl          TYPE,`uint32_t',SIZEOF_UINT32_T,
-dnl          TYPE,`int64_t',SIZEOF_INT64_T,
-dnl          TYPE,`uint64_t',SIZEOF_UINT64_T,
-dnl          `type not handled')')
 
 m4_define(`DEFAULT_DEFINITION',
 `
