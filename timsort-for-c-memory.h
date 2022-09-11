@@ -16,6 +16,9 @@
   <https://www.gnu.org/licenses/>.
 */
 
+#ifndef TIMSORT_FOR_C_MEMORY_H__HEADER_GUARD__
+#define TIMSORT_FOR_C_MEMORY_H__HEADER_GUARD__
+
 #include <stdlib.h>
 
 #undef ATS_MEMALLOC_LIBC
@@ -28,56 +31,18 @@
 #undef ATS_CALLOC
 #undef ATS_REALLOC
 
-#define ATS_MINIT ats2_timsort_minit
-#define ATS_MFREE ats2_timsort_mfree
-#define ATS_MALLOC ats2_timsort_malloc
-#define ATS_CALLOC ats2_timsort_calloc
-#define ATS_REALLOC ats2_timsort_realloc
+#define ATS_MINIT ats2_timsort_c_minit
+#define ATS_MFREE ats2_timsort_c_mfree
+#define ATS_MALLOC ats2_timsort_c_malloc
+#define ATS_CALLOC ats2_timsort_c_calloc
+#define ATS_REALLOC ats2_timsort_c_realloc
 
-ATSinline() void
-ats2_timsort_minit (void)
-{
-  return;
-}
+extern void ats2_timsort_c_minit (void);
+extern void ats2_timsort_c_mfree (atstype_ptr p);
+extern atstype_ptr ats2_timsort_c_malloc (atstype_size size);
+extern atstype_ptr ats2_timsort_c_calloc (atstype_size nmemb,
+                                          atstype_size size);
+extern atstype_ptr ats2_timsort_c_realloc (atstype_ptr p,
+                                           atstype_size size);
 
-ATSinline() void
-ats2_timsort_mfree (atstype_ptr p)
-{
-  free (p);
-}
-
-ATSinline() atstype_ptr
-ats2_timsort_malloc (atstype_size size)
-{
-  atstype_ptr p = malloc (size);
-  if (p == NULL)
-    {
-      fprintf (stderr, "ats2-timsort: malloc failed.\n");
-      exit (1);
-    }
-  return p;
-}
-
-ATSinline() atstype_ptr
-ats2_timsort_calloc (atstype_size nmemb, atstype_size size)
-{
-  atstype_ptr p = calloc (nmemb, size);
-  if (p == NULL)
-    {
-      fprintf (stderr, "ats2-timsort: calloc failed.\n");
-      exit (1);
-    }
-  return p;
-}
-
-ATSinline() atstype_ptr
-ats2_timsort_realloc (atstype_ptr p, atstype_size size)
-{
-  atstype_ptr q = realloc (p, size);
-  if (q == NULL)
-    {
-      fprintf (stderr, "ats2-timsort: realloc failed.\n");
-      exit (1);
-    }
-  return q;
-}
+#endif /* TIMSORT_FOR_C_MEMORY_H__HEADER_GUARD__ */

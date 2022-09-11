@@ -197,7 +197,8 @@ am__objects_1 = timsort/DATS/pointer_timsort_dats.lo \
 	timsort/DATS/float_timsort_dats.lo \
 	timsort/DATS/double_timsort_dats.lo \
 	timsort/DATS/long_double_timsort_dats.lo
-nodist_libats2_timsort_c_la_OBJECTS = $(am__objects_1)
+nodist_libats2_timsort_c_la_OBJECTS = $(am__objects_1) \
+	timsort-for-c-memory_dats.lo
 libats2_timsort_c_la_OBJECTS = $(dist_libats2_timsort_c_la_OBJECTS) \
 	$(nodist_libats2_timsort_c_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -259,6 +260,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/build-aux/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po \
+	./$(DEPDIR)/timsort-for-c-memory_dats.Plo \
 	tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po \
 	tests/$(DEPDIR)/test_clz-test-clz_tests.Po \
 	tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po \
@@ -722,17 +724,19 @@ AUTOMAKE_OPTIONS = foreign subdir-objects -Wno-portability
 @CODE_COVERAGE_ENABLED_TRUE@code_coverage_sanitize = $(subst -,_,$(subst .,_,$(1)))
 @CODE_COVERAGE_ENABLED_TRUE@AM_DISTCHECK_CONFIGURE_FLAGS := $(AM_DISTCHECK_CONFIGURE_FLAGS) --disable-code-coverage
 EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
-	timsort/DATS/typed-timsort-for-c.dats.in tests/test-clz.dats \
-	tests/test-minrun.dats tests/test-nodepower.dats \
-	tests/test-galloping.dats tests/test-merges.dats \
-	tests/test-array_timsort.dats \
+	timsort/DATS/typed-timsort-for-c.dats.in \
+	timsort-for-c-memory.dats timsort-for-c-memory.include.c \
+	tests/test-clz.dats tests/test-minrun.dats \
+	tests/test-nodepower.dats tests/test-galloping.dats \
+	tests/test-merges.dats tests/test-array_timsort.dats \
 	tests/test-timing-array_timsort.dats \
 	list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
 CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
 	$(ARRAY_TIMSORT_DATS_C) $(TIMSORT_COMMON_SATS_C) \
 	$(TIMSORT_COMMON_DATS_C) $(TIMSORT_ATS_SRC) $(TIMSORT_C_SRC) \
-	tests/test-clz tests/test-clz_tests.c tests/test-minrun \
+	timsort-for-c-memory_dats.c tests/test-clz \
+	tests/test-clz_tests.c tests/test-minrun \
 	tests/test-minrun_tests.c tests/test-nodepower \
 	tests/test-nodepower_tests.c tests/test-galloping \
 	tests/test-galloping_tests.c tests/test-merges \
@@ -823,7 +827,8 @@ TIMSORT_C_SRC = timsort/DATS/pointer_timsort_dats.c \
 	timsort/DATS/float_timsort_dats.c \
 	timsort/DATS/double_timsort_dats.c \
 	timsort/DATS/long_double_timsort_dats.c
-nodist_libats2_timsort_c_la_SOURCES = $(TIMSORT_C_SRC)
+nodist_libats2_timsort_c_la_SOURCES = $(TIMSORT_C_SRC) \
+	timsort-for-c-memory_dats.c
 dist_libats2_timsort_c_la_SOURCES = ats2-timsort.h \
 	timsort-for-c-memory.h
 tests_test_clz_SOURCES = tests/test-clz_tests.c
@@ -1168,6 +1173,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timsort-for-c-memory_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_clz-test-clz_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po@am__quote@ # am--include-marker
@@ -1965,6 +1971,7 @@ clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po
+	-rm -f ./$(DEPDIR)/timsort-for-c-memory_dats.Plo
 	-rm -f tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_clz-test-clz_tests.Po
 	-rm -f tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
@@ -2044,6 +2051,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f ./$(DEPDIR)/list_ats_dependencies-list-ats-dependencies_depsprog.Po
+	-rm -f ./$(DEPDIR)/timsort-for-c-memory_dats.Plo
 	-rm -f tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_clz-test-clz_tests.Po
 	-rm -f tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
@@ -2279,6 +2287,8 @@ ats-includes-distclean:
 
 $(TIMSORT_C_SRC): config.status
 config.status: timsort/DATS/typed-timsort-for-c.dats.in
+
+timsort-for-c-memory_dats.$(OBJEXT): timsort-for-c-memory.include.c
 tests/test-clz_tests.c: tests/test-clz.dats
 tests/test-minrun_tests.c: tests/test-minrun.dats
 tests/test-nodepower_tests.c: tests/test-nodepower.dats

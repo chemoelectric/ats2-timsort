@@ -234,13 +234,20 @@ config.status: timsort/DATS/typed-timsort-for-c.dats.in
 
 nodist_libats2_timsort_c_la_SOURCES =
 nodist_libats2_timsort_c_la_SOURCES += $(TIMSORT_C_SRC)
+nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory_dats.c
 dist_libats2_timsort_c_la_SOURCES =
 dist_libats2_timsort_c_la_SOURCES += ats2-timsort.h
 dist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory.h
 
 nobase_dist_pkginclude_HEADERS += ats2-timsort.h
 
+timsort-for-c-memory_dats.$(OBJEXT): timsort-for-c-memory.include.c
+
+CLEANFILES += timsort-for-c-memory_dats.c
+
 EXTRA_DIST += timsort/DATS/typed-timsort-for-c.dats.in
+EXTRA_DIST += timsort-for-c-memory.dats
+EXTRA_DIST += timsort-for-c-memory.include.c
 
 #--------------------------------------------------------------------------
 

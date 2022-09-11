@@ -25,6 +25,14 @@ typedef void ats2_timsort_c_timsort_t (void *, size_t, void *);
 typedef const void *ats2_timsort_c_pointer;
 typedef int ats2_timsort_c_bool;
 
+extern void (*ats2_timsort_c_minit_hook) (void);
+extern void (*ats2_timsort_c_mfree_hook) (void *p);
+extern void *(*ats2_timsort_c_malloc_hook) (size_t size);
+extern void *(*ats2_timsort_c_calloc_hook) (size_t nmemb,
+                                            size_t size);
+extern void *(*ats2_timsort_c_realloc_hook) (void *p,
+                                             size_t size);
+
 ats2_timsort_c_timsort_t ats2_timsort_c_pointer_timsort;
 
 ats2_timsort_c_timsort_t ats2_timsort_c_int_timsort;
