@@ -138,3 +138,17 @@ TIMSORT_C_SRC += uint64_t_timsort_dats.c
 uint64_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
 	@$(MKDIR_P) $(@D)
 	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint64_t $(<) > $(@)
+if HAVE_INT128_T
+TIMSORT_ATS_SRC += int128_t_timsort.dats
+TIMSORT_C_SRC += int128_t_timsort_dats.c
+int128_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int128_t $(<) > $(@)
+endif HAVE_INT128_T
+if HAVE_UINT128_T
+TIMSORT_ATS_SRC += uint128_t_timsort.dats
+TIMSORT_C_SRC += uint128_t_timsort_dats.c
+uint128_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint128_t $(<) > $(@)
+endif HAVE_UINT128_T

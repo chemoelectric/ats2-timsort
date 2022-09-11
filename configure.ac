@@ -120,6 +120,16 @@ AC_CHECK_SIZEOF([uint16_t])
 AC_CHECK_SIZEOF([uint32_t])
 AC_CHECK_SIZEOF([uint64_t])
 
+AC_CHECK_TYPE([__int128_t])
+if test x"${ac_cv_type___int128_t}" = xyes; then
+  AC_CHECK_SIZEOF([__int128_t])
+fi
+
+AC_CHECK_TYPE([__uint128_t])
+if test x"${ac_cv_type___uint128_t}" = xyes; then
+  AC_CHECK_SIZEOF([__uint128_t])
+fi
+
 M4FLAGS="${M4FLAGS} -DSIZEOF_INT=${ac_cv_sizeof_int}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SIGNED_CHAR=${ac_cv_sizeof_signed_char}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SHORT=${ac_cv_sizeof_short}"
@@ -153,6 +163,16 @@ M4FLAGS="${M4FLAGS} -DSIZEOF_UINT8_T=${ac_cv_sizeof_uint8_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT16_T=${ac_cv_sizeof_uint16_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT32_T=${ac_cv_sizeof_uint32_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT64_T=${ac_cv_sizeof_uint64_t}"
+
+if test x"${ac_cv_type___int128_t}" = xyes; then
+  M4FLAGS="${M4FLAGS} -DSIZEOF_INT128_T=${ac_cv_sizeof___int128_t}"
+fi
+AM_CONDITIONAL([HAVE_INT128_T],[test x"${ac_cv_type___int128_t}" = xyes])
+
+if test x"${ac_cv_type___uint128_t}" = xyes; then
+  M4FLAGS="${M4FLAGS} -DSIZEOF_UINT128_T=${ac_cv_sizeof___uint128_t}"
+fi
+AM_CONDITIONAL([HAVE_UINT128_T],[test x"${ac_cv_type___uint128_t}" = xyes])
 
 #--------------------------------------------------------------------------
 #

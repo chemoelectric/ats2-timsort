@@ -70,6 +70,11 @@ ats2_timsort_c_timsort_t ats2_timsort_c_uint16_t_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_uint32_t_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_uint64_t_timsort;
 
+#ifdef __SIZEOF_INT128__
+ats2_timsort_c_timsort_t ats2_timsort_c_int128_t_timsort;
+ats2_timsort_c_timsort_t ats2_timsort_c_uint128_t_timsort;
+#endif
+
 #define ATS2_TIMSORT_C_DEFINE_FUNCTION(F, T)            \
   static inline void                                    \
   F##_timsort (T *arr, size_t n,                        \
@@ -113,5 +118,10 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION (uint8_t, uint8_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION (uint16_t, uint16_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION (uint32_t, uint32_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION (uint64_t, uint64_t)
+
+#ifdef __SIZEOF_INT128__
+ATS2_TIMSORT_C_DEFINE_FUNCTION (int128_t, __int128_t)
+ATS2_TIMSORT_C_DEFINE_FUNCTION (uint128_t, __uint128_t)
+#endif
 
 #endif /* ATS2_TIMSORT_H__HEADER_GUARD__ */

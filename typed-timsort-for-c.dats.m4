@@ -45,28 +45,20 @@ m4_define(`ATSTYPE',
          TYPE,`uint32_t',`uint32',
          TYPE,`int64_t',`int64',
          TYPE,`uint64_t',`uint64',
+         TYPE,`int128_t',`ats2_timsort_c_int128_t',
+         TYPE,`uint128_t',`ats2_timsort_c_uint128_t',
          TYPE)')
-
-m4_define(`IS_SIGNED_TYPE',
-  `m4_if(TYPE,`int',1,
-         TYPE,`signed_char',1,
-         TYPE,`short',1,
-         TYPE,`long',1,
-         TYPE,`long_long',1,
-         TYPE,`ssize_t',1,
-         TYPE,`intptr_t',1,
-         TYPE,`intmax_t',1,
-         TYPE,`int8_t',1,
-         TYPE,`int16_t',1,
-         TYPE,`int32_t',1,
-         TYPE,`int64_t',1,
-         0)')
 
 m4_define(`DEFAULT_DEFINITION',
 `
 
 typedef ats2_timsort_c_intmax_t = $extype"intmax_t"
 typedef ats2_timsort_c_uintmax_t = $extype"uintmax_t"
+
+m4_ifdef(`SIZEOF_INT128_T',
+  `typedef ats2_timsort_c_int128_t = $extype"__int128_t"')
+m4_ifdef(`SIZEOF_UINT128_T',
+  `typedef ats2_timsort_c_uint128_t = $extype"__uint128_t"')
 
 extern fn
 ats2_timsort_c_`'FUNCNAME
@@ -170,6 +162,9 @@ m4_if(TYPE,`short',
       TYPE,`uint16_t',UNSIGNED_DEFINITION(SIZEOF_UINT16_T),
       TYPE,`uint32_t',UNSIGNED_DEFINITION(SIZEOF_UINT32_T),
       TYPE,`uint64_t',UNSIGNED_DEFINITION(SIZEOF_UINT64_T),
+
+      TYPE,`int128_t',SIGNED_DEFINITION(SIZEOF_INT128_T),
+      TYPE,`uint128_t',UNSIGNED_DEFINITION(SIZEOF_UINT128_T),
 
       `DEFAULT_DEFINITION')
 

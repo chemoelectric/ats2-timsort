@@ -209,6 +209,22 @@ make_ats2_timsort_c_am() {
 	    printf '\t@$(MKDIR_P) $(@D)\n' >> "${f}"
         printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' "${t}" >> "${f}"
     done
+
+    printf 'if HAVE_INT128_T\n' >> "${f}"
+    printf 'TIMSORT_ATS_SRC += %s_timsort.dats\n' int128_t >> "${f}"
+    printf 'TIMSORT_C_SRC += %s_timsort_dats.c\n' int128_t >> "${f}"
+    printf '%s_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4\n' int128_t >> "${f}"
+	printf '\t@$(MKDIR_P) $(@D)\n' >> "${f}"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' int128_t >> "${f}"
+    printf 'endif HAVE_INT128_T\n' >> "${f}"
+
+    printf 'if HAVE_UINT128_T\n' >> "${f}"
+    printf 'TIMSORT_ATS_SRC += %s_timsort.dats\n' uint128_t >> "${f}"
+    printf 'TIMSORT_C_SRC += %s_timsort_dats.c\n' uint128_t >> "${f}"
+    printf '%s_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4\n' uint128_t >> "${f}"
+	printf '\t@$(MKDIR_P) $(@D)\n' >> "${f}"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' uint128_t >> "${f}"
+    printf 'endif HAVE_UINT128_T\n' >> "${f}"
 }
 
 # Run everything in a subshell, so the user does not get stuck in a

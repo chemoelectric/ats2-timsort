@@ -663,6 +663,10 @@ LIBOBJS
 GNU_MAKE
 M4FLAGS
 GNU
+HAVE_UINT128_T_FALSE
+HAVE_UINT128_T_TRUE
+HAVE_INT128_T_FALSE
+HAVE_INT128_T_TRUE
 pkgconfigdir
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
@@ -2148,6 +2152,63 @@ rm -f conftest.val
   as_fn_set_status $ac_retval
 
 } # ac_fn_c_compute_int
+
+# ac_fn_c_check_type LINENO TYPE VAR INCLUDES
+# -------------------------------------------
+# Tests whether TYPE exists after having included INCLUDES, setting cache
+# variable VAR accordingly.
+ac_fn_c_check_type ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+printf %s "checking for $2... " >&6; }
+if eval test \${$3+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  eval "$3=no"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main (void)
+{
+if (sizeof ($2))
+	 return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main (void)
+{
+if (sizeof (($2)))
+	    return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+
+else $as_nop
+  eval "$3=yes"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_type
 ac_configure_args_raw=
 for ac_arg
 do
@@ -20092,6 +20153,90 @@ printf "%s\n" "#define SIZEOF_UINT64_T $ac_cv_sizeof_uint64_t" >>confdefs.h
 
 
 
+ac_fn_c_check_type "$LINENO" "__int128_t" "ac_cv_type___int128_t" "$ac_includes_default"
+if test "x$ac_cv_type___int128_t" = xyes
+then :
+
+fi
+
+if test x"${ac_cv_type___int128_t}" = xyes; then
+  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of __int128_t" >&5
+printf %s "checking size of __int128_t... " >&6; }
+if test ${ac_cv_sizeof___int128_t+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (__int128_t))" "ac_cv_sizeof___int128_t"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type___int128_t" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (__int128_t)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof___int128_t=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof___int128_t" >&5
+printf "%s\n" "$ac_cv_sizeof___int128_t" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF___INT128_T $ac_cv_sizeof___int128_t" >>confdefs.h
+
+
+fi
+
+ac_fn_c_check_type "$LINENO" "__uint128_t" "ac_cv_type___uint128_t" "$ac_includes_default"
+if test "x$ac_cv_type___uint128_t" = xyes
+then :
+
+fi
+
+if test x"${ac_cv_type___uint128_t}" = xyes; then
+  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of __uint128_t" >&5
+printf %s "checking size of __uint128_t... " >&6; }
+if test ${ac_cv_sizeof___uint128_t+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (__uint128_t))" "ac_cv_sizeof___uint128_t"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type___uint128_t" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (__uint128_t)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof___uint128_t=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof___uint128_t" >&5
+printf "%s\n" "$ac_cv_sizeof___uint128_t" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF___UINT128_T $ac_cv_sizeof___uint128_t" >>confdefs.h
+
+
+fi
+
 M4FLAGS="${M4FLAGS} -DSIZEOF_INT=${ac_cv_sizeof_int}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SIGNED_CHAR=${ac_cv_sizeof_signed_char}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SHORT=${ac_cv_sizeof_short}"
@@ -20125,6 +20270,30 @@ M4FLAGS="${M4FLAGS} -DSIZEOF_UINT8_T=${ac_cv_sizeof_uint8_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT16_T=${ac_cv_sizeof_uint16_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT32_T=${ac_cv_sizeof_uint32_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT64_T=${ac_cv_sizeof_uint64_t}"
+
+if test x"${ac_cv_type___int128_t}" = xyes; then
+  M4FLAGS="${M4FLAGS} -DSIZEOF_INT128_T=${ac_cv_sizeof___int128_t}"
+fi
+ if test x"${ac_cv_type___int128_t}" = xyes; then
+  HAVE_INT128_T_TRUE=
+  HAVE_INT128_T_FALSE='#'
+else
+  HAVE_INT128_T_TRUE='#'
+  HAVE_INT128_T_FALSE=
+fi
+
+
+if test x"${ac_cv_type___uint128_t}" = xyes; then
+  M4FLAGS="${M4FLAGS} -DSIZEOF_UINT128_T=${ac_cv_sizeof___uint128_t}"
+fi
+ if test x"${ac_cv_type___uint128_t}" = xyes; then
+  HAVE_UINT128_T_TRUE=
+  HAVE_UINT128_T_FALSE='#'
+else
+  HAVE_UINT128_T_TRUE='#'
+  HAVE_UINT128_T_FALSE=
+fi
+
 
 #--------------------------------------------------------------------------
 #
@@ -20460,6 +20629,14 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${CODE_COVERAGE_ENABLED_TRUE}" && test -z "${CODE_COVERAGE_ENABLED_FALSE}"; then
   as_fn_error $? "conditional \"CODE_COVERAGE_ENABLED\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_INT128_T_TRUE}" && test -z "${HAVE_INT128_T_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_INT128_T\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_UINT128_T_TRUE}" && test -z "${HAVE_UINT128_T_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_UINT128_T\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
