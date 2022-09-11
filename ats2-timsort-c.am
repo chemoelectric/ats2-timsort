@@ -88,6 +88,16 @@ TIMSORT_C_SRC += uintptr_t_timsort_dats.c
 uintptr_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
 	@$(MKDIR_P) $(@D)
 	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uintptr_t $(<) > $(@)
+TIMSORT_ATS_SRC += intmax_t_timsort.dats
+TIMSORT_C_SRC += intmax_t_timsort_dats.c
+intmax_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=intmax_t $(<) > $(@)
+TIMSORT_ATS_SRC += uintmax_t_timsort.dats
+TIMSORT_C_SRC += uintmax_t_timsort_dats.c
+uintmax_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uintmax_t $(<) > $(@)
 TIMSORT_ATS_SRC += int8_t_timsort.dats
 TIMSORT_C_SRC += int8_t_timsort_dats.c
 int8_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4

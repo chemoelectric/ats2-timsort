@@ -35,6 +35,8 @@ m4_define(`ATSTYPE',
          TYPE,`long_double',`ldouble',
          TYPE,`intptr_t',`intptr',
          TYPE,`uintptr_t',`uintptr',
+         TYPE,`intmax_t',`ats2_timsort_c_intmax_t',
+         TYPE,`uintmax_t',`ats2_timsort_c_uintmax_t',
          TYPE,`int8_t',`int8',
          TYPE,`uint8_t',`uint8',
          TYPE,`int16_t',`int16',
@@ -53,6 +55,7 @@ m4_define(`IS_SIGNED_TYPE',
          TYPE,`long_long',1,
          TYPE,`ssize_t',1,
          TYPE,`intptr_t',1,
+         TYPE,`intmax_t',1,
          TYPE,`int8_t',1,
          TYPE,`int16_t',1,
          TYPE,`int32_t',1,
@@ -61,6 +64,10 @@ m4_define(`IS_SIGNED_TYPE',
 
 m4_define(`DEFAULT_DEFINITION',
 `
+
+typedef ats2_timsort_c_intmax_t = $extype"intmax_t"
+typedef ats2_timsort_c_uintmax_t = $extype"uintmax_t"
+
 extern fn
 ats2_timsort_c_`'FUNCNAME
           {n         : int}

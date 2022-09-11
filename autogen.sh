@@ -198,6 +198,7 @@ make_ats2_timsort_c_am() {
              float double long_double \
              ssize_t size_t \
              intptr_t uintptr_t \
+             intmax_t uintmax_t \
              int8_t uint8_t \
              int16_t uint16_t \
              int32_t uint32_t \

@@ -54,11 +54,11 @@ ats2_timsort_c_timsort_t ats2_timsort_c_long_double_timsort;
 
 ats2_timsort_c_timsort_t ats2_timsort_c_ssize_t_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_intptr_t_timsort;
-/* ats2_timsort_c_timsort_t ats2_timsort_c_intmax_t_timsort; */
+ats2_timsort_c_timsort_t ats2_timsort_c_intmax_t_timsort;
 
 ats2_timsort_c_timsort_t ats2_timsort_c_size_t_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_uintptr_t_timsort;
-/* ats2_timsort_c_timsort_t ats2_timsort_c_uintmax_t_timsort; */
+ats2_timsort_c_timsort_t ats2_timsort_c_uintmax_t_timsort;
 
 ats2_timsort_c_timsort_t ats2_timsort_c_int8_t_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_int16_t_timsort;
@@ -98,11 +98,11 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION (long_double, long double)
 
 ATS2_TIMSORT_C_DEFINE_FUNCTION (ssize_t, ssize_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION (intptr_t, intptr_t)
-/* ATS2_TIMSORT_C_DEFINE_FUNCTION (intmax_t, intmax_t) */
+ATS2_TIMSORT_C_DEFINE_FUNCTION (intmax_t, intmax_t)
 
 ATS2_TIMSORT_C_DEFINE_FUNCTION (size_t, size_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION (uintptr_t, uintptr_t)
-/* ATS2_TIMSORT_C_DEFINE_FUNCTION (uintmax_t, uintmax_t) */
+ATS2_TIMSORT_C_DEFINE_FUNCTION (uintmax_t, uintmax_t)
 
 ATS2_TIMSORT_C_DEFINE_FUNCTION (int8_t, int8_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION (int16_t, int16_t)
