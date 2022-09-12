@@ -1,0 +1,16 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+host=@host@
+package=@PACKAGE@
+version=@VERSION@
+pkgincludedir="${includedir}/${package}"
+
+CPPFLAGS="-I${pkgincludedir}"
+
+Name: ${package}
+Description: Timsort (powersort) for C, written in ATS2/Postiats
+Version: ${version}
+Libs: -L${libdir} -lats2-timsort-c
+Cflags: ${CPPFLAGS}
