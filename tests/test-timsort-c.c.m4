@@ -77,7 +77,8 @@ main (int argc, char **argv)
       for (size_t i = 0; i != sz; i += 1)
         if (arr1[i] != arr2[i])
           {
-            printf ("mismatch with size %zu at index %zu", sz, i);
+            printf ("mismatch for array size %zu, at index %zu",
+                    sz, i);
             exit(1);
           }
       m4_if(TYPE,`pointer',
