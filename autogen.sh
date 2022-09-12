@@ -184,10 +184,90 @@ run_autoreconf() {
     autoreconf --force --install --verbose || exit $?
 }
 
+make_function_directives() {
+    printf 'BUILT_SOURCES += %s_timsort.dats\n' "$1" >> "$2"
+    printf 'CLEANFILES += %s_timsort.dats\n' "$1" >> "$2"
+    printf 'CLEANFILES += %s_timsort_dats.c\n' "$1" >> "$2"
+    printf 'TIMSORT_ATS_SRC += %s_timsort.dats\n' "$1" >> "$2"
+    printf 'TIMSORT_C_SRC += %s_timsort_dats.c\n' "$1" >> "$2"
+    printf '%s_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4\n' "$1" >> "$2"
+	printf '\t@$(MKDIR_P) $(@D)\n' >> "$2"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' "$1" >> "$2"
+}
+
+make_test_directives() {
+    #
+    # Put source files in a subdirectory, to avoid there being
+    # multiple rules for tests/.dirstamp
+    #
+    # See
+    # https://stackoverflow.com/questions/11958626/make-file-warning-overriding-commands-for-target
+    #
+    printf 'TESTS += tests/test-%s_timsort\n' "$1" >> "$2"
+    printf 'EXTRA_PROGRAMS += tests/test-%s_timsort\n' "$1" >> "$2"
+    printf 'BUILT_SOURCES += tests/src/test-%s_timsort.c\n' "$1" >> "$2"
+    printf 'CLEANFILES += tests/test-%s_timsort\n' "$1" >> "$2"
+    printf 'CLEANFILES += tests/src/test-%s_timsort.c\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_SOURCES =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_SOURCES += tests/src/test-%s_timsort.c\n' "$1" "$1" >> "$2"
+    printf 'tests_test_%s_timsort_SOURCES += ats2-timsort.h\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_DEPENDENCIES =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_DEPENDENCIES += libats2-timsort-c.la\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_CPPFLAGS =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_CPPFLAGS += $(AM_CPPFLAGS)\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_LDADD =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_LDADD += libats2-timsort-c.la\n' "$1" >> "$2"
+    printf 'tests/src/test-%s_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4\n' \
+           "$1" >> "$2"
+	printf '\t@$(MKDIR_P) $(@D)\n' >> "$2"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' "$1" >> "$2"
+}
+
+make_ats2_timsort_c_am() {
+    f='ats2-timsort-c.am'
+
+    echo "Creating ${f}"
+
+    rm -f "${f}"
+    touch "${f}"
+
+    for t in pointer \
+             float double long_double \
+             int unsigned_int \
+             signed_char unsigned_char \
+             short unsigned_short \
+             long unsigned_long \
+             long_long unsigned_long_long \
+             ssize_t size_t \
+             intptr_t uintptr_t \
+             intmax_t uintmax_t \
+             int8_t uint8_t \
+             int16_t uint16_t \
+             int32_t uint32_t \
+             int64_t uint64_t; do
+        make_function_directives "${t}" "${f}"
+        make_test_directives "${t}" "${f}"
+    done
+
+    t=int128_t
+    printf 'if HAVE_INT128_T\n' >> "${f}"
+    make_function_directives "${t}" "${f}"
+    make_test_directives "${t}" "${f}"
+    printf 'endif HAVE_INT128_T\n' >> "${f}"
+
+    t=uint128_t
+    printf 'if HAVE_UINT128_T\n' >> "${f}"
+    make_function_directives "${t}" "${f}"
+    make_test_directives "${t}" "${f}"
+    printf 'endif HAVE_UINT128_T\n' >> "${f}"
+}
+
 # Run everything in a subshell, so the user does not get stuck in a
 # new directory if the process is interrupted.
 (
     cd "${srcdir}"
+
+    make_ats2_timsort_c_am
 
     need_sortsmill_tig && require_sortsmill_tig
     need_pkg_config && require_pkg_config

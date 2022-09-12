@@ -368,7 +368,7 @@ main () =
     test_random_array_of_size (i2sz 10000);
     test_random_array_of_size (i2sz 100000);
     test_random_array_of_size (i2sz 1000000);
-    test_random_array_of_size (i2sz 10000000);
+    //test_random_array_of_size (i2sz 10000000);
 
     println! "Sorted arrays";
     test_sorted_array_of_size (i2sz 0);
@@ -387,7 +387,7 @@ main () =
     test_sorted_array_of_size (i2sz 10000);
     test_sorted_array_of_size (i2sz 100000);
     test_sorted_array_of_size (i2sz 1000000);
-    test_sorted_array_of_size (i2sz 10000000);
+    //test_sorted_array_of_size (i2sz 10000000);
 
     println! "Reverse sorted arrays";
     test_reverse_sorted_array_of_size (i2sz 0);
@@ -406,7 +406,7 @@ main () =
     test_reverse_sorted_array_of_size (i2sz 10000);
     test_reverse_sorted_array_of_size (i2sz 100000);
     test_reverse_sorted_array_of_size (i2sz 1000000);
-    test_reverse_sorted_array_of_size (i2sz 10000000);
+    //test_reverse_sorted_array_of_size (i2sz 10000000);
 
     0
   end

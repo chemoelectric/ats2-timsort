@@ -33,6 +33,7 @@ MOSTLYCLEANFILES =
 CLEANFILES =
 DISTCLEANFILES =
 BUILT_SOURCES =
+AM_M4FLAGS =
 AM_CPPFLAGS =
 AM_CFLAGS =
 AM_LDFLAGS =
@@ -40,6 +41,7 @@ LDADD =
 bin_PROGRAMS =
 lib_LTLIBRARIES =
 EXTRA_PROGRAMS =
+TESTS =
 nobase_nodist_pkginclude_HEADERS =
 nodist_pkgconfig_DATA =
 
@@ -67,6 +69,17 @@ CODE_COVERAGE_IGNORE_PATTERN += $(PATSHOME)/prelude/CATS/*
 
 clean-local: code-coverage-clean tests-clean
 distclean-local: code-coverage-dist-clean ats-includes-distclean
+
+#--------------------------------------------------------------------------
+
+TOTAL_M4FLAGS =
+TOTAL_M4FLAGS += $(AM_M4FLAGS)
+TOTAL_M4FLAGS += $(M4FLAGS)
+TOTAL_M4FLAGS += $(XM4FLAGS)
+
+%.dats: %.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) $(<) > $(@)
 
 #--------------------------------------------------------------------------
 
@@ -189,8 +202,39 @@ libats2_timsort_la_DEPENDENCIES += $(TIMSORT_CATS)
 libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 
 #--------------------------------------------------------------------------
+#
+# The C library.
+#
 
-TESTS =
+lib_LTLIBRARIES += libats2-timsort-c.la
+
+TIMSORT_ATS_SRC =
+TIMSORT_C_SRC =
+
+$(TIMSORT_ATS_SRC): typed-timsort-for-c.dats.m4
+
+include $(top_srcdir)/ats2-timsort-c.am
+
+nodist_libats2_timsort_c_la_SOURCES =
+nodist_libats2_timsort_c_la_SOURCES += $(TIMSORT_C_SRC)
+nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory_dats.c
+dist_libats2_timsort_c_la_SOURCES =
+dist_libats2_timsort_c_la_SOURCES += ats2-timsort.h
+dist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory.h
+
+nobase_dist_pkginclude_HEADERS += ats2-timsort.h
+
+timsort-for-c-memory_dats.$(OBJEXT): timsort-for-c-memory.include.c
+
+CLEANFILES += timsort-for-c-memory_dats.c
+
+EXTRA_DIST += typed-timsort-for-c.dats.m4
+EXTRA_DIST += timsort-for-c-memory.dats
+EXTRA_DIST += timsort-for-c-memory.include.c
+
+#--------------------------------------------------------------------------
+
+EXTRA_DIST += tests/test-timsort-c.c.m4
 
 TESTS += tests/test-clz
 EXTRA_PROGRAMS += tests/test-clz
@@ -336,6 +380,7 @@ list_ats_dependencies_LDADD += -latslib
 #--------------------------------------------------------------------------
 
 nodist_pkgconfig_DATA += ats2-timsort.pc
+nodist_pkgconfig_DATA += ats2-timsort-c.pc
 
 #--------------------------------------------------------------------------
 # local variables:

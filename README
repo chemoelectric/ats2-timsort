@@ -1,19 +1,23 @@
-Timsort (powersort) for ATS2/Postiats
--------------------------------------
+Timsort (powersort) for ATS2/Postiats and C
+-------------------------------------------
 
-Currently there is just an array sort that supports linear types. The
-insertion sort uses binary search, and the merge supports galloping.
+Included:
 
-I will add C interfaces for sorting arrays of pointers and other
-built-in types.
+  * An array sort, for ATS2, that supports linear types. The insertion
+    sort uses binary search, and the merge uses galloping if this
+    seems to help.
 
-I may add a sort for list_vt. This would have more conventional
+  * Sort functions for C, which are the foregoing array sort
+    specialized for particular C types. The most important of these
+    types is probably void pointers. (The void-pointers sort can be
+    used, in particular, to sort strings.) Also supported are numerous
+    integer and floating point types.
+
+I may also add a sort that sorts arbitrarily sized blocks of
+memory. This could be used to make a drop-in replacement for qsort.
+
+And I may add a sort for list_vt. This would have more conventional
 insertion sort and merge.
-
-I may also add a qsort-like implementation for use from C code. (One
-cannot simply use the main implementation, because qsort sorts
-arbitrarily sized blocks of memory, rather than fixed-size array
-elements.)
 
 
 References on the algorithms:

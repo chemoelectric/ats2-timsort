@@ -1,0 +1,754 @@
+BUILT_SOURCES += pointer_timsort.dats
+CLEANFILES += pointer_timsort.dats
+CLEANFILES += pointer_timsort_dats.c
+TIMSORT_ATS_SRC += pointer_timsort.dats
+TIMSORT_C_SRC += pointer_timsort_dats.c
+pointer_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=pointer $(<) > $(@)
+TESTS += tests/test-pointer_timsort
+EXTRA_PROGRAMS += tests/test-pointer_timsort
+BUILT_SOURCES += tests/src/test-pointer_timsort.c
+CLEANFILES += tests/test-pointer_timsort
+CLEANFILES += tests/src/test-pointer_timsort.c
+tests_test_pointer_timsort_SOURCES =
+tests_test_pointer_timsort_SOURCES += tests/src/test-pointer_timsort.c
+tests_test_pointer_timsort_SOURCES += ats2-timsort.h
+tests_test_pointer_timsort_DEPENDENCIES =
+tests_test_pointer_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_pointer_timsort_CPPFLAGS =
+tests_test_pointer_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_pointer_timsort_LDADD =
+tests_test_pointer_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-pointer_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=pointer $(<) > $(@)
+BUILT_SOURCES += float_timsort.dats
+CLEANFILES += float_timsort.dats
+CLEANFILES += float_timsort_dats.c
+TIMSORT_ATS_SRC += float_timsort.dats
+TIMSORT_C_SRC += float_timsort_dats.c
+float_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=float $(<) > $(@)
+TESTS += tests/test-float_timsort
+EXTRA_PROGRAMS += tests/test-float_timsort
+BUILT_SOURCES += tests/src/test-float_timsort.c
+CLEANFILES += tests/test-float_timsort
+CLEANFILES += tests/src/test-float_timsort.c
+tests_test_float_timsort_SOURCES =
+tests_test_float_timsort_SOURCES += tests/src/test-float_timsort.c
+tests_test_float_timsort_SOURCES += ats2-timsort.h
+tests_test_float_timsort_DEPENDENCIES =
+tests_test_float_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_float_timsort_CPPFLAGS =
+tests_test_float_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_float_timsort_LDADD =
+tests_test_float_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-float_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=float $(<) > $(@)
+BUILT_SOURCES += double_timsort.dats
+CLEANFILES += double_timsort.dats
+CLEANFILES += double_timsort_dats.c
+TIMSORT_ATS_SRC += double_timsort.dats
+TIMSORT_C_SRC += double_timsort_dats.c
+double_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=double $(<) > $(@)
+TESTS += tests/test-double_timsort
+EXTRA_PROGRAMS += tests/test-double_timsort
+BUILT_SOURCES += tests/src/test-double_timsort.c
+CLEANFILES += tests/test-double_timsort
+CLEANFILES += tests/src/test-double_timsort.c
+tests_test_double_timsort_SOURCES =
+tests_test_double_timsort_SOURCES += tests/src/test-double_timsort.c
+tests_test_double_timsort_SOURCES += ats2-timsort.h
+tests_test_double_timsort_DEPENDENCIES =
+tests_test_double_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_double_timsort_CPPFLAGS =
+tests_test_double_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_double_timsort_LDADD =
+tests_test_double_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-double_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=double $(<) > $(@)
+BUILT_SOURCES += long_double_timsort.dats
+CLEANFILES += long_double_timsort.dats
+CLEANFILES += long_double_timsort_dats.c
+TIMSORT_ATS_SRC += long_double_timsort.dats
+TIMSORT_C_SRC += long_double_timsort_dats.c
+long_double_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long_double $(<) > $(@)
+TESTS += tests/test-long_double_timsort
+EXTRA_PROGRAMS += tests/test-long_double_timsort
+BUILT_SOURCES += tests/src/test-long_double_timsort.c
+CLEANFILES += tests/test-long_double_timsort
+CLEANFILES += tests/src/test-long_double_timsort.c
+tests_test_long_double_timsort_SOURCES =
+tests_test_long_double_timsort_SOURCES += tests/src/test-long_double_timsort.c
+tests_test_long_double_timsort_SOURCES += ats2-timsort.h
+tests_test_long_double_timsort_DEPENDENCIES =
+tests_test_long_double_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_long_double_timsort_CPPFLAGS =
+tests_test_long_double_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_long_double_timsort_LDADD =
+tests_test_long_double_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-long_double_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long_double $(<) > $(@)
+BUILT_SOURCES += int_timsort.dats
+CLEANFILES += int_timsort.dats
+CLEANFILES += int_timsort_dats.c
+TIMSORT_ATS_SRC += int_timsort.dats
+TIMSORT_C_SRC += int_timsort_dats.c
+int_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int $(<) > $(@)
+TESTS += tests/test-int_timsort
+EXTRA_PROGRAMS += tests/test-int_timsort
+BUILT_SOURCES += tests/src/test-int_timsort.c
+CLEANFILES += tests/test-int_timsort
+CLEANFILES += tests/src/test-int_timsort.c
+tests_test_int_timsort_SOURCES =
+tests_test_int_timsort_SOURCES += tests/src/test-int_timsort.c
+tests_test_int_timsort_SOURCES += ats2-timsort.h
+tests_test_int_timsort_DEPENDENCIES =
+tests_test_int_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_int_timsort_CPPFLAGS =
+tests_test_int_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_int_timsort_LDADD =
+tests_test_int_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-int_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int $(<) > $(@)
+BUILT_SOURCES += unsigned_int_timsort.dats
+CLEANFILES += unsigned_int_timsort.dats
+CLEANFILES += unsigned_int_timsort_dats.c
+TIMSORT_ATS_SRC += unsigned_int_timsort.dats
+TIMSORT_C_SRC += unsigned_int_timsort_dats.c
+unsigned_int_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_int $(<) > $(@)
+TESTS += tests/test-unsigned_int_timsort
+EXTRA_PROGRAMS += tests/test-unsigned_int_timsort
+BUILT_SOURCES += tests/src/test-unsigned_int_timsort.c
+CLEANFILES += tests/test-unsigned_int_timsort
+CLEANFILES += tests/src/test-unsigned_int_timsort.c
+tests_test_unsigned_int_timsort_SOURCES =
+tests_test_unsigned_int_timsort_SOURCES += tests/src/test-unsigned_int_timsort.c
+tests_test_unsigned_int_timsort_SOURCES += ats2-timsort.h
+tests_test_unsigned_int_timsort_DEPENDENCIES =
+tests_test_unsigned_int_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_unsigned_int_timsort_CPPFLAGS =
+tests_test_unsigned_int_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_unsigned_int_timsort_LDADD =
+tests_test_unsigned_int_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-unsigned_int_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_int $(<) > $(@)
+BUILT_SOURCES += signed_char_timsort.dats
+CLEANFILES += signed_char_timsort.dats
+CLEANFILES += signed_char_timsort_dats.c
+TIMSORT_ATS_SRC += signed_char_timsort.dats
+TIMSORT_C_SRC += signed_char_timsort_dats.c
+signed_char_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=signed_char $(<) > $(@)
+TESTS += tests/test-signed_char_timsort
+EXTRA_PROGRAMS += tests/test-signed_char_timsort
+BUILT_SOURCES += tests/src/test-signed_char_timsort.c
+CLEANFILES += tests/test-signed_char_timsort
+CLEANFILES += tests/src/test-signed_char_timsort.c
+tests_test_signed_char_timsort_SOURCES =
+tests_test_signed_char_timsort_SOURCES += tests/src/test-signed_char_timsort.c
+tests_test_signed_char_timsort_SOURCES += ats2-timsort.h
+tests_test_signed_char_timsort_DEPENDENCIES =
+tests_test_signed_char_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_signed_char_timsort_CPPFLAGS =
+tests_test_signed_char_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_signed_char_timsort_LDADD =
+tests_test_signed_char_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-signed_char_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=signed_char $(<) > $(@)
+BUILT_SOURCES += unsigned_char_timsort.dats
+CLEANFILES += unsigned_char_timsort.dats
+CLEANFILES += unsigned_char_timsort_dats.c
+TIMSORT_ATS_SRC += unsigned_char_timsort.dats
+TIMSORT_C_SRC += unsigned_char_timsort_dats.c
+unsigned_char_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_char $(<) > $(@)
+TESTS += tests/test-unsigned_char_timsort
+EXTRA_PROGRAMS += tests/test-unsigned_char_timsort
+BUILT_SOURCES += tests/src/test-unsigned_char_timsort.c
+CLEANFILES += tests/test-unsigned_char_timsort
+CLEANFILES += tests/src/test-unsigned_char_timsort.c
+tests_test_unsigned_char_timsort_SOURCES =
+tests_test_unsigned_char_timsort_SOURCES += tests/src/test-unsigned_char_timsort.c
+tests_test_unsigned_char_timsort_SOURCES += ats2-timsort.h
+tests_test_unsigned_char_timsort_DEPENDENCIES =
+tests_test_unsigned_char_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_unsigned_char_timsort_CPPFLAGS =
+tests_test_unsigned_char_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_unsigned_char_timsort_LDADD =
+tests_test_unsigned_char_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-unsigned_char_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_char $(<) > $(@)
+BUILT_SOURCES += short_timsort.dats
+CLEANFILES += short_timsort.dats
+CLEANFILES += short_timsort_dats.c
+TIMSORT_ATS_SRC += short_timsort.dats
+TIMSORT_C_SRC += short_timsort_dats.c
+short_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=short $(<) > $(@)
+TESTS += tests/test-short_timsort
+EXTRA_PROGRAMS += tests/test-short_timsort
+BUILT_SOURCES += tests/src/test-short_timsort.c
+CLEANFILES += tests/test-short_timsort
+CLEANFILES += tests/src/test-short_timsort.c
+tests_test_short_timsort_SOURCES =
+tests_test_short_timsort_SOURCES += tests/src/test-short_timsort.c
+tests_test_short_timsort_SOURCES += ats2-timsort.h
+tests_test_short_timsort_DEPENDENCIES =
+tests_test_short_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_short_timsort_CPPFLAGS =
+tests_test_short_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_short_timsort_LDADD =
+tests_test_short_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-short_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=short $(<) > $(@)
+BUILT_SOURCES += unsigned_short_timsort.dats
+CLEANFILES += unsigned_short_timsort.dats
+CLEANFILES += unsigned_short_timsort_dats.c
+TIMSORT_ATS_SRC += unsigned_short_timsort.dats
+TIMSORT_C_SRC += unsigned_short_timsort_dats.c
+unsigned_short_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_short $(<) > $(@)
+TESTS += tests/test-unsigned_short_timsort
+EXTRA_PROGRAMS += tests/test-unsigned_short_timsort
+BUILT_SOURCES += tests/src/test-unsigned_short_timsort.c
+CLEANFILES += tests/test-unsigned_short_timsort
+CLEANFILES += tests/src/test-unsigned_short_timsort.c
+tests_test_unsigned_short_timsort_SOURCES =
+tests_test_unsigned_short_timsort_SOURCES += tests/src/test-unsigned_short_timsort.c
+tests_test_unsigned_short_timsort_SOURCES += ats2-timsort.h
+tests_test_unsigned_short_timsort_DEPENDENCIES =
+tests_test_unsigned_short_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_unsigned_short_timsort_CPPFLAGS =
+tests_test_unsigned_short_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_unsigned_short_timsort_LDADD =
+tests_test_unsigned_short_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-unsigned_short_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_short $(<) > $(@)
+BUILT_SOURCES += long_timsort.dats
+CLEANFILES += long_timsort.dats
+CLEANFILES += long_timsort_dats.c
+TIMSORT_ATS_SRC += long_timsort.dats
+TIMSORT_C_SRC += long_timsort_dats.c
+long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long $(<) > $(@)
+TESTS += tests/test-long_timsort
+EXTRA_PROGRAMS += tests/test-long_timsort
+BUILT_SOURCES += tests/src/test-long_timsort.c
+CLEANFILES += tests/test-long_timsort
+CLEANFILES += tests/src/test-long_timsort.c
+tests_test_long_timsort_SOURCES =
+tests_test_long_timsort_SOURCES += tests/src/test-long_timsort.c
+tests_test_long_timsort_SOURCES += ats2-timsort.h
+tests_test_long_timsort_DEPENDENCIES =
+tests_test_long_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_long_timsort_CPPFLAGS =
+tests_test_long_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_long_timsort_LDADD =
+tests_test_long_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-long_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long $(<) > $(@)
+BUILT_SOURCES += unsigned_long_timsort.dats
+CLEANFILES += unsigned_long_timsort.dats
+CLEANFILES += unsigned_long_timsort_dats.c
+TIMSORT_ATS_SRC += unsigned_long_timsort.dats
+TIMSORT_C_SRC += unsigned_long_timsort_dats.c
+unsigned_long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_long $(<) > $(@)
+TESTS += tests/test-unsigned_long_timsort
+EXTRA_PROGRAMS += tests/test-unsigned_long_timsort
+BUILT_SOURCES += tests/src/test-unsigned_long_timsort.c
+CLEANFILES += tests/test-unsigned_long_timsort
+CLEANFILES += tests/src/test-unsigned_long_timsort.c
+tests_test_unsigned_long_timsort_SOURCES =
+tests_test_unsigned_long_timsort_SOURCES += tests/src/test-unsigned_long_timsort.c
+tests_test_unsigned_long_timsort_SOURCES += ats2-timsort.h
+tests_test_unsigned_long_timsort_DEPENDENCIES =
+tests_test_unsigned_long_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_unsigned_long_timsort_CPPFLAGS =
+tests_test_unsigned_long_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_unsigned_long_timsort_LDADD =
+tests_test_unsigned_long_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-unsigned_long_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_long $(<) > $(@)
+BUILT_SOURCES += long_long_timsort.dats
+CLEANFILES += long_long_timsort.dats
+CLEANFILES += long_long_timsort_dats.c
+TIMSORT_ATS_SRC += long_long_timsort.dats
+TIMSORT_C_SRC += long_long_timsort_dats.c
+long_long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long_long $(<) > $(@)
+TESTS += tests/test-long_long_timsort
+EXTRA_PROGRAMS += tests/test-long_long_timsort
+BUILT_SOURCES += tests/src/test-long_long_timsort.c
+CLEANFILES += tests/test-long_long_timsort
+CLEANFILES += tests/src/test-long_long_timsort.c
+tests_test_long_long_timsort_SOURCES =
+tests_test_long_long_timsort_SOURCES += tests/src/test-long_long_timsort.c
+tests_test_long_long_timsort_SOURCES += ats2-timsort.h
+tests_test_long_long_timsort_DEPENDENCIES =
+tests_test_long_long_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_long_long_timsort_CPPFLAGS =
+tests_test_long_long_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_long_long_timsort_LDADD =
+tests_test_long_long_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-long_long_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=long_long $(<) > $(@)
+BUILT_SOURCES += unsigned_long_long_timsort.dats
+CLEANFILES += unsigned_long_long_timsort.dats
+CLEANFILES += unsigned_long_long_timsort_dats.c
+TIMSORT_ATS_SRC += unsigned_long_long_timsort.dats
+TIMSORT_C_SRC += unsigned_long_long_timsort_dats.c
+unsigned_long_long_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_long_long $(<) > $(@)
+TESTS += tests/test-unsigned_long_long_timsort
+EXTRA_PROGRAMS += tests/test-unsigned_long_long_timsort
+BUILT_SOURCES += tests/src/test-unsigned_long_long_timsort.c
+CLEANFILES += tests/test-unsigned_long_long_timsort
+CLEANFILES += tests/src/test-unsigned_long_long_timsort.c
+tests_test_unsigned_long_long_timsort_SOURCES =
+tests_test_unsigned_long_long_timsort_SOURCES += tests/src/test-unsigned_long_long_timsort.c
+tests_test_unsigned_long_long_timsort_SOURCES += ats2-timsort.h
+tests_test_unsigned_long_long_timsort_DEPENDENCIES =
+tests_test_unsigned_long_long_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_unsigned_long_long_timsort_CPPFLAGS =
+tests_test_unsigned_long_long_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_unsigned_long_long_timsort_LDADD =
+tests_test_unsigned_long_long_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-unsigned_long_long_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=unsigned_long_long $(<) > $(@)
+BUILT_SOURCES += ssize_t_timsort.dats
+CLEANFILES += ssize_t_timsort.dats
+CLEANFILES += ssize_t_timsort_dats.c
+TIMSORT_ATS_SRC += ssize_t_timsort.dats
+TIMSORT_C_SRC += ssize_t_timsort_dats.c
+ssize_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=ssize_t $(<) > $(@)
+TESTS += tests/test-ssize_t_timsort
+EXTRA_PROGRAMS += tests/test-ssize_t_timsort
+BUILT_SOURCES += tests/src/test-ssize_t_timsort.c
+CLEANFILES += tests/test-ssize_t_timsort
+CLEANFILES += tests/src/test-ssize_t_timsort.c
+tests_test_ssize_t_timsort_SOURCES =
+tests_test_ssize_t_timsort_SOURCES += tests/src/test-ssize_t_timsort.c
+tests_test_ssize_t_timsort_SOURCES += ats2-timsort.h
+tests_test_ssize_t_timsort_DEPENDENCIES =
+tests_test_ssize_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_ssize_t_timsort_CPPFLAGS =
+tests_test_ssize_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_ssize_t_timsort_LDADD =
+tests_test_ssize_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-ssize_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=ssize_t $(<) > $(@)
+BUILT_SOURCES += size_t_timsort.dats
+CLEANFILES += size_t_timsort.dats
+CLEANFILES += size_t_timsort_dats.c
+TIMSORT_ATS_SRC += size_t_timsort.dats
+TIMSORT_C_SRC += size_t_timsort_dats.c
+size_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=size_t $(<) > $(@)
+TESTS += tests/test-size_t_timsort
+EXTRA_PROGRAMS += tests/test-size_t_timsort
+BUILT_SOURCES += tests/src/test-size_t_timsort.c
+CLEANFILES += tests/test-size_t_timsort
+CLEANFILES += tests/src/test-size_t_timsort.c
+tests_test_size_t_timsort_SOURCES =
+tests_test_size_t_timsort_SOURCES += tests/src/test-size_t_timsort.c
+tests_test_size_t_timsort_SOURCES += ats2-timsort.h
+tests_test_size_t_timsort_DEPENDENCIES =
+tests_test_size_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_size_t_timsort_CPPFLAGS =
+tests_test_size_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_size_t_timsort_LDADD =
+tests_test_size_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-size_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=size_t $(<) > $(@)
+BUILT_SOURCES += intptr_t_timsort.dats
+CLEANFILES += intptr_t_timsort.dats
+CLEANFILES += intptr_t_timsort_dats.c
+TIMSORT_ATS_SRC += intptr_t_timsort.dats
+TIMSORT_C_SRC += intptr_t_timsort_dats.c
+intptr_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=intptr_t $(<) > $(@)
+TESTS += tests/test-intptr_t_timsort
+EXTRA_PROGRAMS += tests/test-intptr_t_timsort
+BUILT_SOURCES += tests/src/test-intptr_t_timsort.c
+CLEANFILES += tests/test-intptr_t_timsort
+CLEANFILES += tests/src/test-intptr_t_timsort.c
+tests_test_intptr_t_timsort_SOURCES =
+tests_test_intptr_t_timsort_SOURCES += tests/src/test-intptr_t_timsort.c
+tests_test_intptr_t_timsort_SOURCES += ats2-timsort.h
+tests_test_intptr_t_timsort_DEPENDENCIES =
+tests_test_intptr_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_intptr_t_timsort_CPPFLAGS =
+tests_test_intptr_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_intptr_t_timsort_LDADD =
+tests_test_intptr_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-intptr_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=intptr_t $(<) > $(@)
+BUILT_SOURCES += uintptr_t_timsort.dats
+CLEANFILES += uintptr_t_timsort.dats
+CLEANFILES += uintptr_t_timsort_dats.c
+TIMSORT_ATS_SRC += uintptr_t_timsort.dats
+TIMSORT_C_SRC += uintptr_t_timsort_dats.c
+uintptr_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uintptr_t $(<) > $(@)
+TESTS += tests/test-uintptr_t_timsort
+EXTRA_PROGRAMS += tests/test-uintptr_t_timsort
+BUILT_SOURCES += tests/src/test-uintptr_t_timsort.c
+CLEANFILES += tests/test-uintptr_t_timsort
+CLEANFILES += tests/src/test-uintptr_t_timsort.c
+tests_test_uintptr_t_timsort_SOURCES =
+tests_test_uintptr_t_timsort_SOURCES += tests/src/test-uintptr_t_timsort.c
+tests_test_uintptr_t_timsort_SOURCES += ats2-timsort.h
+tests_test_uintptr_t_timsort_DEPENDENCIES =
+tests_test_uintptr_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_uintptr_t_timsort_CPPFLAGS =
+tests_test_uintptr_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_uintptr_t_timsort_LDADD =
+tests_test_uintptr_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-uintptr_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uintptr_t $(<) > $(@)
+BUILT_SOURCES += intmax_t_timsort.dats
+CLEANFILES += intmax_t_timsort.dats
+CLEANFILES += intmax_t_timsort_dats.c
+TIMSORT_ATS_SRC += intmax_t_timsort.dats
+TIMSORT_C_SRC += intmax_t_timsort_dats.c
+intmax_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=intmax_t $(<) > $(@)
+TESTS += tests/test-intmax_t_timsort
+EXTRA_PROGRAMS += tests/test-intmax_t_timsort
+BUILT_SOURCES += tests/src/test-intmax_t_timsort.c
+CLEANFILES += tests/test-intmax_t_timsort
+CLEANFILES += tests/src/test-intmax_t_timsort.c
+tests_test_intmax_t_timsort_SOURCES =
+tests_test_intmax_t_timsort_SOURCES += tests/src/test-intmax_t_timsort.c
+tests_test_intmax_t_timsort_SOURCES += ats2-timsort.h
+tests_test_intmax_t_timsort_DEPENDENCIES =
+tests_test_intmax_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_intmax_t_timsort_CPPFLAGS =
+tests_test_intmax_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_intmax_t_timsort_LDADD =
+tests_test_intmax_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-intmax_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=intmax_t $(<) > $(@)
+BUILT_SOURCES += uintmax_t_timsort.dats
+CLEANFILES += uintmax_t_timsort.dats
+CLEANFILES += uintmax_t_timsort_dats.c
+TIMSORT_ATS_SRC += uintmax_t_timsort.dats
+TIMSORT_C_SRC += uintmax_t_timsort_dats.c
+uintmax_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uintmax_t $(<) > $(@)
+TESTS += tests/test-uintmax_t_timsort
+EXTRA_PROGRAMS += tests/test-uintmax_t_timsort
+BUILT_SOURCES += tests/src/test-uintmax_t_timsort.c
+CLEANFILES += tests/test-uintmax_t_timsort
+CLEANFILES += tests/src/test-uintmax_t_timsort.c
+tests_test_uintmax_t_timsort_SOURCES =
+tests_test_uintmax_t_timsort_SOURCES += tests/src/test-uintmax_t_timsort.c
+tests_test_uintmax_t_timsort_SOURCES += ats2-timsort.h
+tests_test_uintmax_t_timsort_DEPENDENCIES =
+tests_test_uintmax_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_uintmax_t_timsort_CPPFLAGS =
+tests_test_uintmax_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_uintmax_t_timsort_LDADD =
+tests_test_uintmax_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-uintmax_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uintmax_t $(<) > $(@)
+BUILT_SOURCES += int8_t_timsort.dats
+CLEANFILES += int8_t_timsort.dats
+CLEANFILES += int8_t_timsort_dats.c
+TIMSORT_ATS_SRC += int8_t_timsort.dats
+TIMSORT_C_SRC += int8_t_timsort_dats.c
+int8_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int8_t $(<) > $(@)
+TESTS += tests/test-int8_t_timsort
+EXTRA_PROGRAMS += tests/test-int8_t_timsort
+BUILT_SOURCES += tests/src/test-int8_t_timsort.c
+CLEANFILES += tests/test-int8_t_timsort
+CLEANFILES += tests/src/test-int8_t_timsort.c
+tests_test_int8_t_timsort_SOURCES =
+tests_test_int8_t_timsort_SOURCES += tests/src/test-int8_t_timsort.c
+tests_test_int8_t_timsort_SOURCES += ats2-timsort.h
+tests_test_int8_t_timsort_DEPENDENCIES =
+tests_test_int8_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_int8_t_timsort_CPPFLAGS =
+tests_test_int8_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_int8_t_timsort_LDADD =
+tests_test_int8_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-int8_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int8_t $(<) > $(@)
+BUILT_SOURCES += uint8_t_timsort.dats
+CLEANFILES += uint8_t_timsort.dats
+CLEANFILES += uint8_t_timsort_dats.c
+TIMSORT_ATS_SRC += uint8_t_timsort.dats
+TIMSORT_C_SRC += uint8_t_timsort_dats.c
+uint8_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint8_t $(<) > $(@)
+TESTS += tests/test-uint8_t_timsort
+EXTRA_PROGRAMS += tests/test-uint8_t_timsort
+BUILT_SOURCES += tests/src/test-uint8_t_timsort.c
+CLEANFILES += tests/test-uint8_t_timsort
+CLEANFILES += tests/src/test-uint8_t_timsort.c
+tests_test_uint8_t_timsort_SOURCES =
+tests_test_uint8_t_timsort_SOURCES += tests/src/test-uint8_t_timsort.c
+tests_test_uint8_t_timsort_SOURCES += ats2-timsort.h
+tests_test_uint8_t_timsort_DEPENDENCIES =
+tests_test_uint8_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_uint8_t_timsort_CPPFLAGS =
+tests_test_uint8_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_uint8_t_timsort_LDADD =
+tests_test_uint8_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-uint8_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint8_t $(<) > $(@)
+BUILT_SOURCES += int16_t_timsort.dats
+CLEANFILES += int16_t_timsort.dats
+CLEANFILES += int16_t_timsort_dats.c
+TIMSORT_ATS_SRC += int16_t_timsort.dats
+TIMSORT_C_SRC += int16_t_timsort_dats.c
+int16_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int16_t $(<) > $(@)
+TESTS += tests/test-int16_t_timsort
+EXTRA_PROGRAMS += tests/test-int16_t_timsort
+BUILT_SOURCES += tests/src/test-int16_t_timsort.c
+CLEANFILES += tests/test-int16_t_timsort
+CLEANFILES += tests/src/test-int16_t_timsort.c
+tests_test_int16_t_timsort_SOURCES =
+tests_test_int16_t_timsort_SOURCES += tests/src/test-int16_t_timsort.c
+tests_test_int16_t_timsort_SOURCES += ats2-timsort.h
+tests_test_int16_t_timsort_DEPENDENCIES =
+tests_test_int16_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_int16_t_timsort_CPPFLAGS =
+tests_test_int16_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_int16_t_timsort_LDADD =
+tests_test_int16_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-int16_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int16_t $(<) > $(@)
+BUILT_SOURCES += uint16_t_timsort.dats
+CLEANFILES += uint16_t_timsort.dats
+CLEANFILES += uint16_t_timsort_dats.c
+TIMSORT_ATS_SRC += uint16_t_timsort.dats
+TIMSORT_C_SRC += uint16_t_timsort_dats.c
+uint16_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint16_t $(<) > $(@)
+TESTS += tests/test-uint16_t_timsort
+EXTRA_PROGRAMS += tests/test-uint16_t_timsort
+BUILT_SOURCES += tests/src/test-uint16_t_timsort.c
+CLEANFILES += tests/test-uint16_t_timsort
+CLEANFILES += tests/src/test-uint16_t_timsort.c
+tests_test_uint16_t_timsort_SOURCES =
+tests_test_uint16_t_timsort_SOURCES += tests/src/test-uint16_t_timsort.c
+tests_test_uint16_t_timsort_SOURCES += ats2-timsort.h
+tests_test_uint16_t_timsort_DEPENDENCIES =
+tests_test_uint16_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_uint16_t_timsort_CPPFLAGS =
+tests_test_uint16_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_uint16_t_timsort_LDADD =
+tests_test_uint16_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-uint16_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint16_t $(<) > $(@)
+BUILT_SOURCES += int32_t_timsort.dats
+CLEANFILES += int32_t_timsort.dats
+CLEANFILES += int32_t_timsort_dats.c
+TIMSORT_ATS_SRC += int32_t_timsort.dats
+TIMSORT_C_SRC += int32_t_timsort_dats.c
+int32_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int32_t $(<) > $(@)
+TESTS += tests/test-int32_t_timsort
+EXTRA_PROGRAMS += tests/test-int32_t_timsort
+BUILT_SOURCES += tests/src/test-int32_t_timsort.c
+CLEANFILES += tests/test-int32_t_timsort
+CLEANFILES += tests/src/test-int32_t_timsort.c
+tests_test_int32_t_timsort_SOURCES =
+tests_test_int32_t_timsort_SOURCES += tests/src/test-int32_t_timsort.c
+tests_test_int32_t_timsort_SOURCES += ats2-timsort.h
+tests_test_int32_t_timsort_DEPENDENCIES =
+tests_test_int32_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_int32_t_timsort_CPPFLAGS =
+tests_test_int32_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_int32_t_timsort_LDADD =
+tests_test_int32_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-int32_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int32_t $(<) > $(@)
+BUILT_SOURCES += uint32_t_timsort.dats
+CLEANFILES += uint32_t_timsort.dats
+CLEANFILES += uint32_t_timsort_dats.c
+TIMSORT_ATS_SRC += uint32_t_timsort.dats
+TIMSORT_C_SRC += uint32_t_timsort_dats.c
+uint32_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint32_t $(<) > $(@)
+TESTS += tests/test-uint32_t_timsort
+EXTRA_PROGRAMS += tests/test-uint32_t_timsort
+BUILT_SOURCES += tests/src/test-uint32_t_timsort.c
+CLEANFILES += tests/test-uint32_t_timsort
+CLEANFILES += tests/src/test-uint32_t_timsort.c
+tests_test_uint32_t_timsort_SOURCES =
+tests_test_uint32_t_timsort_SOURCES += tests/src/test-uint32_t_timsort.c
+tests_test_uint32_t_timsort_SOURCES += ats2-timsort.h
+tests_test_uint32_t_timsort_DEPENDENCIES =
+tests_test_uint32_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_uint32_t_timsort_CPPFLAGS =
+tests_test_uint32_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_uint32_t_timsort_LDADD =
+tests_test_uint32_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-uint32_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint32_t $(<) > $(@)
+BUILT_SOURCES += int64_t_timsort.dats
+CLEANFILES += int64_t_timsort.dats
+CLEANFILES += int64_t_timsort_dats.c
+TIMSORT_ATS_SRC += int64_t_timsort.dats
+TIMSORT_C_SRC += int64_t_timsort_dats.c
+int64_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int64_t $(<) > $(@)
+TESTS += tests/test-int64_t_timsort
+EXTRA_PROGRAMS += tests/test-int64_t_timsort
+BUILT_SOURCES += tests/src/test-int64_t_timsort.c
+CLEANFILES += tests/test-int64_t_timsort
+CLEANFILES += tests/src/test-int64_t_timsort.c
+tests_test_int64_t_timsort_SOURCES =
+tests_test_int64_t_timsort_SOURCES += tests/src/test-int64_t_timsort.c
+tests_test_int64_t_timsort_SOURCES += ats2-timsort.h
+tests_test_int64_t_timsort_DEPENDENCIES =
+tests_test_int64_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_int64_t_timsort_CPPFLAGS =
+tests_test_int64_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_int64_t_timsort_LDADD =
+tests_test_int64_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-int64_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int64_t $(<) > $(@)
+BUILT_SOURCES += uint64_t_timsort.dats
+CLEANFILES += uint64_t_timsort.dats
+CLEANFILES += uint64_t_timsort_dats.c
+TIMSORT_ATS_SRC += uint64_t_timsort.dats
+TIMSORT_C_SRC += uint64_t_timsort_dats.c
+uint64_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint64_t $(<) > $(@)
+TESTS += tests/test-uint64_t_timsort
+EXTRA_PROGRAMS += tests/test-uint64_t_timsort
+BUILT_SOURCES += tests/src/test-uint64_t_timsort.c
+CLEANFILES += tests/test-uint64_t_timsort
+CLEANFILES += tests/src/test-uint64_t_timsort.c
+tests_test_uint64_t_timsort_SOURCES =
+tests_test_uint64_t_timsort_SOURCES += tests/src/test-uint64_t_timsort.c
+tests_test_uint64_t_timsort_SOURCES += ats2-timsort.h
+tests_test_uint64_t_timsort_DEPENDENCIES =
+tests_test_uint64_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_uint64_t_timsort_CPPFLAGS =
+tests_test_uint64_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_uint64_t_timsort_LDADD =
+tests_test_uint64_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-uint64_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint64_t $(<) > $(@)
+if HAVE_INT128_T
+BUILT_SOURCES += int128_t_timsort.dats
+CLEANFILES += int128_t_timsort.dats
+CLEANFILES += int128_t_timsort_dats.c
+TIMSORT_ATS_SRC += int128_t_timsort.dats
+TIMSORT_C_SRC += int128_t_timsort_dats.c
+int128_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int128_t $(<) > $(@)
+TESTS += tests/test-int128_t_timsort
+EXTRA_PROGRAMS += tests/test-int128_t_timsort
+BUILT_SOURCES += tests/src/test-int128_t_timsort.c
+CLEANFILES += tests/test-int128_t_timsort
+CLEANFILES += tests/src/test-int128_t_timsort.c
+tests_test_int128_t_timsort_SOURCES =
+tests_test_int128_t_timsort_SOURCES += tests/src/test-int128_t_timsort.c
+tests_test_int128_t_timsort_SOURCES += ats2-timsort.h
+tests_test_int128_t_timsort_DEPENDENCIES =
+tests_test_int128_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_int128_t_timsort_CPPFLAGS =
+tests_test_int128_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_int128_t_timsort_LDADD =
+tests_test_int128_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-int128_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=int128_t $(<) > $(@)
+endif HAVE_INT128_T
+if HAVE_UINT128_T
+BUILT_SOURCES += uint128_t_timsort.dats
+CLEANFILES += uint128_t_timsort.dats
+CLEANFILES += uint128_t_timsort_dats.c
+TIMSORT_ATS_SRC += uint128_t_timsort.dats
+TIMSORT_C_SRC += uint128_t_timsort_dats.c
+uint128_t_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint128_t $(<) > $(@)
+TESTS += tests/test-uint128_t_timsort
+EXTRA_PROGRAMS += tests/test-uint128_t_timsort
+BUILT_SOURCES += tests/src/test-uint128_t_timsort.c
+CLEANFILES += tests/test-uint128_t_timsort
+CLEANFILES += tests/src/test-uint128_t_timsort.c
+tests_test_uint128_t_timsort_SOURCES =
+tests_test_uint128_t_timsort_SOURCES += tests/src/test-uint128_t_timsort.c
+tests_test_uint128_t_timsort_SOURCES += ats2-timsort.h
+tests_test_uint128_t_timsort_DEPENDENCIES =
+tests_test_uint128_t_timsort_DEPENDENCIES += libats2-timsort-c.la
+tests_test_uint128_t_timsort_CPPFLAGS =
+tests_test_uint128_t_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_uint128_t_timsort_LDADD =
+tests_test_uint128_t_timsort_LDADD += libats2-timsort-c.la
+tests/src/test-uint128_t_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4
+	@$(MKDIR_P) $(@D)
+	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=uint128_t $(<) > $(@)
+endif HAVE_UINT128_T
