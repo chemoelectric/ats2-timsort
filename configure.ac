@@ -197,6 +197,7 @@ AC_CONFIG_FILES([ats2-timsort.pc])
 #AC_CONFIG_FILES([ats2-timsort-c.pc])
 AC_CONFIG_FILES([list-ats-dependencies.dats])
 AC_CONFIG_FILES([common-macros.m4])
+AC_CONFIG_FILES([timsort-macros.m4])
 
 AC_OUTPUT
 

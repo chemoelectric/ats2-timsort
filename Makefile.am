@@ -41,6 +41,7 @@ LDADD =
 bin_PROGRAMS =
 lib_LTLIBRARIES =
 EXTRA_PROGRAMS =
+TESTS =
 nobase_nodist_pkginclude_HEADERS =
 nodist_pkgconfig_DATA =
 
@@ -76,7 +77,7 @@ TOTAL_M4FLAGS += $(AM_M4FLAGS)
 TOTAL_M4FLAGS += $(M4FLAGS)
 TOTAL_M4FLAGS += $(XM4FLAGS)
 
-%.dats: %.dats.m4 common-macros.m4
+%.dats: %.dats.m4 common-macros.m4 timsort-macros.m4
 	@$(MKDIR_P) $(@D)
 	$(call v,M4)$(M4) $(TOTAL_M4FLAGS) $(<) > $(@)
 
@@ -208,13 +209,9 @@ libats2_timsort_la_DEPENDENCIES += $(BPTR_CATS)
 lib_LTLIBRARIES += libats2-timsort-c.la
 
 TIMSORT_ATS_SRC =
-BUILT_SOURCES += $(TIMSORT_ATS_SRC)
-CLEANFILES += $(TIMSORT_ATS_SRC)
+TIMSORT_C_SRC =
 
 $(TIMSORT_ATS_SRC): typed-timsort-for-c.dats.m4
-
-TIMSORT_C_SRC =
-CLEANFILES += $(TIMSORT_C_SRC)
 
 include $(top_srcdir)/ats2-timsort-c.am
 
@@ -237,7 +234,7 @@ EXTRA_DIST += timsort-for-c-memory.include.c
 
 #--------------------------------------------------------------------------
 
-TESTS =
+EXTRA_DIST += tests/test-timsort-c.c.m4
 
 TESTS += tests/test-clz
 EXTRA_PROGRAMS += tests/test-clz
@@ -355,19 +352,6 @@ tests_test_timing_array_timsort_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_timing_array_timsort_LDADD =
 tests_test_timing_array_timsort_LDADD += libats2-timsort.la
 tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
-
-TESTS += tests/test-int_timsort
-EXTRA_PROGRAMS += tests/test-int_timsort
-CLEANFILES += tests/test-int_timsort
-tests_test_int_timsort_SOURCES =
-tests_test_int_timsort_SOURCES += tests/test-int_timsort.c
-tests_test_int_timsort_SOURCES += ats2-timsort.h
-tests_test_int_timsort_DEPENDENCIES =
-tests_test_int_timsort_DEPENDENCIES += libats2-timsort-c.la
-tests_test_int_timsort_CPPFLAGS =
-tests_test_int_timsort_CPPFLAGS += $(AM_CPPFLAGS)
-tests_test_int_timsort_LDADD =
-tests_test_int_timsort_LDADD += libats2-timsort-c.la
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)

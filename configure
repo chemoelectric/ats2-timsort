@@ -20445,6 +20445,8 @@ ac_config_files="$ac_config_files list-ats-dependencies.dats"
 
 ac_config_files="$ac_config_files common-macros.m4"
 
+ac_config_files="$ac_config_files timsort-macros.m4"
+
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -21599,6 +21601,7 @@ do
     "ats2-timsort.pc") CONFIG_FILES="$CONFIG_FILES ats2-timsort.pc" ;;
     "list-ats-dependencies.dats") CONFIG_FILES="$CONFIG_FILES list-ats-dependencies.dats" ;;
     "common-macros.m4") CONFIG_FILES="$CONFIG_FILES common-macros.m4" ;;
+    "timsort-macros.m4") CONFIG_FILES="$CONFIG_FILES timsort-macros.m4" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
