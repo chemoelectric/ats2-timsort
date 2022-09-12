@@ -62,6 +62,8 @@ main (int argc, char **argv)
   CTYPE arr1[ARRMAX];
   CTYPE arr2[ARRMAX];
 
+  srand (1);
+
   for (size_t sz = 1; sz <= ARRMAX; sz *= 10)
     {
       for (size_t i = 0; i != sz; i += 1)
