@@ -35,12 +35,26 @@ compare (const void *px, const void *py)
         `return ((x < y) ? -1 : ((x > y) ? 1 : 0));')
 }
 
+m4_if(REENTRANT,no,
+`
 static int
 less_than (CTYPE x, CTYPE y)
 {
   m4_if(TYPE,`pointer',`return (strcmp (x, y) < 0);',
         `return (x < y);')
 }
+',
+`
+int flag;
+
+static int
+less_than (CTYPE x, CTYPE y, void *env)
+{
+  (*(size_t *) env) = 1;
+  m4_if(TYPE,`pointer',`return (strcmp (x, y) < 0);',
+        `return (x < y);')
+}
+')
 
 static CTYPE
 random_value (void)
@@ -74,12 +88,18 @@ main (int argc, char **argv)
         }
 
       qsort (arr1, sz, sizeof arr1[0], compare);
-      TYPE`'_timsort (arr2, sz, less_than);
+
+      m4_if(REENTRANT,yes,`flag = 0;')
+      m4_if(REENTRANT,no,
+            `TYPE`'_timsort (arr2, sz, less_than);',
+            `TYPE`'_timsort_r (arr2, sz, less_than, &flag);')
+      m4_if(REENTRANT,yes,
+            `if (1 < sz && flag != 1) { printf ("environment failed: flag = %d\n", flag); exit (1); }')
 
       for (size_t i = 0; i != sz; i += 1)
         if (arr1[i] != arr2[i])
           {
-            printf ("mismatch for array size %zu, at index %zu",
+            printf ("mismatch for array size %zu, at index %zu\n",
                     sz, i);
             exit(1);
           }

@@ -70,6 +70,8 @@ m4_ifdef(`SIZEOF_INT128_T',
 m4_ifdef(`SIZEOF_UINT128_T',
   `typedef ats2_timsort_c_uint128_t = $extype"__uint128_t"')
 
+m4_if(REENTRANT,no,
+`
 extern fn
 ats2_timsort_c_`'FUNCNAME
           {n         : int}
@@ -88,9 +90,33 @@ ats2_timsort_c_`'FUNCNAME (arr, n, less_than) =
   in
     array_timsort<ATSTYPE> (arr, n)
   end
+',
+`
+extern fn
+ats2_timsort_c_`'FUNCNAME`'_r
+          {n         : int}
+          {arrsz     : int | n <= arrsz}
+          (arr       : &array (ATSTYPE, arrsz),
+           n         : size_t n,
+           less_than : (ATSTYPE, ATSTYPE, ptr) -<fun> int,
+           env       : ptr)
+    : void = "ext#ats2_timsort_c_`'FUNCNAME`'_r"
+
+implement
+ats2_timsort_c_`'FUNCNAME`'_r (arr, n, less_than, env) =
+  let
+    implement
+    array_timsort$lt<ATSTYPE> (x, y) =
+      less_than (x, y, env) <> 0
+  in
+    array_timsort<ATSTYPE> (arr, n)
+  end
+')
 ')
 
 m4_define(`INDIRECT_DEFINITION',
+`
+m4_if(REENTRANT,no,
 `
 %{
 void
@@ -99,6 +125,17 @@ ats2_timsort_c_`'FUNCNAME (void *arr, size_t n, void *less_than)
   ats2_timsort_c_`'$1`'_timsort (arr, n, less_than);
 }
 %}
+',
+`
+%{
+void
+ats2_timsort_c_`'FUNCNAME`'_r (void *arr, size_t n,
+                               void *less_than, void *env)
+{
+  ats2_timsort_c_`'$1`'_timsort_r (arr, n, less_than, env);
+}
+%}
+')
 ')
 
 m4_define(`SIGNED_DEFINITION',

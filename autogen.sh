@@ -192,7 +192,18 @@ make_function_directives() {
     printf 'TIMSORT_C_SRC += %s_timsort_dats.c\n' "$1" >> "$2"
     printf '%s_timsort.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4\n' "$1" >> "$2"
 	printf '\t@$(MKDIR_P) $(@D)\n' >> "$2"
-    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' "$1" >> "$2"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s -DREENTRANT=no $(<) > $(@)\n' "$1" >> "$2"
+}
+
+make_function_r_directives() {
+    printf 'BUILT_SOURCES += %s_timsort_r.dats\n' "$1" >> "$2"
+    printf 'CLEANFILES += %s_timsort_r.dats\n' "$1" >> "$2"
+    printf 'CLEANFILES += %s_timsort_r_dats.c\n' "$1" >> "$2"
+    printf 'TIMSORT_ATS_SRC += %s_timsort_r.dats\n' "$1" >> "$2"
+    printf 'TIMSORT_C_SRC += %s_timsort_r_dats.c\n' "$1" >> "$2"
+    printf '%s_timsort_r.dats: typed-timsort-for-c.dats.m4 common-macros.m4 timsort-macros.m4\n' "$1" >> "$2"
+	printf '\t@$(MKDIR_P) $(@D)\n' >> "$2"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s -DREENTRANT=yes $(<) > $(@)\n' "$1" >> "$2"
 }
 
 make_test_directives() {
@@ -220,7 +231,35 @@ make_test_directives() {
     printf 'tests/src/test-%s_timsort.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4\n' \
            "$1" >> "$2"
 	printf '\t@$(MKDIR_P) $(@D)\n' >> "$2"
-    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s $(<) > $(@)\n' "$1" >> "$2"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s -DREENTRANT=no $(<) > $(@)\n' "$1" >> "$2"
+}
+
+make_test_r_directives() {
+    #
+    # Put source files in a subdirectory, to avoid there being
+    # multiple rules for tests/.dirstamp
+    #
+    # See
+    # https://stackoverflow.com/questions/11958626/make-file-warning-overriding-commands-for-target
+    #
+    printf 'TESTS += tests/test-%s_timsort_r\n' "$1" >> "$2"
+    printf 'EXTRA_PROGRAMS += tests/test-%s_timsort_r\n' "$1" >> "$2"
+    printf 'BUILT_SOURCES += tests/src/test-%s_timsort_r.c\n' "$1" >> "$2"
+    printf 'CLEANFILES += tests/test-%s_timsort_r\n' "$1" >> "$2"
+    printf 'CLEANFILES += tests/src/test-%s_timsort_r.c\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_SOURCES =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_SOURCES += tests/src/test-%s_timsort_r.c\n' "$1" "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_SOURCES += ats2-timsort.h\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_DEPENDENCIES =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_DEPENDENCIES += libats2-timsort-c.la\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_CPPFLAGS =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_CPPFLAGS += $(AM_CPPFLAGS)\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_LDADD =\n' "$1" >> "$2"
+    printf 'tests_test_%s_timsort_r_LDADD += libats2-timsort-c.la\n' "$1" >> "$2"
+    printf 'tests/src/test-%s_timsort_r.c: tests/test-timsort-c.c.m4 common-macros.m4 timsort-macros.m4\n' \
+           "$1" >> "$2"
+	printf '\t@$(MKDIR_P) $(@D)\n' >> "$2"
+    printf '\t$(call v,M4)$(M4) $(TOTAL_M4FLAGS) -DTYPE=%s -DREENTRANT=yes $(<) > $(@)\n' "$1" >> "$2"
 }
 
 make_ats2_timsort_c_am() {
@@ -246,19 +285,25 @@ make_ats2_timsort_c_am() {
              int32_t uint32_t \
              int64_t uint64_t; do
         make_function_directives "${t}" "${f}"
+        make_function_r_directives "${t}" "${f}"
         make_test_directives "${t}" "${f}"
+        make_test_r_directives "${t}" "${f}"
     done
 
     t=int128_t
     printf 'if HAVE_INT128_T\n' >> "${f}"
     make_function_directives "${t}" "${f}"
+    make_function_r_directives "${t}" "${f}"
     make_test_directives "${t}" "${f}"
+    make_test_r_directives "${t}" "${f}"
     printf 'endif HAVE_INT128_T\n' >> "${f}"
 
     t=uint128_t
     printf 'if HAVE_UINT128_T\n' >> "${f}"
     make_function_directives "${t}" "${f}"
+    make_function_r_directives "${t}" "${f}"
     make_test_directives "${t}" "${f}"
+    make_test_r_directives "${t}" "${f}"
     printf 'endif HAVE_UINT128_T\n' >> "${f}"
 }
 
