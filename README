@@ -1,6 +1,11 @@
 Timsort (powersort) for ATS2/Postiats and C
 -------------------------------------------
 
+Implementations of natural mergesort employing the ‘powerset’
+strategy. ‘Powersort’ is the strategy employed in later versions of
+Timsort—that is, in the sort implementation of the C-Python
+interpreter.
+
 Included:
 
   * An array sort, for ATS2, that supports linear types. The insertion
