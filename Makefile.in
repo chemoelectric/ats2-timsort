@@ -33,7 +33,7 @@
 #
 
 # aminclude_static.am generated automatically by Autoconf
-# from AX_AM_MACROS_STATIC on Mon Sep 12 07:52:12 CDT 2022
+# from AX_AM_MACROS_STATIC on Mon Sep 12 08:13:49 CDT 2022
 
 
 
@@ -223,8 +223,8 @@ DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
-CONFIG_CLEAN_FILES = ats2-timsort.pc list-ats-dependencies.dats \
-	common-macros.m4 timsort-macros.m4
+CONFIG_CLEAN_FILES = ats2-timsort.pc ats2-timsort-c.pc \
+	list-ats-dependencies.dats common-macros.m4 timsort-macros.m4
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_INT128_T_TRUE@am__EXEEXT_1 =  \
 @HAVE_INT128_T_TRUE@	tests/test-int128_t_timsort$(EXEEXT)
@@ -820,8 +820,8 @@ TEST_LOGS = $(am__test_logs2:.test.log=.log)
 TEST_LOG_DRIVER = $(SHELL) $(top_srcdir)/build-aux/test-driver
 TEST_LOG_COMPILE = $(TEST_LOG_COMPILER) $(AM_TEST_LOG_FLAGS) \
 	$(TEST_LOG_FLAGS)
-am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/ats2-timsort.pc.in \
-	$(srcdir)/common-macros.m4.in \
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/ats2-timsort-c.pc.in \
+	$(srcdir)/ats2-timsort.pc.in $(srcdir)/common-macros.m4.in \
 	$(srcdir)/list-ats-dependencies.dats.in \
 	$(srcdir)/timsort-macros.m4.in \
 	$(top_srcdir)/aminclude_static.am \
@@ -1159,7 +1159,7 @@ lib_LTLIBRARIES = libats2-timsort.la libats2-timsort-c.la
 nobase_nodist_pkginclude_HEADERS = 
 
 #--------------------------------------------------------------------------
-nodist_pkgconfig_DATA = ats2-timsort.pc
+nodist_pkgconfig_DATA = ats2-timsort.pc ats2-timsort-c.pc
 CODE_COVERAGE_IGNORE_PATTERN = /usr/include/* /usr/include/*/* \
 	$(PATSHOME)/ccomp/runtime/* $(PATSHOME)/prelude/CATS/*
 
@@ -1473,6 +1473,8 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	$(am__cd) $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
 $(am__aclocal_m4_deps):
 ats2-timsort.pc: $(top_builddir)/config.status $(srcdir)/ats2-timsort.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+ats2-timsort-c.pc: $(top_builddir)/config.status $(srcdir)/ats2-timsort-c.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 list-ats-dependencies.dats: $(top_builddir)/config.status $(srcdir)/list-ats-dependencies.dats.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
@@ -3929,7 +3931,6 @@ tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
-#nodist_pkgconfig_DATA += ats2-timsort-c.pc
 
 #--------------------------------------------------------------------------
 # local variables:

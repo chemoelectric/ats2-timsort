@@ -380,7 +380,7 @@ list_ats_dependencies_LDADD += -latslib
 #--------------------------------------------------------------------------
 
 nodist_pkgconfig_DATA += ats2-timsort.pc
-#nodist_pkgconfig_DATA += ats2-timsort-c.pc
+nodist_pkgconfig_DATA += ats2-timsort-c.pc
 
 #--------------------------------------------------------------------------
 # local variables:

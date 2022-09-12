@@ -20440,7 +20440,8 @@ printf "%s\n" "$as_me: WARNING: Please consider installing and using GNU Make:
 
 ac_config_files="$ac_config_files ats2-timsort.pc"
 
-#AC_CONFIG_FILES([ats2-timsort-c.pc])
+ac_config_files="$ac_config_files ats2-timsort-c.pc"
+
 ac_config_files="$ac_config_files list-ats-dependencies.dats"
 
 ac_config_files="$ac_config_files common-macros.m4"
@@ -21599,6 +21600,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "GNUmakefile") CONFIG_FILES="$CONFIG_FILES GNUmakefile:Makefile.in" ;;
     "ats2-timsort.pc") CONFIG_FILES="$CONFIG_FILES ats2-timsort.pc" ;;
+    "ats2-timsort-c.pc") CONFIG_FILES="$CONFIG_FILES ats2-timsort-c.pc" ;;
     "list-ats-dependencies.dats") CONFIG_FILES="$CONFIG_FILES list-ats-dependencies.dats" ;;
     "common-macros.m4") CONFIG_FILES="$CONFIG_FILES common-macros.m4" ;;
     "timsort-macros.m4") CONFIG_FILES="$CONFIG_FILES timsort-macros.m4" ;;
