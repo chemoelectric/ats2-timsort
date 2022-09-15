@@ -219,8 +219,9 @@ make_test_directives() {
     printf 'BUILT_SOURCES += tests/src/test-%s_timsort.c\n' "$1" >> "$2"
     printf 'CLEANFILES += tests/test-%s_timsort\n' "$1" >> "$2"
     printf 'CLEANFILES += tests/src/test-%s_timsort.c\n' "$1" >> "$2"
+    printf 'nodist_tests_test_%s_timsort_SOURCES =\n' "$1" >> "$2"
+    printf 'nodist_tests_test_%s_timsort_SOURCES += tests/src/test-%s_timsort.c\n' "$1" "$1" >> "$2"
     printf 'tests_test_%s_timsort_SOURCES =\n' "$1" >> "$2"
-    printf 'tests_test_%s_timsort_SOURCES += tests/src/test-%s_timsort.c\n' "$1" "$1" >> "$2"
     printf 'tests_test_%s_timsort_SOURCES += ats2-timsort.h\n' "$1" >> "$2"
     printf 'tests_test_%s_timsort_DEPENDENCIES =\n' "$1" >> "$2"
     printf 'tests_test_%s_timsort_DEPENDENCIES += libats2-timsort-c.la\n' "$1" >> "$2"
@@ -247,8 +248,9 @@ make_test_r_directives() {
     printf 'BUILT_SOURCES += tests/src/test-%s_timsort_r.c\n' "$1" >> "$2"
     printf 'CLEANFILES += tests/test-%s_timsort_r\n' "$1" >> "$2"
     printf 'CLEANFILES += tests/src/test-%s_timsort_r.c\n' "$1" >> "$2"
+    printf 'nodist_tests_test_%s_timsort_r_SOURCES =\n' "$1" >> "$2"
+    printf 'nodist_tests_test_%s_timsort_r_SOURCES += tests/src/test-%s_timsort_r.c\n' "$1" "$1" >> "$2"
     printf 'tests_test_%s_timsort_r_SOURCES =\n' "$1" >> "$2"
-    printf 'tests_test_%s_timsort_r_SOURCES += tests/src/test-%s_timsort_r.c\n' "$1" "$1" >> "$2"
     printf 'tests_test_%s_timsort_r_SOURCES += ats2-timsort.h\n' "$1" >> "$2"
     printf 'tests_test_%s_timsort_r_DEPENDENCIES =\n' "$1" >> "$2"
     printf 'tests_test_%s_timsort_r_DEPENDENCIES += libats2-timsort-c.la\n' "$1" >> "$2"
@@ -294,8 +296,7 @@ make_ats2_timsort_c_am() {
     for t in int128_t uint128_t \
              float32 float64 float128 \
              float32x float64x float128x \
-             decimal32 decimal64 decimal128 \
-             decimal32x decimal64x decimal128x; do
+             decimal32 decimal64 decimal128; do
         T=`echo ${t} | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
         printf '\n' >> "${f}"
         printf 'if HAVE_%s\n' "${T}" >> "${f}"

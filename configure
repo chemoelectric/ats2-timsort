@@ -663,12 +663,6 @@ LIBOBJS
 GNU_MAKE
 M4FLAGS
 GNU
-HAVE_DECIMAL128X_FALSE
-HAVE_DECIMAL128X_TRUE
-HAVE_DECIMAL64X_FALSE
-HAVE_DECIMAL64X_TRUE
-HAVE_DECIMAL32X_FALSE
-HAVE_DECIMAL32X_TRUE
 HAVE_DECIMAL128_FALSE
 HAVE_DECIMAL128_TRUE
 HAVE_DECIMAL64_FALSE
@@ -20778,160 +20772,6 @@ printf "%s\n" "#define SIZEOF__DECIMAL128 $ac_cv_sizeof__Decimal128" >>confdefs.
      M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL128=${ac_cv_sizeof__Decimal128}"
    fi
 
-
-   ac_fn_c_check_type "$LINENO" "_Decimal32x" "ac_cv_type__Decimal32x" "$ac_includes_default"
-if test "x$ac_cv_type__Decimal32x" = xyes
-then :
-
-fi
-
-    if test x"${ac_cv_type__Decimal32x}" = xyes; then
-  HAVE_DECIMAL32X_TRUE=
-  HAVE_DECIMAL32X_FALSE='#'
-else
-  HAVE_DECIMAL32X_TRUE='#'
-  HAVE_DECIMAL32X_FALSE=
-fi
-
-   if test x"${ac_cv_type__Decimal32x}" = xyes; then
-     # The cast to long int works around a bug in the HP C Compiler
-# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
-# This bug is HP SR number 8606223364.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal32x" >&5
-printf %s "checking size of _Decimal32x... " >&6; }
-if test ${ac_cv_sizeof__Decimal32x+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal32x))" "ac_cv_sizeof__Decimal32x"        "$ac_includes_default"
-then :
-
-else $as_nop
-  if test "$ac_cv_type__Decimal32x" = yes; then
-     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 77 "cannot compute sizeof (_Decimal32x)
-See \`config.log' for more details" "$LINENO" 5; }
-   else
-     ac_cv_sizeof__Decimal32x=0
-   fi
-fi
-
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal32x" >&5
-printf "%s\n" "$ac_cv_sizeof__Decimal32x" >&6; }
-
-
-
-printf "%s\n" "#define SIZEOF__DECIMAL32X $ac_cv_sizeof__Decimal32x" >>confdefs.h
-
-
-     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL32X=${ac_cv_sizeof__Decimal32x}"
-   fi
-
-   ac_fn_c_check_type "$LINENO" "_Decimal64x" "ac_cv_type__Decimal64x" "$ac_includes_default"
-if test "x$ac_cv_type__Decimal64x" = xyes
-then :
-
-fi
-
-    if test x"${ac_cv_type__Decimal64x}" = xyes; then
-  HAVE_DECIMAL64X_TRUE=
-  HAVE_DECIMAL64X_FALSE='#'
-else
-  HAVE_DECIMAL64X_TRUE='#'
-  HAVE_DECIMAL64X_FALSE=
-fi
-
-   if test x"${ac_cv_type__Decimal64x}" = xyes; then
-     # The cast to long int works around a bug in the HP C Compiler
-# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
-# This bug is HP SR number 8606223364.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal64x" >&5
-printf %s "checking size of _Decimal64x... " >&6; }
-if test ${ac_cv_sizeof__Decimal64x+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal64x))" "ac_cv_sizeof__Decimal64x"        "$ac_includes_default"
-then :
-
-else $as_nop
-  if test "$ac_cv_type__Decimal64x" = yes; then
-     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 77 "cannot compute sizeof (_Decimal64x)
-See \`config.log' for more details" "$LINENO" 5; }
-   else
-     ac_cv_sizeof__Decimal64x=0
-   fi
-fi
-
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal64x" >&5
-printf "%s\n" "$ac_cv_sizeof__Decimal64x" >&6; }
-
-
-
-printf "%s\n" "#define SIZEOF__DECIMAL64X $ac_cv_sizeof__Decimal64x" >>confdefs.h
-
-
-     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL64X=${ac_cv_sizeof__Decimal64x}"
-   fi
-
-   ac_fn_c_check_type "$LINENO" "_Decimal128x" "ac_cv_type__Decimal128x" "$ac_includes_default"
-if test "x$ac_cv_type__Decimal128x" = xyes
-then :
-
-fi
-
-    if test x"${ac_cv_type__Decimal128x}" = xyes; then
-  HAVE_DECIMAL128X_TRUE=
-  HAVE_DECIMAL128X_FALSE='#'
-else
-  HAVE_DECIMAL128X_TRUE='#'
-  HAVE_DECIMAL128X_FALSE=
-fi
-
-   if test x"${ac_cv_type__Decimal128x}" = xyes; then
-     # The cast to long int works around a bug in the HP C Compiler
-# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
-# This bug is HP SR number 8606223364.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal128x" >&5
-printf %s "checking size of _Decimal128x... " >&6; }
-if test ${ac_cv_sizeof__Decimal128x+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal128x))" "ac_cv_sizeof__Decimal128x"        "$ac_includes_default"
-then :
-
-else $as_nop
-  if test "$ac_cv_type__Decimal128x" = yes; then
-     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 77 "cannot compute sizeof (_Decimal128x)
-See \`config.log' for more details" "$LINENO" 5; }
-   else
-     ac_cv_sizeof__Decimal128x=0
-   fi
-fi
-
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal128x" >&5
-printf "%s\n" "$ac_cv_sizeof__Decimal128x" >&6; }
-
-
-
-printf "%s\n" "#define SIZEOF__DECIMAL128X $ac_cv_sizeof__Decimal128x" >>confdefs.h
-
-
-     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL128X=${ac_cv_sizeof__Decimal128x}"
-   fi
-
 #--------------------------------------------------------------------------
 #
 # Checks for library functions.
@@ -21313,18 +21153,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_DECIMAL128_TRUE}" && test -z "${HAVE_DECIMAL128_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_DECIMAL128\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_DECIMAL32X_TRUE}" && test -z "${HAVE_DECIMAL32X_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_DECIMAL32X\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_DECIMAL64X_TRUE}" && test -z "${HAVE_DECIMAL64X_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_DECIMAL64X\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_DECIMAL128X_TRUE}" && test -z "${HAVE_DECIMAL128X_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_DECIMAL128X\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

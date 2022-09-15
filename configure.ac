@@ -178,10 +178,6 @@ my_check_type([_Decimal32],[DECIMAL32])
 my_check_type([_Decimal64],[DECIMAL64])
 my_check_type([_Decimal128],[DECIMAL128])
 
-my_check_type([_Decimal32x],[DECIMAL32X])
-my_check_type([_Decimal64x],[DECIMAL64X])
-my_check_type([_Decimal128x],[DECIMAL128X])
-
 #--------------------------------------------------------------------------
 #
 # Checks for library functions.

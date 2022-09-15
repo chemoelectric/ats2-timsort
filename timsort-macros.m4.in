@@ -39,9 +39,6 @@ m4_define(`CTYPE',
          TYPE,`decimal32',`_Decimal32',
          TYPE,`decimal64',`_Decimal64',
          TYPE,`decimal128',`_Decimal128',
-         TYPE,`decimal32x',`_Decimal32x',
-         TYPE,`decimal64x',`_Decimal64x',
-         TYPE,`decimal128x',`_Decimal128x',
          TYPE)')
 
 m4_define(`ATSTYPE',
@@ -79,9 +76,6 @@ m4_define(`ATSTYPE',
          TYPE,`decimal32',`ats2_timsort_c_decimal32',
          TYPE,`decimal64',`ats2_timsort_c_decimal64',
          TYPE,`decimal128',`ats2_timsort_c_decimal128',
-         TYPE,`decimal32x',`ats2_timsort_c_decimal32x',
-         TYPE,`decimal64x',`ats2_timsort_c_decimal64x',
-         TYPE,`decimal128x',`ats2_timsort_c_decimal128x',
          TYPE)')
 
 m4_define(`DEFAULT_DEFINITION',
