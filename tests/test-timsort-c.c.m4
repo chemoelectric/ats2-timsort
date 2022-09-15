@@ -63,12 +63,9 @@ less_than (CTYPE x, CTYPE y, void *env)
 static CTYPE
 random_value (void)
 {
-  m4_if(TYPE,`float',
-          `return (((CTYPE) rand ()) / RAND_MAX);',
-        TYPE,`double',
-          `return (((CTYPE) rand ()) / RAND_MAX);',
-        TYPE,`long_double',
-          `return (((CTYPE) rand ()) / RAND_MAX);',
+  m4_if(TYPE,`float',`m4_random_float',
+        TYPE,`double',`m4_random_float',
+        TYPE,`long_double',`m4_random_float',
         TYPE,`float32',`m4_random_float',
         TYPE,`float64',`m4_random_float',
         TYPE,`float128',`m4_random_float',
