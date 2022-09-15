@@ -667,6 +667,8 @@ HAVE_UINT128_T_FALSE
 HAVE_UINT128_T_TRUE
 HAVE_INT128_T_FALSE
 HAVE_INT128_T_TRUE
+ATS2_FLOATTYPES_LIBS
+ATS2_FLOATTYPES_CFLAGS
 pkgconfigdir
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
@@ -830,6 +832,7 @@ with_aix_soname
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+with_ats2_floattypes
 with_gcov
 enable_code_coverage
 with_pkgconfigdir
@@ -852,6 +855,8 @@ CXXCPP
 PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
+ATS2_FLOATTYPES_CFLAGS
+ATS2_FLOATTYPES_LIBS
 GNU_MAKE'
 
 
@@ -1507,6 +1512,9 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
+  --with-ats2-floattypes=[yes,no,check]
+                          use ats2-floattypes to build C interfaces for
+                          floating point types [default=yes]
   --with-gcov=GCOV        use given GCOV for coverage (GCOV=gcov).
   --with-pkgconfigdir     pkg-config installation directory
                           ['${libdir}/pkgconfig']
@@ -1533,6 +1541,10 @@ Some influential environment variables:
               directories to add to pkg-config's search path
   PKG_CONFIG_LIBDIR
               path overriding pkg-config's built-in search path
+  ATS2_FLOATTYPES_CFLAGS
+              C compiler flags for ATS2_FLOATTYPES, overriding pkg-config
+  ATS2_FLOATTYPES_LIBS
+              linker flags for ATS2_FLOATTYPES, overriding pkg-config
   GNU_MAKE    GNU Make command
 
 Use these variables to override the choices made by `configure' or to help
@@ -13484,6 +13496,23 @@ else
 fi
 
 
+
+# Check whether --with-ats2-floattypes was given.
+if test ${with_ats2_floattypes+y}
+then :
+  withval=$with_ats2_floattypes;
+else $as_nop
+  with_ats2_floattypes=yes
+fi
+
+case x"${with_ats2_floattypes}" in
+  xyes | xno | xcheck )
+    ;;
+  * )
+    as_fn_error $? "expected --with-ats2-floattypes=[yes,no,check], but got --with-ats2-floattypes=\"${with_ats2_floattypes}\"" "$LINENO" 5
+    ;;
+esac
+
 #--------------------------------------------------------------------------
 #
 # Checks for programs.
@@ -19246,6 +19275,111 @@ pkgconfigdir=$with_pkgconfigdir
 #--------------------------------------------------------------------------
 #
 # Checks for libraries.
+
+
+pkg_failed=no
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ATS2_FLOATTYPES" >&5
+printf %s "checking for ATS2_FLOATTYPES... " >&6; }
+
+if test -n "$ATS2_FLOATTYPES_CFLAGS"; then
+    pkg_cv_ATS2_FLOATTYPES_CFLAGS="$ATS2_FLOATTYPES_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ats2-floattypes\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ats2-floattypes") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_ATS2_FLOATTYPES_CFLAGS=`$PKG_CONFIG --cflags "ats2-floattypes" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$ATS2_FLOATTYPES_LIBS"; then
+    pkg_cv_ATS2_FLOATTYPES_LIBS="$ATS2_FLOATTYPES_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ats2-floattypes\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ats2-floattypes") 2>&5
+  ac_status=$?
+  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_ATS2_FLOATTYPES_LIBS=`$PKG_CONFIG --libs "ats2-floattypes" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        ATS2_FLOATTYPES_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ats2-floattypes" 2>&1`
+        else
+	        ATS2_FLOATTYPES_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ats2-floattypes" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$ATS2_FLOATTYPES_PKG_ERRORS" >&5
+
+	case x"${with_ats2_floattypes}" in
+     xno )
+       ;;
+     xcheck )
+       with_ats2_floattypes=no
+       ;;
+     * )
+       as_fn_error $? "ats2-floattypes is not installed; consider --with-ats2-floattypes=no" "$LINENO" 5
+       ;;
+   esac
+elif test $pkg_failed = untried; then
+     	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+	case x"${with_ats2_floattypes}" in
+     xno )
+       ;;
+     xcheck )
+       with_ats2_floattypes=no
+       ;;
+     * )
+       as_fn_error $? "ats2-floattypes is not installed; consider --with-ats2-floattypes=no" "$LINENO" 5
+       ;;
+   esac
+else
+	ATS2_FLOATTYPES_CFLAGS=$pkg_cv_ATS2_FLOATTYPES_CFLAGS
+	ATS2_FLOATTYPES_LIBS=$pkg_cv_ATS2_FLOATTYPES_LIBS
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+	case x"${with_ats2_floattypes}" in
+     xno )
+       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: You have ats2-floattypes installed; consider --with-ats2-floattypes=yes" >&5
+printf "%s\n" "$as_me: You have ats2-floattypes installed; consider --with-ats2-floattypes=yes" >&6;}
+       ;;
+     xcheck )
+       with_ats2_floattypes=yes
+       ;;
+   esac
+fi
+if test x"${with_ats2_floattypes}" = xyes; then
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: building with ats-floattypes" >&5
+printf "%s\n" "$as_me: building with ats-floattypes" >&6;}
+else
+   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: building without ats-floattypes" >&5
+printf "%s\n" "$as_me: building without ats-floattypes" >&6;}
+fi
 
 #--------------------------------------------------------------------------
 #

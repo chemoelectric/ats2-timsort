@@ -48,6 +48,18 @@ fi
 AM_CONDITIONAL([DEPENDENCY_TRACKING],
   [test x"${enable_dependency_tracking}" != xno])
 
+AC_ARG_WITH([ats2-floattypes],
+   [AS_HELP_STRING([--with-ats2-floattypes=@<:@yes,no,check@:>@],
+      [use ats2-floattypes to build C interfaces for floating point types @<:@default=yes@:>@])],
+   [],[with_ats2_floattypes=yes])
+case x"${with_ats2_floattypes}" in
+  xyes | xno | xcheck )
+    ;;
+  * )
+    AC_MSG_ERROR([expected --with-ats2-floattypes=@<:@yes,no,check@:>@, but got --with-ats2-floattypes="${with_ats2_floattypes}"])
+    ;;
+esac
+
 #--------------------------------------------------------------------------
 #
 # Checks for programs.
@@ -77,6 +89,31 @@ PKG_INSTALLDIR
 #--------------------------------------------------------------------------
 #
 # Checks for libraries.
+
+PKG_CHECK_MODULES([ATS2_FLOATTYPES],[ats2-floattypes],
+  [case x"${with_ats2_floattypes}" in
+     xno )
+       AC_MSG_NOTICE([You have ats2-floattypes installed; consider --with-ats2-floattypes=yes])
+       ;;
+     xcheck )
+       with_ats2_floattypes=yes
+       ;;
+   esac],
+  [case x"${with_ats2_floattypes}" in
+     xno )
+       ;;
+     xcheck )
+       with_ats2_floattypes=no
+       ;;
+     * )
+       AC_MSG_ERROR([ats2-floattypes is not installed; consider --with-ats2-floattypes=no])
+       ;;
+   esac])
+if test x"${with_ats2_floattypes}" = xyes; then
+   AC_MSG_NOTICE([building with ats-floattypes])
+else
+   AC_MSG_NOTICE([building without ats-floattypes])
+fi
 
 #--------------------------------------------------------------------------
 #
