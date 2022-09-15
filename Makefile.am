@@ -59,6 +59,8 @@ AM_CPPFLAGS += -I$(srcdir)
 AM_CPPFLAGS += -I$(PATSHOME)
 AM_CPPFLAGS += -I$(PATSHOME)/ccomp/runtime/
 
+AM_CFLAGS += $(ATS2_FLOATTYPES_CFLAGS)
+
 LDADD += $(CODE_COVERAGE_LIBS)
 
 CODE_COVERAGE_IGNORE_PATTERN =
@@ -88,6 +90,7 @@ PATSOPT_DEPS =
 AM_PATSOPTFLAGS =
 AM_PATSOPTFLAGS += -IATS $(builddir)
 AM_PATSOPTFLAGS += -IATS $(srcdir)
+AM_PATSOPTFLAGS += $(ATS2_FLOATTYPES_PATSOPTFLAGS)
 
 TOTAL_PATSOPTFLAGS =
 TOTAL_PATSOPTFLAGS += $(AM_PATSOPTFLAGS)
@@ -221,6 +224,8 @@ nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory_dats.c
 dist_libats2_timsort_c_la_SOURCES =
 dist_libats2_timsort_c_la_SOURCES += ats2-timsort.h
 dist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory.h
+libats2_timsort_c_la_LIBADD =
+libats2_timsort_c_la_LIBADD += $(ATS2_FLOATTYPES_LIBS)
 
 nobase_dist_pkginclude_HEADERS += ats2-timsort.h
 

@@ -30,6 +30,15 @@ m4_define(`CTYPE',
          TYPE,`long_double',`long double',
          TYPE,`int128_t',`__int128_t',
          TYPE,`uint128_t',`__uint128_t',
+         TYPE,`float32',`_Float32',
+         TYPE,`float64',`_Float64',
+         TYPE,`float128',`_Float128',
+         TYPE,`float32x',`_Float32x',
+         TYPE,`float64x',`_Float64x',
+         TYPE,`float128x',`_Float128x',
+         TYPE,`decimal32',`_Decimal32',
+         TYPE,`decimal64',`_Decimal64',
+         TYPE,`decimal128',`_Decimal128',
          TYPE)')
 
 m4_define(`ATSTYPE',
@@ -58,6 +67,15 @@ m4_define(`ATSTYPE',
          TYPE,`uint64_t',`uint64',
          TYPE,`int128_t',`ats2_timsort_c_int128_t',
          TYPE,`uint128_t',`ats2_timsort_c_uint128_t',
+         TYPE,`float32',`ats2_timsort_c_float32',
+         TYPE,`float64',`ats2_timsort_c_float64',
+         TYPE,`float128',`ats2_timsort_c_float128',
+         TYPE,`float32x',`ats2_timsort_c_float32x',
+         TYPE,`float64x',`ats2_timsort_c_float64x',
+         TYPE,`float128x',`ats2_timsort_c_float128x',
+         TYPE,`decimal32',`ats2_timsort_c_decimal32',
+         TYPE,`decimal64',`ats2_timsort_c_decimal64',
+         TYPE,`decimal128',`ats2_timsort_c_decimal128',
          TYPE)')
 
 m4_define(`DEFAULT_DEFINITION',
@@ -69,6 +87,30 @@ m4_ifdef(`SIZEOF_INT128_T',
   `typedef ats2_timsort_c_int128_t = $extype"__int128_t"')
 m4_ifdef(`SIZEOF_UINT128_T',
   `typedef ats2_timsort_c_uint128_t = $extype"__uint128_t"')
+m4_ifdef(`SIZEOF_FLOAT32',
+  `typedef ats2_timsort_c_float32 = $extype"_Float32"')
+m4_ifdef(`SIZEOF_FLOAT64',
+  `typedef ats2_timsort_c_float64 = $extype"_Float64"')
+m4_ifdef(`SIZEOF_FLOAT128',
+  `typedef ats2_timsort_c_float128 = $extype"_Float128"')
+m4_ifdef(`SIZEOF_FLOAT32X',
+  `typedef ats2_timsort_c_float32x = $extype"_Float32x"')
+m4_ifdef(`SIZEOF_FLOAT64X',
+  `typedef ats2_timsort_c_float64x = $extype"_Float64x"')
+m4_ifdef(`SIZEOF_FLOAT128X',
+  `typedef ats2_timsort_c_float128x = $extype"_Float128x"')
+m4_ifdef(`SIZEOF_DECIMAL32',
+  `typedef ats2_timsort_c_decimal32 = $extype"_Decimal32"')
+m4_ifdef(`SIZEOF_DECIMAL64',
+  `typedef ats2_timsort_c_decimal64 = $extype"_Decimal64"')
+m4_ifdef(`SIZEOF_DECIMAL128',
+  `typedef ats2_timsort_c_decimal128 = $extype"_Decimal128"')
+m4_ifdef(`SIZEOF_DECIMAL32X',
+  `typedef ats2_timsort_c_decimal32x = $extype"_Decimal32x"')
+m4_ifdef(`SIZEOF_DECIMAL64X',
+  `typedef ats2_timsort_c_decimal64x = $extype"_Decimal64x"')
+m4_ifdef(`SIZEOF_DECIMAL128X',
+  `typedef ats2_timsort_c_decimal128x = $extype"_Decimal128x"')
 
 m4_if(REENTRANT,no,
 `

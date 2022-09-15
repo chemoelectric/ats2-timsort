@@ -120,16 +120,6 @@ AC_CHECK_SIZEOF([uint16_t])
 AC_CHECK_SIZEOF([uint32_t])
 AC_CHECK_SIZEOF([uint64_t])
 
-AC_CHECK_TYPE([__int128_t])
-if test x"${ac_cv_type___int128_t}" = xyes; then
-  AC_CHECK_SIZEOF([__int128_t])
-fi
-
-AC_CHECK_TYPE([__uint128_t])
-if test x"${ac_cv_type___uint128_t}" = xyes; then
-  AC_CHECK_SIZEOF([__uint128_t])
-fi
-
 M4FLAGS="${M4FLAGS} -DSIZEOF_INT=${ac_cv_sizeof_int}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SIGNED_CHAR=${ac_cv_sizeof_signed_char}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SHORT=${ac_cv_sizeof_short}"
@@ -164,15 +154,29 @@ M4FLAGS="${M4FLAGS} -DSIZEOF_UINT16_T=${ac_cv_sizeof_uint16_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT32_T=${ac_cv_sizeof_uint32_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT64_T=${ac_cv_sizeof_uint64_t}"
 
-if test x"${ac_cv_type___int128_t}" = xyes; then
-  M4FLAGS="${M4FLAGS} -DSIZEOF_INT128_T=${ac_cv_sizeof___int128_t}"
-fi
-AM_CONDITIONAL([HAVE_INT128_T],[test x"${ac_cv_type___int128_t}" = xyes])
+m4_define([my_check_type],
+  [m4_define([__shvar],[AS_TR_SH([$1])])
+   AC_CHECK_TYPE(__shvar)
+   AM_CONDITIONAL([HAVE_$2],[test x"${[ac_cv_type_]__shvar}" = xyes])
+   if test x"${[ac_cv_type_]__shvar}" = xyes; then
+     AC_CHECK_SIZEOF(__shvar)
+     M4FLAGS="${M4FLAGS} -DSIZEOF_$2=${[ac_cv_sizeof_]__shvar}"
+   fi])
 
-if test x"${ac_cv_type___uint128_t}" = xyes; then
-  M4FLAGS="${M4FLAGS} -DSIZEOF_UINT128_T=${ac_cv_sizeof___uint128_t}"
-fi
-AM_CONDITIONAL([HAVE_UINT128_T],[test x"${ac_cv_type___uint128_t}" = xyes])
+my_check_type([__int128_t],[INT128_T])
+my_check_type([__uint128_t],[UINT128_T])
+
+my_check_type([_Float32],[FLOAT32])
+my_check_type([_Float64],[FLOAT64])
+my_check_type([_Float128],[FLOAT128])
+
+my_check_type([_Float32x],[FLOAT32X])
+my_check_type([_Float64x],[FLOAT64X])
+my_check_type([_Float128x],[FLOAT128X])
+
+my_check_type([_Decimal32],[DECIMAL32])
+my_check_type([_Decimal64],[DECIMAL64])
+my_check_type([_Decimal128],[DECIMAL128])
 
 #--------------------------------------------------------------------------
 #
