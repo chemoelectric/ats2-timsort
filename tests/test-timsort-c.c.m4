@@ -19,6 +19,10 @@
 include(`common-macros.m4')
 m4_include(`timsort-macros.m4')
 
+divert(-1)
+m4_define(`m4_random_float',`return (((CTYPE) rand ()) / RAND_MAX);')
+divert
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,6 +69,18 @@ random_value (void)
           `return (((CTYPE) rand ()) / RAND_MAX);',
         TYPE,`long_double',
           `return (((CTYPE) rand ()) / RAND_MAX);',
+        TYPE,`float32',`m4_random_float',
+        TYPE,`float64',`m4_random_float',
+        TYPE,`float128',`m4_random_float',
+        TYPE,`float32x',`m4_random_float',
+        TYPE,`float64x',`m4_random_float',
+        TYPE,`float128x',`m4_random_float',
+        TYPE,`decimal32',`m4_random_float',
+        TYPE,`decimal64',`m4_random_float',
+        TYPE,`decimal128',`m4_random_float',
+        TYPE,`decimal32x',`m4_random_float',
+        TYPE,`decimal64x',`m4_random_float',
+        TYPE,`decimal128x',`m4_random_float',
         TYPE,`pointer',
           `char buf[1000]; sprintf (buf, "%d", rand ()); return strdup (buf);',
         `return (rand ());')

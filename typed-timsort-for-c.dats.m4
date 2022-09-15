@@ -28,8 +28,30 @@ m4_include(`timsort-macros.m4')
 #include "timsort/HATS/array-timsort.hats"
 
 %{^
+
 #include "ats2-timsort.h"
 #include "timsort-for-c-memory.h"
+
+#ifndef __STDC_WANT_IEC_60559_BFP_EXT__
+#define __STDC_WANT_IEC_60559_BFP_EXT__ 1
+#endif
+
+#ifndef __STDC_WANT_IEC_60559_DFP_EXT__
+#define __STDC_WANT_IEC_60559_DFP_EXT__ 1
+#endif
+
+#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+#define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+#endif
+
+#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
+#define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
+#endif
+
+#ifndef __STDC_WANT_IEC_60559_ATTRIBS_EXT__
+#define __STDC_WANT_IEC_60559_ATTRIBS_EXT__ 1
+#endif
+
 %}
 
 m4_if(TYPE,`short',

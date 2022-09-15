@@ -21,6 +21,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <float.h>
 
 typedef void ats2_timsort_c_timsort_t (void *, size_t, void *);
 typedef void ats2_timsort_c_timsort_r_t (void *, size_t, void *,
@@ -83,6 +84,54 @@ ats2_timsort_c_timsort_t ats2_timsort_c_int128_t_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_uint128_t_timsort;
 #endif
 
+#ifdef FLT32_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_float32_timsort;
+#endif
+
+#ifdef FLT64_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_float64_timsort;
+#endif
+
+#ifdef FLT128_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_float128_timsort;
+#endif
+
+#ifdef FLT32X_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_float32x_timsort;
+#endif
+
+#ifdef FLT64X_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_float64x_timsort;
+#endif
+
+#ifdef FLT128X_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_float128x_timsort;
+#endif
+
+#ifdef DEC32_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_decimal32_timsort;
+#endif
+
+#ifdef DEC64_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_decimal64_timsort;
+#endif
+
+#ifdef DEC128_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_decimal128_timsort;
+#endif
+
+#ifdef DEC32X_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_decimal32x_timsort;
+#endif
+
+#ifdef DEC64X_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_decimal64x_timsort;
+#endif
+
+#ifdef DEC128X_MANT_DIG
+ats2_timsort_c_timsort_t ats2_timsort_c_decimal128x_timsort;
+#endif
+
 /*------------------------------------------------------------------*/
 /* Reentrant extern functions, without much typechecking.           */
 
@@ -125,6 +174,54 @@ ats2_timsort_c_timsort_r_t ats2_timsort_c_uint64_t_timsort_r;
 #ifdef __SIZEOF_INT128__
 ats2_timsort_c_timsort_r_t ats2_timsort_c_int128_t_timsort_r;
 ats2_timsort_c_timsort_r_t ats2_timsort_c_uint128_t_timsort_r;
+#endif
+
+#ifdef FLT32_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_float32_timsort_r;
+#endif
+
+#ifdef FLT64_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_float64_timsort_r;
+#endif
+
+#ifdef FLT128_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_float128_timsort_r;
+#endif
+
+#ifdef FLT32X_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_float32x_timsort_r;
+#endif
+
+#ifdef FLT64X_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_float64x_timsort_r;
+#endif
+
+#ifdef FLT128X_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_float128x_timsort_r;
+#endif
+
+#ifdef DEC32_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal32_timsort_r;
+#endif
+
+#ifdef DEC64_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal64_timsort_r;
+#endif
+
+#ifdef DEC128_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal128_timsort_r;
+#endif
+
+#ifdef DEC32X_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal32x_timsort_r;
+#endif
+
+#ifdef DEC64X_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal64x_timsort_r;
+#endif
+
+#ifdef DEC128X_MANT_DIG
+ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal128x_timsort_r;
 #endif
 
 /*------------------------------------------------------------------*/
@@ -179,6 +276,54 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION (int128_t, __int128_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION (uint128_t, __uint128_t)
 #endif
 
+#ifdef FLT32_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (float32, _Float32)
+#endif
+
+#ifdef FLT64_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (float64, _Float64)
+#endif
+
+#ifdef FLT128_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (float128, _Float128)
+#endif
+
+#ifdef FLT32X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (float32x, _Float32x)
+#endif
+
+#ifdef FLT64X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (float64x, _Float64x)
+#endif
+
+#ifdef FLT128X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (float128x, _Float128x)
+#endif
+
+#ifdef DEC32_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal32, _Decimal32)
+#endif
+
+#ifdef DEC64_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal64, _Decimal64)
+#endif
+
+#ifdef DEC128_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal128, _Decimal128)
+#endif
+
+#ifdef DEC32X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal32x, _Decimal32x)
+#endif
+
+#ifdef DEC64X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal64x, _Decimal64x)
+#endif
+
+#ifdef DEC128X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal128x, _Decimal128x)
+#endif
+
 /*------------------------------------------------------------------*/
 /* Reentrant inline interfaces, with typechecking.                  */
 
@@ -231,6 +376,54 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION_R (uint64_t, uint64_t)
 #ifdef __SIZEOF_INT128__
 ATS2_TIMSORT_C_DEFINE_FUNCTION_R (int128_t, __int128_t)
 ATS2_TIMSORT_C_DEFINE_FUNCTION_R (uint128_t, __uint128_t)
+#endif
+
+#ifdef FLT32_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (float32, _Float32)
+#endif
+
+#ifdef FLT64_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (float64, _Float64)
+#endif
+
+#ifdef FLT128_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (float128, _Float128)
+#endif
+
+#ifdef FLT32X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (float32x, _Float32x)
+#endif
+
+#ifdef FLT64X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (float64x, _Float64x)
+#endif
+
+#ifdef FLT128X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (float128x, _Float128x)
+#endif
+
+#ifdef DEC32_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal32, _Decimal32)
+#endif
+
+#ifdef DEC64_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal64, _Decimal64)
+#endif
+
+#ifdef DEC128_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal128, _Decimal128)
+#endif
+
+#ifdef DEC32X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal32x, _Decimal32x)
+#endif
+
+#ifdef DEC64X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal64x, _Decimal64x)
+#endif
+
+#ifdef DEC128X_MANT_DIG
+ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal128x, _Decimal128x)
 #endif
 
 /*------------------------------------------------------------------*/

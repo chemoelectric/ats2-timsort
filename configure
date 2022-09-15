@@ -663,12 +663,34 @@ LIBOBJS
 GNU_MAKE
 M4FLAGS
 GNU
+HAVE_DECIMAL128X_FALSE
+HAVE_DECIMAL128X_TRUE
+HAVE_DECIMAL64X_FALSE
+HAVE_DECIMAL64X_TRUE
+HAVE_DECIMAL32X_FALSE
+HAVE_DECIMAL32X_TRUE
+HAVE_DECIMAL128_FALSE
+HAVE_DECIMAL128_TRUE
+HAVE_DECIMAL64_FALSE
+HAVE_DECIMAL64_TRUE
+HAVE_DECIMAL32_FALSE
+HAVE_DECIMAL32_TRUE
+HAVE_FLOAT128X_FALSE
+HAVE_FLOAT128X_TRUE
+HAVE_FLOAT64X_FALSE
+HAVE_FLOAT64X_TRUE
+HAVE_FLOAT32X_FALSE
+HAVE_FLOAT32X_TRUE
+HAVE_FLOAT128_FALSE
+HAVE_FLOAT128_TRUE
+HAVE_FLOAT64_FALSE
+HAVE_FLOAT64_TRUE
+HAVE_FLOAT32_FALSE
+HAVE_FLOAT32_TRUE
 HAVE_UINT128_T_FALSE
 HAVE_UINT128_T_TRUE
 HAVE_INT128_T_FALSE
 HAVE_INT128_T_TRUE
-ATS2_FLOATTYPES_LIBS
-ATS2_FLOATTYPES_CFLAGS
 pkgconfigdir
 PKG_CONFIG_LIBDIR
 PKG_CONFIG_PATH
@@ -832,7 +854,6 @@ with_aix_soname
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
-with_ats2_floattypes
 with_gcov
 enable_code_coverage
 with_pkgconfigdir
@@ -855,8 +876,6 @@ CXXCPP
 PKG_CONFIG
 PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
-ATS2_FLOATTYPES_CFLAGS
-ATS2_FLOATTYPES_LIBS
 GNU_MAKE'
 
 
@@ -1512,9 +1531,6 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
-  --with-ats2-floattypes=[yes,no,check]
-                          use ats2-floattypes to build C interfaces for
-                          floating point types [default=yes]
   --with-gcov=GCOV        use given GCOV for coverage (GCOV=gcov).
   --with-pkgconfigdir     pkg-config installation directory
                           ['${libdir}/pkgconfig']
@@ -1541,10 +1557,6 @@ Some influential environment variables:
               directories to add to pkg-config's search path
   PKG_CONFIG_LIBDIR
               path overriding pkg-config's built-in search path
-  ATS2_FLOATTYPES_CFLAGS
-              C compiler flags for ATS2_FLOATTYPES, overriding pkg-config
-  ATS2_FLOATTYPES_LIBS
-              linker flags for ATS2_FLOATTYPES, overriding pkg-config
   GNU_MAKE    GNU Make command
 
 Use these variables to override the choices made by `configure' or to help
@@ -13496,23 +13508,6 @@ else
 fi
 
 
-
-# Check whether --with-ats2-floattypes was given.
-if test ${with_ats2_floattypes+y}
-then :
-  withval=$with_ats2_floattypes;
-else $as_nop
-  with_ats2_floattypes=yes
-fi
-
-case x"${with_ats2_floattypes}" in
-  xyes | xno | xcheck )
-    ;;
-  * )
-    as_fn_error $? "expected --with-ats2-floattypes=[yes,no,check], but got --with-ats2-floattypes=\"${with_ats2_floattypes}\"" "$LINENO" 5
-    ;;
-esac
-
 #--------------------------------------------------------------------------
 #
 # Checks for programs.
@@ -19276,111 +19271,6 @@ pkgconfigdir=$with_pkgconfigdir
 #
 # Checks for libraries.
 
-
-pkg_failed=no
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for ATS2_FLOATTYPES" >&5
-printf %s "checking for ATS2_FLOATTYPES... " >&6; }
-
-if test -n "$ATS2_FLOATTYPES_CFLAGS"; then
-    pkg_cv_ATS2_FLOATTYPES_CFLAGS="$ATS2_FLOATTYPES_CFLAGS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ats2-floattypes\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "ats2-floattypes") 2>&5
-  ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_ATS2_FLOATTYPES_CFLAGS=`$PKG_CONFIG --cflags "ats2-floattypes" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-if test -n "$ATS2_FLOATTYPES_LIBS"; then
-    pkg_cv_ATS2_FLOATTYPES_LIBS="$ATS2_FLOATTYPES_LIBS"
- elif test -n "$PKG_CONFIG"; then
-    if test -n "$PKG_CONFIG" && \
-    { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ats2-floattypes\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "ats2-floattypes") 2>&5
-  ac_status=$?
-  printf "%s\n" "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; then
-  pkg_cv_ATS2_FLOATTYPES_LIBS=`$PKG_CONFIG --libs "ats2-floattypes" 2>/dev/null`
-		      test "x$?" != "x0" && pkg_failed=yes
-else
-  pkg_failed=yes
-fi
- else
-    pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-   	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        ATS2_FLOATTYPES_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ats2-floattypes" 2>&1`
-        else
-	        ATS2_FLOATTYPES_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ats2-floattypes" 2>&1`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$ATS2_FLOATTYPES_PKG_ERRORS" >&5
-
-	case x"${with_ats2_floattypes}" in
-     xno )
-       ;;
-     xcheck )
-       with_ats2_floattypes=no
-       ;;
-     * )
-       as_fn_error $? "ats2-floattypes is not installed; consider --with-ats2-floattypes=no" "$LINENO" 5
-       ;;
-   esac
-elif test $pkg_failed = untried; then
-     	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
-printf "%s\n" "no" >&6; }
-	case x"${with_ats2_floattypes}" in
-     xno )
-       ;;
-     xcheck )
-       with_ats2_floattypes=no
-       ;;
-     * )
-       as_fn_error $? "ats2-floattypes is not installed; consider --with-ats2-floattypes=no" "$LINENO" 5
-       ;;
-   esac
-else
-	ATS2_FLOATTYPES_CFLAGS=$pkg_cv_ATS2_FLOATTYPES_CFLAGS
-	ATS2_FLOATTYPES_LIBS=$pkg_cv_ATS2_FLOATTYPES_LIBS
-        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-printf "%s\n" "yes" >&6; }
-	case x"${with_ats2_floattypes}" in
-     xno )
-       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: You have ats2-floattypes installed; consider --with-ats2-floattypes=yes" >&5
-printf "%s\n" "$as_me: You have ats2-floattypes installed; consider --with-ats2-floattypes=yes" >&6;}
-       ;;
-     xcheck )
-       with_ats2_floattypes=yes
-       ;;
-   esac
-fi
-if test x"${with_ats2_floattypes}" = xyes; then
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: building with ats-floattypes" >&5
-printf "%s\n" "$as_me: building with ats-floattypes" >&6;}
-else
-   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: building without ats-floattypes" >&5
-printf "%s\n" "$as_me: building without ats-floattypes" >&6;}
-fi
-
 #--------------------------------------------------------------------------
 #
 # Checks for header files.
@@ -20287,90 +20177,6 @@ printf "%s\n" "#define SIZEOF_UINT64_T $ac_cv_sizeof_uint64_t" >>confdefs.h
 
 
 
-ac_fn_c_check_type "$LINENO" "__int128_t" "ac_cv_type___int128_t" "$ac_includes_default"
-if test "x$ac_cv_type___int128_t" = xyes
-then :
-
-fi
-
-if test x"${ac_cv_type___int128_t}" = xyes; then
-  # The cast to long int works around a bug in the HP C Compiler
-# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
-# This bug is HP SR number 8606223364.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of __int128_t" >&5
-printf %s "checking size of __int128_t... " >&6; }
-if test ${ac_cv_sizeof___int128_t+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (__int128_t))" "ac_cv_sizeof___int128_t"        "$ac_includes_default"
-then :
-
-else $as_nop
-  if test "$ac_cv_type___int128_t" = yes; then
-     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 77 "cannot compute sizeof (__int128_t)
-See \`config.log' for more details" "$LINENO" 5; }
-   else
-     ac_cv_sizeof___int128_t=0
-   fi
-fi
-
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof___int128_t" >&5
-printf "%s\n" "$ac_cv_sizeof___int128_t" >&6; }
-
-
-
-printf "%s\n" "#define SIZEOF___INT128_T $ac_cv_sizeof___int128_t" >>confdefs.h
-
-
-fi
-
-ac_fn_c_check_type "$LINENO" "__uint128_t" "ac_cv_type___uint128_t" "$ac_includes_default"
-if test "x$ac_cv_type___uint128_t" = xyes
-then :
-
-fi
-
-if test x"${ac_cv_type___uint128_t}" = xyes; then
-  # The cast to long int works around a bug in the HP C Compiler
-# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
-# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
-# This bug is HP SR number 8606223364.
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of __uint128_t" >&5
-printf %s "checking size of __uint128_t... " >&6; }
-if test ${ac_cv_sizeof___uint128_t+y}
-then :
-  printf %s "(cached) " >&6
-else $as_nop
-  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (__uint128_t))" "ac_cv_sizeof___uint128_t"        "$ac_includes_default"
-then :
-
-else $as_nop
-  if test "$ac_cv_type___uint128_t" = yes; then
-     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error 77 "cannot compute sizeof (__uint128_t)
-See \`config.log' for more details" "$LINENO" 5; }
-   else
-     ac_cv_sizeof___uint128_t=0
-   fi
-fi
-
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof___uint128_t" >&5
-printf "%s\n" "$ac_cv_sizeof___uint128_t" >&6; }
-
-
-
-printf "%s\n" "#define SIZEOF___UINT128_T $ac_cv_sizeof___uint128_t" >>confdefs.h
-
-
-fi
-
 M4FLAGS="${M4FLAGS} -DSIZEOF_INT=${ac_cv_sizeof_int}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SIGNED_CHAR=${ac_cv_sizeof_signed_char}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_SHORT=${ac_cv_sizeof_short}"
@@ -20405,10 +20211,16 @@ M4FLAGS="${M4FLAGS} -DSIZEOF_UINT16_T=${ac_cv_sizeof_uint16_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT32_T=${ac_cv_sizeof_uint32_t}"
 M4FLAGS="${M4FLAGS} -DSIZEOF_UINT64_T=${ac_cv_sizeof_uint64_t}"
 
-if test x"${ac_cv_type___int128_t}" = xyes; then
-  M4FLAGS="${M4FLAGS} -DSIZEOF_INT128_T=${ac_cv_sizeof___int128_t}"
+
+
+
+   ac_fn_c_check_type "$LINENO" "__int128_t" "ac_cv_type___int128_t" "$ac_includes_default"
+if test "x$ac_cv_type___int128_t" = xyes
+then :
+
 fi
- if test x"${ac_cv_type___int128_t}" = xyes; then
+
+    if test x"${ac_cv_type___int128_t}" = xyes; then
   HAVE_INT128_T_TRUE=
   HAVE_INT128_T_FALSE='#'
 else
@@ -20416,11 +20228,50 @@ else
   HAVE_INT128_T_FALSE=
 fi
 
+   if test x"${ac_cv_type___int128_t}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of __int128_t" >&5
+printf %s "checking size of __int128_t... " >&6; }
+if test ${ac_cv_sizeof___int128_t+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (__int128_t))" "ac_cv_sizeof___int128_t"        "$ac_includes_default"
+then :
 
-if test x"${ac_cv_type___uint128_t}" = xyes; then
-  M4FLAGS="${M4FLAGS} -DSIZEOF_UINT128_T=${ac_cv_sizeof___uint128_t}"
+else $as_nop
+  if test "$ac_cv_type___int128_t" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (__int128_t)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof___int128_t=0
+   fi
 fi
- if test x"${ac_cv_type___uint128_t}" = xyes; then
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof___int128_t" >&5
+printf "%s\n" "$ac_cv_sizeof___int128_t" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF___INT128_T $ac_cv_sizeof___int128_t" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_INT128_T=${ac_cv_sizeof___int128_t}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "__uint128_t" "ac_cv_type___uint128_t" "$ac_includes_default"
+if test "x$ac_cv_type___uint128_t" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type___uint128_t}" = xyes; then
   HAVE_UINT128_T_TRUE=
   HAVE_UINT128_T_FALSE='#'
 else
@@ -20428,6 +20279,658 @@ else
   HAVE_UINT128_T_FALSE=
 fi
 
+   if test x"${ac_cv_type___uint128_t}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of __uint128_t" >&5
+printf %s "checking size of __uint128_t... " >&6; }
+if test ${ac_cv_sizeof___uint128_t+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (__uint128_t))" "ac_cv_sizeof___uint128_t"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type___uint128_t" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (__uint128_t)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof___uint128_t=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof___uint128_t" >&5
+printf "%s\n" "$ac_cv_sizeof___uint128_t" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF___UINT128_T $ac_cv_sizeof___uint128_t" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_UINT128_T=${ac_cv_sizeof___uint128_t}"
+   fi
+
+
+   ac_fn_c_check_type "$LINENO" "_Float32" "ac_cv_type__Float32" "$ac_includes_default"
+if test "x$ac_cv_type__Float32" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Float32}" = xyes; then
+  HAVE_FLOAT32_TRUE=
+  HAVE_FLOAT32_FALSE='#'
+else
+  HAVE_FLOAT32_TRUE='#'
+  HAVE_FLOAT32_FALSE=
+fi
+
+   if test x"${ac_cv_type__Float32}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Float32" >&5
+printf %s "checking size of _Float32... " >&6; }
+if test ${ac_cv_sizeof__Float32+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Float32))" "ac_cv_sizeof__Float32"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Float32" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Float32)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Float32=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Float32" >&5
+printf "%s\n" "$ac_cv_sizeof__Float32" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__FLOAT32 $ac_cv_sizeof__Float32" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_FLOAT32=${ac_cv_sizeof__Float32}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Float64" "ac_cv_type__Float64" "$ac_includes_default"
+if test "x$ac_cv_type__Float64" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Float64}" = xyes; then
+  HAVE_FLOAT64_TRUE=
+  HAVE_FLOAT64_FALSE='#'
+else
+  HAVE_FLOAT64_TRUE='#'
+  HAVE_FLOAT64_FALSE=
+fi
+
+   if test x"${ac_cv_type__Float64}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Float64" >&5
+printf %s "checking size of _Float64... " >&6; }
+if test ${ac_cv_sizeof__Float64+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Float64))" "ac_cv_sizeof__Float64"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Float64" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Float64)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Float64=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Float64" >&5
+printf "%s\n" "$ac_cv_sizeof__Float64" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__FLOAT64 $ac_cv_sizeof__Float64" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_FLOAT64=${ac_cv_sizeof__Float64}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Float128" "ac_cv_type__Float128" "$ac_includes_default"
+if test "x$ac_cv_type__Float128" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Float128}" = xyes; then
+  HAVE_FLOAT128_TRUE=
+  HAVE_FLOAT128_FALSE='#'
+else
+  HAVE_FLOAT128_TRUE='#'
+  HAVE_FLOAT128_FALSE=
+fi
+
+   if test x"${ac_cv_type__Float128}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Float128" >&5
+printf %s "checking size of _Float128... " >&6; }
+if test ${ac_cv_sizeof__Float128+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Float128))" "ac_cv_sizeof__Float128"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Float128" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Float128)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Float128=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Float128" >&5
+printf "%s\n" "$ac_cv_sizeof__Float128" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__FLOAT128 $ac_cv_sizeof__Float128" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_FLOAT128=${ac_cv_sizeof__Float128}"
+   fi
+
+
+   ac_fn_c_check_type "$LINENO" "_Float32x" "ac_cv_type__Float32x" "$ac_includes_default"
+if test "x$ac_cv_type__Float32x" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Float32x}" = xyes; then
+  HAVE_FLOAT32X_TRUE=
+  HAVE_FLOAT32X_FALSE='#'
+else
+  HAVE_FLOAT32X_TRUE='#'
+  HAVE_FLOAT32X_FALSE=
+fi
+
+   if test x"${ac_cv_type__Float32x}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Float32x" >&5
+printf %s "checking size of _Float32x... " >&6; }
+if test ${ac_cv_sizeof__Float32x+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Float32x))" "ac_cv_sizeof__Float32x"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Float32x" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Float32x)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Float32x=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Float32x" >&5
+printf "%s\n" "$ac_cv_sizeof__Float32x" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__FLOAT32X $ac_cv_sizeof__Float32x" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_FLOAT32X=${ac_cv_sizeof__Float32x}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Float64x" "ac_cv_type__Float64x" "$ac_includes_default"
+if test "x$ac_cv_type__Float64x" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Float64x}" = xyes; then
+  HAVE_FLOAT64X_TRUE=
+  HAVE_FLOAT64X_FALSE='#'
+else
+  HAVE_FLOAT64X_TRUE='#'
+  HAVE_FLOAT64X_FALSE=
+fi
+
+   if test x"${ac_cv_type__Float64x}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Float64x" >&5
+printf %s "checking size of _Float64x... " >&6; }
+if test ${ac_cv_sizeof__Float64x+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Float64x))" "ac_cv_sizeof__Float64x"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Float64x" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Float64x)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Float64x=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Float64x" >&5
+printf "%s\n" "$ac_cv_sizeof__Float64x" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__FLOAT64X $ac_cv_sizeof__Float64x" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_FLOAT64X=${ac_cv_sizeof__Float64x}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Float128x" "ac_cv_type__Float128x" "$ac_includes_default"
+if test "x$ac_cv_type__Float128x" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Float128x}" = xyes; then
+  HAVE_FLOAT128X_TRUE=
+  HAVE_FLOAT128X_FALSE='#'
+else
+  HAVE_FLOAT128X_TRUE='#'
+  HAVE_FLOAT128X_FALSE=
+fi
+
+   if test x"${ac_cv_type__Float128x}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Float128x" >&5
+printf %s "checking size of _Float128x... " >&6; }
+if test ${ac_cv_sizeof__Float128x+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Float128x))" "ac_cv_sizeof__Float128x"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Float128x" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Float128x)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Float128x=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Float128x" >&5
+printf "%s\n" "$ac_cv_sizeof__Float128x" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__FLOAT128X $ac_cv_sizeof__Float128x" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_FLOAT128X=${ac_cv_sizeof__Float128x}"
+   fi
+
+
+   ac_fn_c_check_type "$LINENO" "_Decimal32" "ac_cv_type__Decimal32" "$ac_includes_default"
+if test "x$ac_cv_type__Decimal32" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Decimal32}" = xyes; then
+  HAVE_DECIMAL32_TRUE=
+  HAVE_DECIMAL32_FALSE='#'
+else
+  HAVE_DECIMAL32_TRUE='#'
+  HAVE_DECIMAL32_FALSE=
+fi
+
+   if test x"${ac_cv_type__Decimal32}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal32" >&5
+printf %s "checking size of _Decimal32... " >&6; }
+if test ${ac_cv_sizeof__Decimal32+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal32))" "ac_cv_sizeof__Decimal32"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Decimal32" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Decimal32)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Decimal32=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal32" >&5
+printf "%s\n" "$ac_cv_sizeof__Decimal32" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__DECIMAL32 $ac_cv_sizeof__Decimal32" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL32=${ac_cv_sizeof__Decimal32}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Decimal64" "ac_cv_type__Decimal64" "$ac_includes_default"
+if test "x$ac_cv_type__Decimal64" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Decimal64}" = xyes; then
+  HAVE_DECIMAL64_TRUE=
+  HAVE_DECIMAL64_FALSE='#'
+else
+  HAVE_DECIMAL64_TRUE='#'
+  HAVE_DECIMAL64_FALSE=
+fi
+
+   if test x"${ac_cv_type__Decimal64}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal64" >&5
+printf %s "checking size of _Decimal64... " >&6; }
+if test ${ac_cv_sizeof__Decimal64+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal64))" "ac_cv_sizeof__Decimal64"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Decimal64" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Decimal64)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Decimal64=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal64" >&5
+printf "%s\n" "$ac_cv_sizeof__Decimal64" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__DECIMAL64 $ac_cv_sizeof__Decimal64" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL64=${ac_cv_sizeof__Decimal64}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Decimal128" "ac_cv_type__Decimal128" "$ac_includes_default"
+if test "x$ac_cv_type__Decimal128" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Decimal128}" = xyes; then
+  HAVE_DECIMAL128_TRUE=
+  HAVE_DECIMAL128_FALSE='#'
+else
+  HAVE_DECIMAL128_TRUE='#'
+  HAVE_DECIMAL128_FALSE=
+fi
+
+   if test x"${ac_cv_type__Decimal128}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal128" >&5
+printf %s "checking size of _Decimal128... " >&6; }
+if test ${ac_cv_sizeof__Decimal128+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal128))" "ac_cv_sizeof__Decimal128"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Decimal128" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Decimal128)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Decimal128=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal128" >&5
+printf "%s\n" "$ac_cv_sizeof__Decimal128" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__DECIMAL128 $ac_cv_sizeof__Decimal128" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL128=${ac_cv_sizeof__Decimal128}"
+   fi
+
+
+   ac_fn_c_check_type "$LINENO" "_Decimal32x" "ac_cv_type__Decimal32x" "$ac_includes_default"
+if test "x$ac_cv_type__Decimal32x" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Decimal32x}" = xyes; then
+  HAVE_DECIMAL32X_TRUE=
+  HAVE_DECIMAL32X_FALSE='#'
+else
+  HAVE_DECIMAL32X_TRUE='#'
+  HAVE_DECIMAL32X_FALSE=
+fi
+
+   if test x"${ac_cv_type__Decimal32x}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal32x" >&5
+printf %s "checking size of _Decimal32x... " >&6; }
+if test ${ac_cv_sizeof__Decimal32x+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal32x))" "ac_cv_sizeof__Decimal32x"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Decimal32x" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Decimal32x)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Decimal32x=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal32x" >&5
+printf "%s\n" "$ac_cv_sizeof__Decimal32x" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__DECIMAL32X $ac_cv_sizeof__Decimal32x" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL32X=${ac_cv_sizeof__Decimal32x}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Decimal64x" "ac_cv_type__Decimal64x" "$ac_includes_default"
+if test "x$ac_cv_type__Decimal64x" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Decimal64x}" = xyes; then
+  HAVE_DECIMAL64X_TRUE=
+  HAVE_DECIMAL64X_FALSE='#'
+else
+  HAVE_DECIMAL64X_TRUE='#'
+  HAVE_DECIMAL64X_FALSE=
+fi
+
+   if test x"${ac_cv_type__Decimal64x}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal64x" >&5
+printf %s "checking size of _Decimal64x... " >&6; }
+if test ${ac_cv_sizeof__Decimal64x+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal64x))" "ac_cv_sizeof__Decimal64x"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Decimal64x" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Decimal64x)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Decimal64x=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal64x" >&5
+printf "%s\n" "$ac_cv_sizeof__Decimal64x" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__DECIMAL64X $ac_cv_sizeof__Decimal64x" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL64X=${ac_cv_sizeof__Decimal64x}"
+   fi
+
+   ac_fn_c_check_type "$LINENO" "_Decimal128x" "ac_cv_type__Decimal128x" "$ac_includes_default"
+if test "x$ac_cv_type__Decimal128x" = xyes
+then :
+
+fi
+
+    if test x"${ac_cv_type__Decimal128x}" = xyes; then
+  HAVE_DECIMAL128X_TRUE=
+  HAVE_DECIMAL128X_FALSE='#'
+else
+  HAVE_DECIMAL128X_TRUE='#'
+  HAVE_DECIMAL128X_FALSE=
+fi
+
+   if test x"${ac_cv_type__Decimal128x}" = xyes; then
+     # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking size of _Decimal128x" >&5
+printf %s "checking size of _Decimal128x... " >&6; }
+if test ${ac_cv_sizeof__Decimal128x+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (_Decimal128x))" "ac_cv_sizeof__Decimal128x"        "$ac_includes_default"
+then :
+
+else $as_nop
+  if test "$ac_cv_type__Decimal128x" = yes; then
+     { { printf "%s\n" "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+printf "%s\n" "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (_Decimal128x)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof__Decimal128x=0
+   fi
+fi
+
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof__Decimal128x" >&5
+printf "%s\n" "$ac_cv_sizeof__Decimal128x" >&6; }
+
+
+
+printf "%s\n" "#define SIZEOF__DECIMAL128X $ac_cv_sizeof__Decimal128x" >>confdefs.h
+
+
+     M4FLAGS="${M4FLAGS} -DSIZEOF_DECIMAL128X=${ac_cv_sizeof__Decimal128x}"
+   fi
 
 #--------------------------------------------------------------------------
 #
@@ -20774,6 +21277,54 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_UINT128_T_TRUE}" && test -z "${HAVE_UINT128_T_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_UINT128_T\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FLOAT32_TRUE}" && test -z "${HAVE_FLOAT32_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FLOAT32\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FLOAT64_TRUE}" && test -z "${HAVE_FLOAT64_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FLOAT64\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FLOAT128_TRUE}" && test -z "${HAVE_FLOAT128_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FLOAT128\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FLOAT32X_TRUE}" && test -z "${HAVE_FLOAT32X_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FLOAT32X\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FLOAT64X_TRUE}" && test -z "${HAVE_FLOAT64X_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FLOAT64X\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FLOAT128X_TRUE}" && test -z "${HAVE_FLOAT128X_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FLOAT128X\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DECIMAL32_TRUE}" && test -z "${HAVE_DECIMAL32_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DECIMAL32\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DECIMAL64_TRUE}" && test -z "${HAVE_DECIMAL64_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DECIMAL64\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DECIMAL128_TRUE}" && test -z "${HAVE_DECIMAL128_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DECIMAL128\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DECIMAL32X_TRUE}" && test -z "${HAVE_DECIMAL32X_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DECIMAL32X\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DECIMAL64X_TRUE}" && test -z "${HAVE_DECIMAL64X_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DECIMAL64X\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DECIMAL128X_TRUE}" && test -z "${HAVE_DECIMAL128X_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DECIMAL128X\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
