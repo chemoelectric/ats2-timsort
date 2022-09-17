@@ -610,7 +610,8 @@ am__objects_12 = pointer_timsort_dats.lo pointer_timsort_r_dats.lo \
 	$(am__objects_6) $(am__objects_7) $(am__objects_8) \
 	$(am__objects_9) $(am__objects_10) $(am__objects_11)
 nodist_libats2_timsort_c_la_OBJECTS = $(am__objects_12) \
-	timsort-for-c-memory_dats.lo
+	timsort-for-c-memory_dats.lo \
+	timsort-for-c-out-of-place_dats.lo
 libats2_timsort_c_la_OBJECTS = $(dist_libats2_timsort_c_la_OBJECTS) \
 	$(nodist_libats2_timsort_c_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -1153,6 +1154,7 @@ am__depfiles_remade = ./$(DEPDIR)/decimal128_timsort_dats.Plo \
 	./$(DEPDIR)/ssize_t_timsort_dats.Plo \
 	./$(DEPDIR)/ssize_t_timsort_r_dats.Plo \
 	./$(DEPDIR)/timsort-for-c-memory_dats.Plo \
+	./$(DEPDIR)/timsort-for-c-out-of-place_dats.Plo \
 	./$(DEPDIR)/uint128_t_timsort_dats.Plo \
 	./$(DEPDIR)/uint128_t_timsort_r_dats.Plo \
 	./$(DEPDIR)/uint16_t_timsort_dats.Plo \
@@ -1945,10 +1947,11 @@ AUTOMAKE_OPTIONS = foreign subdir-objects -Wno-portability
 #--------------------------------------------------------------------------
 EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
 	typed-timsort-for-c.dats.m4 timsort-for-c-memory.dats \
-	timsort-for-c-memory.include.c tests/test-timsort-c.c.m4 \
-	tests/test-clz.dats tests/test-minrun.dats \
-	tests/test-nodepower.dats tests/test-galloping.dats \
-	tests/test-merges.dats tests/test-array_timsort.dats \
+	timsort-for-c-memory.include.c timsort-for-c-out-of-place.dats \
+	tests/test-timsort-c.c.m4 tests/test-clz.dats \
+	tests/test-minrun.dats tests/test-nodepower.dats \
+	tests/test-galloping.dats tests/test-merges.dats \
+	tests/test-array_timsort.dats \
 	tests/test-timing-array_timsort.dats \
 	list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
@@ -2856,7 +2859,7 @@ tests_test_uint64_t_timsort_r_LDADD = libats2-timsort-c.la
 @HAVE_DECIMAL128_TRUE@tests_test_decimal128_timsort_r_LDADD =  \
 @HAVE_DECIMAL128_TRUE@	libats2-timsort-c.la
 nodist_libats2_timsort_c_la_SOURCES = $(TIMSORT_C_SRC) \
-	timsort-for-c-memory_dats.c
+	timsort-for-c-memory_dats.c timsort-for-c-out-of-place_dats.c
 dist_libats2_timsort_c_la_SOURCES = ats2-timsort.h \
 	timsort-for-c-memory.h
 libats2_timsort_c_la_LIBADD = $(ATS2_FLOATTYPES_LIBS)
@@ -3692,6 +3695,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ssize_t_timsort_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ssize_t_timsort_r_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timsort-for-c-memory_dats.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/timsort-for-c-out-of-place_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uint128_t_timsort_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uint128_t_timsort_r_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uint16_t_timsort_dats.Plo@am__quote@ # am--include-marker
@@ -6250,6 +6254,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/ssize_t_timsort_dats.Plo
 	-rm -f ./$(DEPDIR)/ssize_t_timsort_r_dats.Plo
 	-rm -f ./$(DEPDIR)/timsort-for-c-memory_dats.Plo
+	-rm -f ./$(DEPDIR)/timsort-for-c-out-of-place_dats.Plo
 	-rm -f ./$(DEPDIR)/uint128_t_timsort_dats.Plo
 	-rm -f ./$(DEPDIR)/uint128_t_timsort_r_dats.Plo
 	-rm -f ./$(DEPDIR)/uint16_t_timsort_dats.Plo
@@ -6471,6 +6476,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/ssize_t_timsort_dats.Plo
 	-rm -f ./$(DEPDIR)/ssize_t_timsort_r_dats.Plo
 	-rm -f ./$(DEPDIR)/timsort-for-c-memory_dats.Plo
+	-rm -f ./$(DEPDIR)/timsort-for-c-out-of-place_dats.Plo
 	-rm -f ./$(DEPDIR)/uint128_t_timsort_dats.Plo
 	-rm -f ./$(DEPDIR)/uint128_t_timsort_r_dats.Plo
 	-rm -f ./$(DEPDIR)/uint16_t_timsort_dats.Plo

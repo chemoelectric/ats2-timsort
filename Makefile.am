@@ -219,6 +219,7 @@ include $(top_srcdir)/ats2-timsort-c.am
 nodist_libats2_timsort_c_la_SOURCES =
 nodist_libats2_timsort_c_la_SOURCES += $(TIMSORT_C_SRC)
 nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory_dats.c
+nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-out-of-place_dats.c
 dist_libats2_timsort_c_la_SOURCES =
 dist_libats2_timsort_c_la_SOURCES += ats2-timsort.h
 dist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory.h
@@ -234,6 +235,7 @@ CLEANFILES += timsort-for-c-memory_dats.c
 EXTRA_DIST += typed-timsort-for-c.dats.m4
 EXTRA_DIST += timsort-for-c-memory.dats
 EXTRA_DIST += timsort-for-c-memory.include.c
+EXTRA_DIST += timsort-for-c-out-of-place.dats
 
 #--------------------------------------------------------------------------
 
