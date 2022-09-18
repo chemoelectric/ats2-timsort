@@ -84,8 +84,8 @@ test_sorting (size_t sz)
   long double t1 = t12 - t11;
 
   long double t21 = get_clock ();
-  timsort_to_new_array (gotten, unsorted, sz, sizeof (entry_t),
-                        less_than);
+  timsort_to_array (gotten, unsorted, sz, sizeof (entry_t),
+                    less_than);
   long double t22 = get_clock ();
   long double t2 = t22 - t21;
 

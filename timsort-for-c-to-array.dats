@@ -41,7 +41,7 @@ staload UN = "prelude/SATS/unsafe.sats"
 %}
 
 extern fn
-ats2_timsort_c_timsort_to_new_array
+ats2_timsort_c_timsort_to_array
           {nmemb, sz : int}
           (result    : &array (byte?, nmemb * sz)
                         >> array (byte, nmemb * sz),
@@ -49,7 +49,7 @@ ats2_timsort_c_timsort_to_new_array
            n         : size_t nmemb,
            sz        : size_t sz,
            less_than : (ptr, ptr) -<fun> int)
-    : void = "ext#ats2_timsort_c_timsort_to_new_array"
+    : void = "ext#ats2_timsort_c_timsort_to_array"
 
 fn
 fill_pointers
@@ -130,9 +130,9 @@ copy_elements
   end
 
 implement
-ats2_timsort_c_timsort_to_new_array {nmemb, sz}
-                                    (result, arr, nmemb, sz,
-                                     less_than) =
+ats2_timsort_c_timsort_to_array {nmemb, sz}
+                                (result, arr, nmemb, sz,
+                                 less_than) =
   let
     implement
     array_timsort$lt<ptr> (x, y) =
@@ -180,8 +180,8 @@ ats2_timsort_c_timsort_to_new_array {nmemb, sz}
 %{
 /* An addressable instantiation of the inline subroutine. */
 extern inline void
-timsort_to_new_array (void *result, const void *arr,
-                      size_t nmemb, size_t sz,
-                      ats2_timsort_c_bool ( *less_than )
-                        (const void *, const void *));
+timsort_to_array (void *result, const void *arr,
+                  size_t nmemb, size_t sz,
+                  ats2_timsort_c_bool ( *less_than )
+                    (const void *, const void *));
 %}

@@ -120,11 +120,11 @@ ats2_timsort_c_timsort_t ats2_timsort_c_decimal64_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_decimal128_timsort;
 #endif
 
-extern void ats2_timsort_c_timsort_to_new_array (void *result,
-                                                 void *arr,
-                                                 size_t nmemb,
-                                                 size_t sz,
-                                                 void *less_than);
+extern void ats2_timsort_c_timsort_to_array (void *result,
+                                             void *arr,
+                                             size_t nmemb,
+                                             size_t sz,
+                                             void *less_than);
 
 /*------------------------------------------------------------------*/
 /* Reentrant extern functions, without much typechecking.           */
@@ -295,12 +295,12 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal128, _Decimal128)
 #endif
 
 inline void
-timsort_to_new_array (void *result, const void *arr,
-                      size_t nmemb, size_t sz,
-                      ats2_timsort_c_bool (*less_than) (const void *,
-                                                        const void *))
+timsort_to_array (void *result, const void *arr,
+                  size_t nmemb, size_t sz,
+                  ats2_timsort_c_bool (*less_than) (const void *,
+                                                    const void *))
 {
-  ats2_timsort_c_timsort_to_new_array (result, (void *) arr,
+  ats2_timsort_c_timsort_to_array (result, (void *) arr,
                                        nmemb, sz,
                                        (void *) less_than);
 }
