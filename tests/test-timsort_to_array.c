@@ -73,7 +73,8 @@ test_sorting (size_t sz)
 {
   entry_t *unsorted = malloc (sz * sizeof (entry_t));
   entry_t *expected = malloc (sz * sizeof (entry_t));
-  entry_t *gotten = malloc (sz * sizeof (entry_t));
+  entry_t *gotten1 = malloc (sz * sizeof (entry_t));
+  entry_t *gotten2 = malloc (sz * sizeof (entry_t));
 
   make_unsorted (unsorted, sz);
 
@@ -84,35 +85,61 @@ test_sorting (size_t sz)
   long double t1 = t12 - t11;
 
   long double t21 = get_clock ();
-  timsort_to_array (gotten, unsorted, sz, sizeof (entry_t),
+  timsort_to_array (gotten1, unsorted, sz, sizeof (entry_t),
                     less_than);
   long double t22 = get_clock ();
   long double t2 = t22 - t21;
 
-  printf ("  Perry:%Lf  ours:%Lf  %zu\n", t1, t2, sz);
+  copy_array (gotten2, unsorted, sz);
+  long double t31 = get_clock ();
+  timsort_to_array (gotten2, gotten2, sz, sizeof (entry_t),
+                    less_than);
+  long double t32 = get_clock ();
+  long double t3 = t32 - t31;
+
+  printf ("  Perry:%Lf  ours1:%Lf  ours2:%Lf  %zu\n", t1, t2, t3, sz);
 
 #if 0
   for (size_t i = 0; i != sz; i += 1)
-    printf ("expected[%zu]={%d,%lf}  gotten[%zu]={%d,%lf}\n",
+    printf ("expected[%zu]={%d,%lf}  gotten1[%zu]={%d,%lf}\n",
             i, expected[i].key, expected[i].value,
-            i, gotten[i].key, gotten[i].value);
+            i, gotten[i].key, gotten1[i].value);
+#endif
+#if 0
+  for (size_t i = 0; i != sz; i += 1)
+    printf ("expected[%zu]={%d,%lf}  gotten2[%zu]={%d,%lf}\n",
+            i, expected[i].key, expected[i].value,
+            i, gotten2[i].key, gotten2[i].value);
 #endif
 
   for (size_t i = 0; i != sz; i += 1)
-    if (gotten[i].key != expected[i].key
-        || gotten[i].value != expected[i].value)
+    if (gotten1[i].key != expected[i].key
+        || gotten1[i].value != expected[i].value)
       {
         printf ("mismatched results: \n");
         printf ("  expected[%zu] = { %d, %lf }\n",
                 i, expected[i].key, expected[i].value);
-        printf ("  gotten[%zu]   = { %d, %lf }\n",
-                i, gotten[i].key, gotten[i].value);
+        printf ("  gotten1[%zu]   = { %d, %lf }\n",
+                i, gotten1[i].key, gotten1[i].value);
+        exit (1);
+      }
+
+  for (size_t i = 0; i != sz; i += 1)
+    if (gotten2[i].key != expected[i].key
+        || gotten2[i].value != expected[i].value)
+      {
+        printf ("mismatched results: \n");
+        printf ("  expected[%zu] = { %d, %lf }\n",
+                i, expected[i].key, expected[i].value);
+        printf ("  gotten2[%zu]   = { %d, %lf }\n",
+                i, gotten2[i].key, gotten2[i].value);
         exit (1);
       }
 
   free (unsorted);
   free (expected);
-  free (gotten);
+  free (gotten1);
+  free (gotten2);
 }
 
 int

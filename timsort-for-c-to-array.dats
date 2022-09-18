@@ -29,6 +29,7 @@ staload UN = "prelude/SATS/unsafe.sats"
 
 %{^
 
+#include <assert.h>
 #include "ats2-timsort.h"
 #include "timsort-for-c-memory.h"
 
@@ -38,20 +39,32 @@ staload UN = "prelude/SATS/unsafe.sats"
 #define ats2_timsort_c_memcpy memcpy
 #endif
 
+static inline size_t
+ptr_to_index (atstype_ptr arr,
+              atstype_ptr p,
+              atstype_size sz)
+{
+  return ((atstype_byte *) p - (atstype_byte *) arr) / sz;
+}
+
+static inline void
+exchange_elements (atstype_ptr p, atstype_ptr q,
+                   atstype_size sz)
+{
+  const atstype_byte *p_end = (atstype_byte *) p + sz;
+  while (p != p_end)
+    {
+      atstype_byte tmp = *(atstype_byte *) p;
+      *(atstype_byte *) p = *(atstype_byte *) q;
+      *(atstype_byte *) q = tmp;
+      p += 1;
+      q += 1;
+    }
+}
+
 %}
 
 extern fn
-ats2_timsort_c_timsort_to_array
-          {nmemb, sz : int}
-          (result    : &array (byte?, nmemb * sz)
-                        >> array (byte, nmemb * sz),
-           arr       : &array (byte, nmemb * sz),
-           n         : size_t nmemb,
-           sz        : size_t sz,
-           less_than : (ptr, ptr) -<fun> int)
-    : void = "ext#ats2_timsort_c_timsort_to_array"
-
-fn
 fill_pointers
           {p_arr     : addr}
           {nmemb, sz : int}
@@ -59,7 +72,10 @@ fill_pointers
            nmemb     : size_t nmemb,
            sz        : size_t sz,
            ptrs      : &array (ptr?, nmemb) >> array (ptr, nmemb))
-    : void =
+    : void = "sta#fill_pointers"
+
+implement
+fill_pointers {p_arr} {nmemb, sz} (p_arr, nmemb, sz, ptrs) =
   let
     prval () = lemma_g1uint_param nmemb
 
@@ -92,9 +108,8 @@ fill_pointers
     loop (view@ ptrs | addr@ ptrs, nmemb)
   end
 
-fn
+extern fn
 copy_elements
-          {p_arr     : addr}
           {nmemb, sz : int}
           (result    : &array (byte?, nmemb * sz)
                         >> array (byte, nmemb * sz),
@@ -102,7 +117,10 @@ copy_elements
            nmemb     : size_t nmemb,
            sz        : size_t sz,
            ptrs      : &array (ptr, nmemb))
-    : void =
+    : void = "sta#copy_elements"
+
+implement
+copy_elements {nmemb, sz} (result, arr, nmemb, sz, ptrs) =
   let
     prval () = lemma_g1uint_param nmemb
 
@@ -129,55 +147,223 @@ copy_elements
     loop (addr@ result, ptrs, nmemb)
   end
 
+extern fn
+permute_elements
+          {nmemb, sz : int}
+          (arr       : &array (byte, nmemb * sz),
+           nmemb     : size_t nmemb,
+           sz        : size_t sz,
+           ptrs      : &array (ptr, nmemb))
+    : void = "sta#permute_elements"
+
 implement
-ats2_timsort_c_timsort_to_array {nmemb, sz}
-                                (result, arr, nmemb, sz,
-                                 less_than) =
+permute_elements {nmemb, sz} (arr, nmemb, sz, ptrs) =
+  (* Permute the elements of arr. This algorithm destroys the contents
+     of ptrs but is O(n) in the number of swaps. See
+     https://stackoverflow.com/a/16501453 *)
+  let
+    typedef imemb_t = [i : nat | i < nmemb] size_t i
+    macdef index (p) = $extfcall (imemb_t, "ptr_to_index",
+                                  addr@ arr, ,(p), sz)
+    macdef pointer (i) = ptr_add<byte> (addr@ arr, ,(i) * sz)
+    macdef exch (p, q) = $extfcall (void, "exchange_elements",
+                                    ,(p), ,(q), sz)
+
+    fun
+    find_incorrectly_positioned_element
+              {k : nat | k <= nmemb}
+              .<nmemb - k>.
+              (ptrs : &array (ptr, nmemb),
+               k    : size_t k)
+        :<!wrt> [k1 : nat | k1 <= nmemb]
+                size_t k1 =
+      if k = nmemb then
+        k
+      else
+        let
+          val p = ptrs[k]
+        in
+          if iseqz p then
+            find_incorrectly_positioned_element (ptrs, succ k)
+          else
+            let
+              val i = index p
+            in
+              if i = k then
+                begin
+                  ptrs[k] := the_null_ptr;
+                  find_incorrectly_positioned_element (ptrs, succ k)
+                end
+              else
+                k
+            end
+        end
+
+    fun
+    position_elements
+              {i0, i : nat | i0 < nmemb; i < nmemb}
+              (ptrs  : &array (ptr, nmemb),
+               i0    : size_t i0,
+               p     : ptr,
+               i     : size_t i)
+        :<!wrt,!ntm> void =
+      let
+        val p1 = ptrs[i]
+        val i1 = index p1
+      in
+        ptrs[i] := the_null_ptr;
+        if i1 <> i0 then
+          begin
+            exch (p, p1);
+            position_elements (ptrs, i0, p1, i1)
+          end
+      end
+
+    fun
+    loop {k0   : nat | k0 < nmemb}
+         (ptrs : &array (ptr, nmemb),
+          k0   : size_t k0)
+        :<!wrt,!ntm> void =
+      let
+        val i0 = find_incorrectly_positioned_element (ptrs, k0)
+      in
+        if i0 <> nmemb then
+          begin
+            position_elements (ptrs, i0, pointer i0, i0);
+            if succ i0 <> nmemb then
+              loop (ptrs, succ i0)
+          end
+      end
+  in
+    if i2sz 0 < nmemb then
+      loop (ptrs, i2sz 0)
+  end
+
+extern fn
+ats2_timsort_c_timsort_to_pointers
+          {nmemb, sz : int}
+          (ptrs      : &array (ptr?, nmemb) >> array (ptr, nmemb),
+           arr       : &array (byte, nmemb * sz),
+           nmemb     : size_t nmemb,
+           sz        : size_t sz,
+           less_than : (ptr, ptr) -<fun> int)
+    : void = "sta#ats2_timsort_c_timsort_to_pointers"
+
+implement
+ats2_timsort_c_timsort_to_pointers (ptrs, arr, nmemb, sz, less_than) =
   let
     implement
     array_timsort$lt<ptr> (x, y) =
       (x \less_than y) <> 0
-
-    fn
-    sort {nmemb, sz : int}
-         (result    : &array (byte?, nmemb * sz)
-                       >> array (byte, nmemb * sz),
-          arr       : &array (byte, nmemb * sz),
-          nmemb     : size_t nmemb,
-          sz        : size_t sz,
-          less_than : (ptr, ptr) -<fun> int,
-          ptrs      : &array (ptr?, nmemb) >> array (ptr, nmemb))
-        : void =
-      begin
-        fill_pointers (addr@ arr, nmemb, sz, ptrs);
-        array_timsort<ptr> (ptrs, nmemb);
-        copy_elements (result, arr, nmemb, sz, ptrs)
-      end
   in
-    if nmemb <= i2sz PTRS_THRESHOLD then
-      let
-        prval () = lemma_g1uint_param nmemb
-        var storage : @[ptr?][PTRS_THRESHOLD]
-        prval @(pf_ptrs, pf_unused) =
-          array_v_split {ptr?} {..} {PTRS_THRESHOLD} {nmemb}
-                        (view@ storage)
-        val () = sort (result, arr, nmemb, sz, less_than,
-                       !(addr@ storage))
-        prval () = view@ storage :=
-          array_v_unsplit (pf_ptrs, pf_unused)
-      in
-      end
-    else
-      let
-        val @(pf_ptrs, pfgc_ptrs | p_ptrs) =
-          array_ptr_alloc<ptr> nmemb
-      in
-        sort (result, arr, nmemb, sz, less_than, !p_ptrs);
-        array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
-      end
+    fill_pointers (addr@ arr, nmemb, sz, ptrs);
+    array_timsort<ptr> (ptrs, nmemb)
   end
 
-%{
+extern fn
+ats2_timsort_c_timsort_to_separate_array
+          {nmemb, sz : int}
+          (result    : &array (byte?, nmemb * sz)
+                        >> array (byte, nmemb * sz),
+           arr       : &array (byte, nmemb * sz),
+           nmemb     : size_t nmemb,
+           sz        : size_t sz,
+           less_than : (ptr, ptr) -<fun> int)
+    : void = "sta#ats2_timsort_c_timsort_to_separate_array"
+
+implement
+ats2_timsort_c_timsort_to_separate_array {nmemb, sz}
+                                         (result, arr, nmemb, sz,
+                                          less_than) =
+  if nmemb <= i2sz PTRS_THRESHOLD then
+    let
+      prval () = lemma_g1uint_param nmemb
+      var storage : @[ptr?][PTRS_THRESHOLD]
+      prval @(pf_ptrs, pf_unused) =
+        array_v_split {ptr?} {..} {PTRS_THRESHOLD} {nmemb}
+                      (view@ storage)
+      macdef ptrs = !(addr@ storage)
+      val () = ats2_timsort_c_timsort_to_pointers (ptrs, arr,
+                                                   nmemb, sz,
+                                                   less_than)
+      val () = copy_elements (result, arr, nmemb, sz, ptrs)
+      prval () = view@ storage :=
+        array_v_unsplit (pf_ptrs, pf_unused)
+    in
+    end
+  else
+    let
+      val @(pf_ptrs, pfgc_ptrs | p_ptrs) =
+        array_ptr_alloc<ptr> nmemb
+      macdef ptrs = !p_ptrs
+    in
+      ats2_timsort_c_timsort_to_pointers (ptrs, arr, nmemb, sz,
+                                          less_than);
+      copy_elements (result, arr, nmemb, sz, ptrs);
+      array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
+    end
+
+extern fn
+ats2_timsort_c_timsort_to_same_array
+          {nmemb, sz : int}
+          (arr       : &array (byte, nmemb * sz),
+           nmemb     : size_t nmemb,
+           sz        : size_t sz,
+           less_than : (ptr, ptr) -<fun> int)
+    : void = "sta#ats2_timsort_c_timsort_to_same_array"
+
+implement
+ats2_timsort_c_timsort_to_same_array {nmemb, sz}
+                                     (arr, nmemb, sz, less_than) =
+  if nmemb <= i2sz PTRS_THRESHOLD then
+    let
+      prval () = lemma_g1uint_param nmemb
+      var storage : @[ptr?][PTRS_THRESHOLD]
+      prval @(pf_ptrs, pf_unused) =
+        array_v_split {ptr?} {..} {PTRS_THRESHOLD} {nmemb}
+                      (view@ storage)
+      macdef ptrs = !(addr@ storage)
+      val () = ats2_timsort_c_timsort_to_pointers (ptrs, arr,
+                                                   nmemb, sz,
+                                                   less_than)
+      val () = permute_elements (arr, nmemb, sz, ptrs)
+      prval () = view@ storage :=
+        array_v_unsplit (pf_ptrs, pf_unused)
+    in
+    end
+  else
+    let
+      val @(pf_ptrs, pfgc_ptrs | p_ptrs) =
+        array_ptr_alloc<ptr> nmemb
+      macdef ptrs = !p_ptrs
+    in
+      ats2_timsort_c_timsort_to_pointers (ptrs, arr, nmemb, sz,
+                                          less_than);
+      permute_elements (arr, nmemb, sz, ptrs);
+      array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
+    end
+
+%{$
+
+void
+ats2_timsort_c_timsort_to_array (void *result, void *arr,
+                                 size_t nmemb, size_t sz,
+                                 void *less_than)
+{
+  if ((char *) result == (char *) arr)
+    ats2_timsort_c_timsort_to_same_array (arr, nmemb, sz, less_than);
+  else
+    {
+      /* Remove this assertion if it causes problems on your
+         platform: */
+      assert ((char *) result + (nmemb * sz) <= (char *) arr ||
+              (char *) arr + (nmemb * sz) <= (char *) result);
+
+      ats2_timsort_c_timsort_to_separate_array
+        (result, arr, nmemb, sz, less_than);
+    }
+}
+
 /* An addressable instantiation of the inline subroutine. */
 extern inline void
 timsort_to_array (void *result, const void *arr,
