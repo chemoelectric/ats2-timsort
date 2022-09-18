@@ -100,6 +100,27 @@ m4_if(TYPE,`short',
 
       `DEFAULT_DEFINITION')
 
+m4_if(REENTRANT,no,
+`
+%{
+/* An addressable instantiation of the inline subroutine. */
+extern inline void
+TYPE`'_timsort (CTYPE *arr, size_t n,
+                ats2_timsort_c_bool ( *less_than )
+                  (CTYPE, CTYPE));
+%}
+',
+`
+%{
+/* An addressable instantiation of the inline subroutine. */
+extern inline void
+TYPE`'_timsort_r (CTYPE *arr, size_t n,
+                  ats2_timsort_c_bool ( *less_than )
+                    (CTYPE, CTYPE, void *),
+                  void *environment);
+%}
+')
+
 dnl local variables:
 dnl mode: ats
 dnl end:

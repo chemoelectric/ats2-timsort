@@ -41,15 +41,15 @@ staload UN = "prelude/SATS/unsafe.sats"
 %}
 
 extern fn
-ats2_timsort_c_timsort_out_of_place
+ats2_timsort_c_timsort_to_new_array
           {nmemb, sz : int}
           (result    : &array (byte?, nmemb * sz)
                         >> array (byte, nmemb * sz),
            arr       : &array (byte, nmemb * sz),
            n         : size_t nmemb,
            sz        : size_t sz,
-           less_than : (byte, byte) -<fun> int)
-    : void = "ext#ats2_timsort_c_timsort_out_of_place"
+           less_than : (ptr, ptr) -<fun> int)
+    : void = "ext#ats2_timsort_c_timsort_to_new_array"
 
 fn
 fill_pointers
@@ -129,17 +129,10 @@ copy_elements
     loop (addr@ result, ptrs, nmemb)
   end
 
-fn
-ats2_timsort_c_timsort_out_of_place
-          {nmemb, sz : int}
-          (result    : &array (byte?, nmemb * sz)
-                        >> array (byte, nmemb * sz),
-           arr       : &array (byte, nmemb * sz)
-                        >> array (byte?!, nmemb * sz),
-           nmemb     : size_t nmemb,
-           sz        : size_t sz,
-           less_than : (ptr, ptr) -<fun> int)
-    : void =
+implement
+ats2_timsort_c_timsort_to_new_array {nmemb, sz}
+                                    (result, arr, nmemb, sz,
+                                     less_than) =
   let
     implement
     array_timsort$lt<ptr> (x, y) =
@@ -183,3 +176,12 @@ ats2_timsort_c_timsort_out_of_place
         array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
       end
   end
+
+%{
+/* An addressable instantiation of the inline subroutine. */
+extern inline void
+timsort_to_new_array (void *result, const void *arr,
+                      size_t nmemb, size_t sz,
+                      ats2_timsort_c_bool ( *less_than )
+                        (const void *, const void *));
+%}
