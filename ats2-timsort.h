@@ -300,8 +300,10 @@ timsort_to_array (void *result, const void *arr,
                   ats2_timsort_c_bool (*less_than) (const void *,
                                                     const void *))
 {
-  /* Sort either to the same array or to a separate array with no
-     overlap. Sorting to the same array is likely to be slower. */
+  /* The ‘result’ array may overlap with the original array,
+     ‘arr’. More O(n) temporary space is used than in the ‘typed’
+     sorts, with even more space used if the arrays overlap than if
+     they do not. */
   ats2_timsort_c_timsort_to_array (result, (void *) arr,
                                    nmemb, sz,
                                    (void *) less_than);
