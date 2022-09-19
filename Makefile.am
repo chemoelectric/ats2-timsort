@@ -359,6 +359,38 @@ tests_test_timing_array_timsort_LDADD =
 tests_test_timing_array_timsort_LDADD += libats2-timsort.la
 tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
 
+TESTS += tests/test-timsort_to_pointers
+EXTRA_PROGRAMS += tests/test-timsort_to_pointers
+CLEANFILES += tests/test-timsort_to_pointers
+tests_test_timsort_to_pointers_SOURCES =
+tests_test_timsort_to_pointers_SOURCES += tests/test-timsort_to_pointers.c
+tests_test_timsort_to_pointers_SOURCES += tests/Perry-Nadkarni/timsort.c
+tests_test_timsort_to_pointers_SOURCES += tests/Perry-Nadkarni/timsort.h
+tests_test_timsort_to_pointers_SOURCES += tests/Perry-Nadkarni/timsort-impl.h
+tests_test_timsort_to_pointers_DEPENDENCIES =
+tests_test_timsort_to_pointers_DEPENDENCIES += libats2-timsort-c.la
+tests_test_timsort_to_pointers_CPPFLAGS =
+tests_test_timsort_to_pointers_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_timsort_to_pointers_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_timsort_to_pointers_LDADD =
+tests_test_timsort_to_pointers_LDADD += libats2-timsort-c.la
+
+TESTS += tests/test-timsort_r_to_pointers
+EXTRA_PROGRAMS += tests/test-timsort_r_to_pointers
+CLEANFILES += tests/test-timsort_r_to_pointers
+tests_test_timsort_r_to_pointers_SOURCES =
+tests_test_timsort_r_to_pointers_SOURCES += tests/test-timsort_r_to_pointers.c
+tests_test_timsort_r_to_pointers_SOURCES += tests/Perry-Nadkarni/timsort.c
+tests_test_timsort_r_to_pointers_SOURCES += tests/Perry-Nadkarni/timsort.h
+tests_test_timsort_r_to_pointers_SOURCES += tests/Perry-Nadkarni/timsort-impl.h
+tests_test_timsort_r_to_pointers_DEPENDENCIES =
+tests_test_timsort_r_to_pointers_DEPENDENCIES += libats2-timsort-c.la
+tests_test_timsort_r_to_pointers_CPPFLAGS =
+tests_test_timsort_r_to_pointers_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_timsort_r_to_pointers_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_timsort_r_to_pointers_LDADD =
+tests_test_timsort_r_to_pointers_LDADD += libats2-timsort-c.la
+
 TESTS += tests/test-timsort_to_array
 EXTRA_PROGRAMS += tests/test-timsort_to_array
 CLEANFILES += tests/test-timsort_to_array

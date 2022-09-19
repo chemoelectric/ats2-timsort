@@ -157,7 +157,7 @@ ats2_timsort_c_timsort_r_to_ptrs
 
 implement
 ats2_timsort_c_timsort_r_to_ptrs (ptrs, arr, nmemb, sz,
-                                      less_than, env) =
+                                  less_than, env) =
   let
     implement
     array_timsort$lt<ptr> (x, y) =
@@ -254,6 +254,23 @@ ats2_timsort_c_timsort_r_to_separate_array {nmemb, sz}
 
 %{$
 
+void
+ats2_timsort_c_timsort_to_pointers (void *ptrs, void *arr,
+                                    size_t nmemb, size_t sz,
+                                    void *less_than)
+{
+  ats2_timsort_c_timsort_to_ptrs (ptrs, arr, nmemb, sz, less_than);
+}
+
+void
+ats2_timsort_c_timsort_r_to_pointers (void *ptrs, void *arr,
+                                      size_t nmemb, size_t sz,
+                                      void *less_than, void *env)
+{
+  ats2_timsort_c_timsort_r_to_ptrs (ptrs, arr, nmemb, sz, less_than,
+                                    env);
+}
+
 #define BUFFER_THRESHOLD 256
 
 void
@@ -308,7 +325,19 @@ ats2_timsort_c_timsort_r_to_array (void *result, void *arr,
     }
 }
 
-/* An addressable instantiations of the inline subroutines. */
+/* Addressable instantiations of the inline subroutines. */
+extern inline void
+timsort_to_pointers (void **ptrs, const void *arr,
+                     size_t nmemb, size_t sz,
+                     ats2_timsort_c_bool ( *less_than )
+                       (const void *, const void *));
+extern inline void
+timsort_r_to_pointers (void **ptrs, const void *arr,
+                       size_t nmemb, size_t sz,
+                       ats2_timsort_c_bool ( *less_than )
+                         (const void *, const void *,
+                          void *environment),
+                       void *environment);
 extern inline void
 timsort_to_array (void *result, const void *arr,
                   size_t nmemb, size_t sz,

@@ -120,10 +120,13 @@ ats2_timsort_c_timsort_t ats2_timsort_c_decimal64_timsort;
 ats2_timsort_c_timsort_t ats2_timsort_c_decimal128_timsort;
 #endif
 
-extern void ats2_timsort_c_timsort_to_array (void *result,
-                                             void *arr,
-                                             size_t nmemb,
-                                             size_t sz,
+extern void ats2_timsort_c_timsort_to_pointers (void *ptrs, void *arr,
+                                                size_t nmemb,
+                                                size_t sz,
+                                                void *less_than);
+
+extern void ats2_timsort_c_timsort_to_array (void *result, void *arr,
+                                             size_t nmemb, size_t sz,
                                              void *less_than);
 
 /*------------------------------------------------------------------*/
@@ -205,6 +208,13 @@ ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal64_timsort_r;
 #ifdef DEC128_MANT_DIG
 ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal128_timsort_r;
 #endif
+
+extern void ats2_timsort_c_timsort_r_to_pointers (void *ptrs,
+                                                  void *arr,
+                                                  size_t nmemb,
+                                                  size_t sz,
+                                                  void *less_than,
+                                                  void *environment);
 
 extern void ats2_timsort_c_timsort_r_to_array (void *result,
                                                void *arr,
@@ -302,6 +312,16 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION (decimal128, _Decimal128)
 #endif
 
 inline void
+timsort_to_pointers (void **ptrs, const void *arr,
+                     size_t nmemb, size_t sz,
+                     ats2_timsort_c_bool (*less_than) (const void *,
+                                                       const void *))
+{
+  ats2_timsort_c_timsort_to_pointers ((void *) ptrs, (void *) arr,
+                                      nmemb, sz, (void *) less_than);
+}
+
+inline void
 timsort_to_array (void *result, const void *arr,
                   size_t nmemb, size_t sz,
                   ats2_timsort_c_bool (*less_than) (const void *,
@@ -312,8 +332,7 @@ timsort_to_array (void *result, const void *arr,
      sorts, with even more space used if the arrays overlap than if
      they do not. */
   ats2_timsort_c_timsort_to_array (result, (void *) arr,
-                                   nmemb, sz,
-                                   (void *) less_than);
+                                   nmemb, sz, (void *) less_than);
 }
 
 /*------------------------------------------------------------------*/
@@ -405,6 +424,19 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal64, _Decimal64)
 #ifdef DEC128_MANT_DIG
 ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal128, _Decimal128)
 #endif
+
+inline void
+timsort_r_to_pointers (void **ptrs, const void *arr,
+                       size_t nmemb, size_t sz,
+                       ats2_timsort_c_bool ( *less_than )
+                         (const void *, const void *,
+                          void *environment),
+                       void *environment)
+{
+  ats2_timsort_c_timsort_r_to_pointers ((void *) ptrs, (void *) arr,
+                                        nmemb, sz, (void *) less_than,
+                                        environment);
+}
 
 inline void
 timsort_r_to_array (void *result, const void *arr,
