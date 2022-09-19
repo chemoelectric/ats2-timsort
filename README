@@ -27,7 +27,8 @@ Included:
     data, in sorted order, to a new location. If the new location is
     identical to or overlaps with the original, the data is copied
     first, in sorted order, to a temporary buffer. (This is faster
-    than permuting the data in place.)
+    than using the sorted pointers to permute the original data in
+    place.)
 
 And I may add a sort for list_vt. This would have more conventional
 insertion sort and merge.
