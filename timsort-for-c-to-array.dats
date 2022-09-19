@@ -124,17 +124,17 @@ copy_elements {nmemb, sz} (result, arr, nmemb, sz, ptrs) =
   end
 
 extern fn
-ats2_timsort_c_timsort_to_pointers
+ats2_timsort_c_timsort_to_ptrs
           {nmemb, sz : int}
           (ptrs      : &array (ptr?, nmemb) >> array (ptr, nmemb),
            arr       : &array (byte, nmemb * sz),
            nmemb     : size_t nmemb,
            sz        : size_t sz,
            less_than : (ptr, ptr) -<fun> int)
-    : void = "sta#ats2_timsort_c_timsort_to_pointers"
+    : void = "sta#ats2_timsort_c_timsort_to_ptrs"
 
 implement
-ats2_timsort_c_timsort_to_pointers (ptrs, arr, nmemb, sz, less_than) =
+ats2_timsort_c_timsort_to_ptrs (ptrs, arr, nmemb, sz, less_than) =
   let
     implement
     array_timsort$lt<ptr> (x, y) =
@@ -145,7 +145,7 @@ ats2_timsort_c_timsort_to_pointers (ptrs, arr, nmemb, sz, less_than) =
   end
 
 extern fn
-ats2_timsort_c_timsort_r_to_pointers
+ats2_timsort_c_timsort_r_to_ptrs
           {nmemb, sz : int}
           (ptrs      : &array (ptr?, nmemb) >> array (ptr, nmemb),
            arr       : &array (byte, nmemb * sz),
@@ -153,10 +153,10 @@ ats2_timsort_c_timsort_r_to_pointers
            sz        : size_t sz,
            less_than : (ptr, ptr, ptr) -<fun> int,
            env       : ptr)
-    : void = "sta#ats2_timsort_c_timsort_r_to_pointers"
+    : void = "sta#ats2_timsort_c_timsort_r_to_ptrs"
 
 implement
-ats2_timsort_c_timsort_r_to_pointers (ptrs, arr, nmemb, sz,
+ats2_timsort_c_timsort_r_to_ptrs (ptrs, arr, nmemb, sz,
                                       less_than, env) =
   let
     implement
@@ -190,9 +190,8 @@ ats2_timsort_c_timsort_to_separate_array {nmemb, sz}
         array_v_split {ptr?} {..} {PTRS_THRESHOLD} {nmemb}
                       (view@ storage)
       macdef ptrs = !(addr@ storage)
-      val () = ats2_timsort_c_timsort_to_pointers (ptrs, arr,
-                                                   nmemb, sz,
-                                                   less_than)
+      val () = ats2_timsort_c_timsort_to_ptrs (ptrs, arr, nmemb, sz,
+                                               less_than)
       val () = copy_elements (result, arr, nmemb, sz, ptrs)
       prval () = view@ storage :=
         array_v_unsplit (pf_ptrs, pf_unused)
@@ -204,8 +203,8 @@ ats2_timsort_c_timsort_to_separate_array {nmemb, sz}
         array_ptr_alloc<ptr> nmemb
       macdef ptrs = !p_ptrs
     in
-      ats2_timsort_c_timsort_to_pointers (ptrs, arr, nmemb, sz,
-                                          less_than);
+      ats2_timsort_c_timsort_to_ptrs (ptrs, arr, nmemb, sz,
+                                      less_than);
       copy_elements (result, arr, nmemb, sz, ptrs);
       array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
     end
@@ -234,9 +233,8 @@ ats2_timsort_c_timsort_r_to_separate_array {nmemb, sz}
         array_v_split {ptr?} {..} {PTRS_THRESHOLD} {nmemb}
                       (view@ storage)
       macdef ptrs = !(addr@ storage)
-      val () = ats2_timsort_c_timsort_r_to_pointers (ptrs, arr,
-                                                     nmemb, sz,
-                                                     less_than, env)
+      val () = ats2_timsort_c_timsort_r_to_ptrs (ptrs, arr, nmemb, sz,
+                                                 less_than, env)
       val () = copy_elements (result, arr, nmemb, sz, ptrs)
       prval () = view@ storage :=
         array_v_unsplit (pf_ptrs, pf_unused)
@@ -248,8 +246,8 @@ ats2_timsort_c_timsort_r_to_separate_array {nmemb, sz}
         array_ptr_alloc<ptr> nmemb
       macdef ptrs = !p_ptrs
     in
-      ats2_timsort_c_timsort_r_to_pointers (ptrs, arr, nmemb, sz,
-                                            less_than, env);
+      ats2_timsort_c_timsort_r_to_ptrs (ptrs, arr, nmemb, sz,
+                                        less_than, env);
       copy_elements (result, arr, nmemb, sz, ptrs);
       array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
     end
