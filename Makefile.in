@@ -180,6 +180,7 @@ EXTRA_PROGRAMS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-array_timsort$(EXEEXT) \
 	tests/test-timing-array_timsort$(EXEEXT) \
 	tests/test-timsort_to_array$(EXEEXT) \
+	tests/test-timsort_r_to_array$(EXEEXT) \
 	list-ats-dependencies$(EXEEXT)
 TESTS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-pointer_timsort_r$(EXEEXT) \
@@ -245,7 +246,8 @@ TESTS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-galloping$(EXEEXT) tests/test-merges$(EXEEXT) \
 	tests/test-array_timsort$(EXEEXT) \
 	tests/test-timing-array_timsort$(EXEEXT) \
-	tests/test-timsort_to_array$(EXEEXT)
+	tests/test-timsort_to_array$(EXEEXT) \
+	tests/test-timsort_r_to_array$(EXEEXT)
 @HAVE_INT128_T_TRUE@am__append_1 = int128_t_timsort.dats \
 @HAVE_INT128_T_TRUE@	int128_t_timsort_r.dats \
 @HAVE_INT128_T_TRUE@	tests/src/test-int128_t_timsort.c \
@@ -961,6 +963,10 @@ am_tests_test_timing_array_timsort_OBJECTS = tests/test_timing_array_timsort-tes
 	tests/Perry-Nadkarni/test_timing_array_timsort-timsort.$(OBJEXT)
 tests_test_timing_array_timsort_OBJECTS =  \
 	$(am_tests_test_timing_array_timsort_OBJECTS)
+am_tests_test_timsort_r_to_array_OBJECTS = tests/test_timsort_r_to_array-test-timsort_r_to_array.$(OBJEXT) \
+	tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.$(OBJEXT)
+tests_test_timsort_r_to_array_OBJECTS =  \
+	$(am_tests_test_timsort_r_to_array_OBJECTS)
 am_tests_test_timsort_to_array_OBJECTS =  \
 	tests/test_timsort_to_array-test-timsort_to_array.$(OBJEXT) \
 	tests/Perry-Nadkarni/test_timsort_to_array-timsort.$(OBJEXT)
@@ -1192,8 +1198,10 @@ am__depfiles_remade = ./$(DEPDIR)/decimal128_timsort_dats.Plo \
 	tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po \
 	tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po \
 	tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po \
+	tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po \
 	tests/$(DEPDIR)/test_timsort_to_array-test-timsort_to_array.Po \
 	tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po \
+	tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Po \
 	tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_to_array-timsort.Po \
 	tests/src/$(DEPDIR)/test_decimal128_timsort-test-decimal128_timsort.Po \
 	tests/src/$(DEPDIR)/test_decimal128_timsort_r-test-decimal128_timsort_r.Po \
@@ -1415,6 +1423,7 @@ SOURCES = $(dist_libats2_timsort_c_la_SOURCES) \
 	$(tests_test_ssize_t_timsort_r_SOURCES) \
 	$(nodist_tests_test_ssize_t_timsort_r_SOURCES) \
 	$(tests_test_timing_array_timsort_SOURCES) \
+	$(tests_test_timsort_r_to_array_SOURCES) \
 	$(tests_test_timsort_to_array_SOURCES) \
 	$(tests_test_uint128_t_timsort_SOURCES) \
 	$(nodist_tests_test_uint128_t_timsort_SOURCES) \
@@ -1524,6 +1533,7 @@ DIST_SOURCES = $(dist_libats2_timsort_c_la_SOURCES) \
 	$(tests_test_ssize_t_timsort_SOURCES) \
 	$(tests_test_ssize_t_timsort_r_SOURCES) \
 	$(tests_test_timing_array_timsort_SOURCES) \
+	$(tests_test_timsort_r_to_array_SOURCES) \
 	$(tests_test_timsort_to_array_SOURCES) \
 	$(am__tests_test_uint128_t_timsort_SOURCES_DIST) \
 	$(am__tests_test_uint128_t_timsort_r_SOURCES_DIST) \
@@ -2116,8 +2126,8 @@ CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
 	tests/test-array_timsort_tests.c \
 	tests/test-timing-array_timsort \
 	tests/test-timing-array_timsort_tests.c \
-	tests/test-timsort_to_array list-ats-dependencies \
-	list-ats-dependencies_depsprog.c
+	tests/test-timsort_to_array tests/test-timsort_r_to_array \
+	list-ats-dependencies list-ats-dependencies_depsprog.c
 DISTCLEANFILES = Makefile GNUmakefile
 BUILT_SOURCES = pointer_timsort.dats pointer_timsort_r.dats \
 	tests/src/test-pointer_timsort.c \
@@ -2922,6 +2932,14 @@ tests_test_timsort_to_array_DEPENDENCIES = libats2-timsort-c.la
 tests_test_timsort_to_array_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DATS_MEMALLOC_LIBC
 tests_test_timsort_to_array_LDADD = libats2-timsort-c.la
+tests_test_timsort_r_to_array_SOURCES =  \
+	tests/test-timsort_r_to_array.c tests/Perry-Nadkarni/timsort.c \
+	tests/Perry-Nadkarni/timsort.h \
+	tests/Perry-Nadkarni/timsort-impl.h
+tests_test_timsort_r_to_array_DEPENDENCIES = libats2-timsort-c.la
+tests_test_timsort_r_to_array_CPPFLAGS = $(AM_CPPFLAGS) \
+	-DATS_MEMALLOC_LIBC
+tests_test_timsort_r_to_array_LDADD = libats2-timsort-c.la
 nodist_list_ats_dependencies_SOURCES =  \
 	list-ats-dependencies_depsprog.c
 list_ats_dependencies_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
@@ -3496,6 +3514,15 @@ tests/Perry-Nadkarni/test_timing_array_timsort-timsort.$(OBJEXT):  \
 tests/test-timing-array_timsort$(EXEEXT): $(tests_test_timing_array_timsort_OBJECTS) $(tests_test_timing_array_timsort_DEPENDENCIES) $(EXTRA_tests_test_timing_array_timsort_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test-timing-array_timsort$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_timing_array_timsort_OBJECTS) $(tests_test_timing_array_timsort_LDADD) $(LIBS)
+tests/test_timsort_r_to_array-test-timsort_r_to_array.$(OBJEXT):  \
+	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.$(OBJEXT):  \
+	tests/Perry-Nadkarni/$(am__dirstamp) \
+	tests/Perry-Nadkarni/$(DEPDIR)/$(am__dirstamp)
+
+tests/test-timsort_r_to_array$(EXEEXT): $(tests_test_timsort_r_to_array_OBJECTS) $(tests_test_timsort_r_to_array_DEPENDENCIES) $(EXTRA_tests_test_timsort_r_to_array_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test-timsort_r_to_array$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_timsort_r_to_array_OBJECTS) $(tests_test_timsort_r_to_array_LDADD) $(LIBS)
 tests/test_timsort_to_array-test-timsort_to_array.$(OBJEXT):  \
 	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
 tests/Perry-Nadkarni/test_timsort_to_array-timsort.$(OBJEXT):  \
@@ -3755,8 +3782,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timsort_to_array-test-timsort_to_array.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_to_array-timsort.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/src/$(DEPDIR)/test_decimal128_timsort-test-decimal128_timsort.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/src/$(DEPDIR)/test_decimal128_timsort_r-test-decimal128_timsort_r.Po@am__quote@ # am--include-marker
@@ -4754,6 +4783,34 @@ tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj: tests/Perry-Nadkarni
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/Perry-Nadkarni/timsort.c' object='tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timing_array_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/Perry-Nadkarni/test_timing_array_timsort-timsort.obj `if test -f 'tests/Perry-Nadkarni/timsort.c'; then $(CYGPATH_W) 'tests/Perry-Nadkarni/timsort.c'; else $(CYGPATH_W) '$(srcdir)/tests/Perry-Nadkarni/timsort.c'; fi`
+
+tests/test_timsort_r_to_array-test-timsort_r_to_array.o: tests/test-timsort_r_to_array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_timsort_r_to_array-test-timsort_r_to_array.o -MD -MP -MF tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Tpo -c -o tests/test_timsort_r_to_array-test-timsort_r_to_array.o `test -f 'tests/test-timsort_r_to_array.c' || echo '$(srcdir)/'`tests/test-timsort_r_to_array.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Tpo tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-timsort_r_to_array.c' object='tests/test_timsort_r_to_array-test-timsort_r_to_array.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_timsort_r_to_array-test-timsort_r_to_array.o `test -f 'tests/test-timsort_r_to_array.c' || echo '$(srcdir)/'`tests/test-timsort_r_to_array.c
+
+tests/test_timsort_r_to_array-test-timsort_r_to_array.obj: tests/test-timsort_r_to_array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_timsort_r_to_array-test-timsort_r_to_array.obj -MD -MP -MF tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Tpo -c -o tests/test_timsort_r_to_array-test-timsort_r_to_array.obj `if test -f 'tests/test-timsort_r_to_array.c'; then $(CYGPATH_W) 'tests/test-timsort_r_to_array.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-timsort_r_to_array.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Tpo tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-timsort_r_to_array.c' object='tests/test_timsort_r_to_array-test-timsort_r_to_array.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_timsort_r_to_array-test-timsort_r_to_array.obj `if test -f 'tests/test-timsort_r_to_array.c'; then $(CYGPATH_W) 'tests/test-timsort_r_to_array.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-timsort_r_to_array.c'; fi`
+
+tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.o: tests/Perry-Nadkarni/timsort.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.o -MD -MP -MF tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Tpo -c -o tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.o `test -f 'tests/Perry-Nadkarni/timsort.c' || echo '$(srcdir)/'`tests/Perry-Nadkarni/timsort.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Tpo tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/Perry-Nadkarni/timsort.c' object='tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.o `test -f 'tests/Perry-Nadkarni/timsort.c' || echo '$(srcdir)/'`tests/Perry-Nadkarni/timsort.c
+
+tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.obj: tests/Perry-Nadkarni/timsort.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.obj -MD -MP -MF tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Tpo -c -o tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.obj `if test -f 'tests/Perry-Nadkarni/timsort.c'; then $(CYGPATH_W) 'tests/Perry-Nadkarni/timsort.c'; else $(CYGPATH_W) '$(srcdir)/tests/Perry-Nadkarni/timsort.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Tpo tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/Perry-Nadkarni/timsort.c' object='tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_r_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/Perry-Nadkarni/test_timsort_r_to_array-timsort.obj `if test -f 'tests/Perry-Nadkarni/timsort.c'; then $(CYGPATH_W) 'tests/Perry-Nadkarni/timsort.c'; else $(CYGPATH_W) '$(srcdir)/tests/Perry-Nadkarni/timsort.c'; fi`
 
 tests/test_timsort_to_array-test-timsort_to_array.o: tests/test-timsort_to_array.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_timsort_to_array_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_timsort_to_array-test-timsort_to_array.o -MD -MP -MF tests/$(DEPDIR)/test_timsort_to_array-test-timsort_to_array.Tpo -c -o tests/test_timsort_to_array-test-timsort_to_array.o `test -f 'tests/test-timsort_to_array.c' || echo '$(srcdir)/'`tests/test-timsort_to_array.c
@@ -6004,6 +6061,13 @@ tests/test-timsort_to_array.log: tests/test-timsort_to_array$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+tests/test-timsort_r_to_array.log: tests/test-timsort_r_to_array$(EXEEXT)
+	@p='tests/test-timsort_r_to_array$(EXEEXT)'; \
+	b='tests/test-timsort_r_to_array'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -6351,8 +6415,10 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
+	-rm -f tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po
 	-rm -f tests/$(DEPDIR)/test_timsort_to_array-test-timsort_to_array.Po
 	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po
+	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Po
 	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_to_array-timsort.Po
 	-rm -f tests/src/$(DEPDIR)/test_decimal128_timsort-test-decimal128_timsort.Po
 	-rm -f tests/src/$(DEPDIR)/test_decimal128_timsort_r-test-decimal128_timsort_r.Po
@@ -6575,8 +6641,10 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
+	-rm -f tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po
 	-rm -f tests/$(DEPDIR)/test_timsort_to_array-test-timsort_to_array.Po
 	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timing_array_timsort-timsort.Po
+	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_r_to_array-timsort.Po
 	-rm -f tests/Perry-Nadkarni/$(DEPDIR)/test_timsort_to_array-timsort.Po
 	-rm -f tests/src/$(DEPDIR)/test_decimal128_timsort-test-decimal128_timsort.Po
 	-rm -f tests/src/$(DEPDIR)/test_decimal128_timsort_r-test-decimal128_timsort_r.Po
