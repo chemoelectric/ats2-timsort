@@ -14,9 +14,9 @@ Included:
 
   * Sort functions for C, which are the foregoing array sort
     specialized for particular C types. Probably the most important of
-    these types are void pointers and size_t, which can be used for
-    general sorting. Also supported are numerous integer and floating
-    point types.
+    these types is void pointers, which can be used to sort heap
+    objects, arrays of general elements, arrays of bytes, etc. Also
+    supported are numerous integer and floating point types.
 
     The interfaces are ‘true’ C functions: there is no special runtime
     code needed. Both ‘envless’ and ‘reentrant’ (‘env-full’)
