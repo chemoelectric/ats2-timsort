@@ -145,6 +145,29 @@ ats2_timsort_c_timsort_to_pointers (ptrs, arr, nmemb, sz, less_than) =
   end
 
 extern fn
+ats2_timsort_c_timsort_r_to_pointers
+          {nmemb, sz : int}
+          (ptrs      : &array (ptr?, nmemb) >> array (ptr, nmemb),
+           arr       : &array (byte, nmemb * sz),
+           nmemb     : size_t nmemb,
+           sz        : size_t sz,
+           less_than : (ptr, ptr, ptr) -<fun> int,
+           env       : ptr)
+    : void = "sta#ats2_timsort_c_timsort_r_to_pointers"
+
+implement
+ats2_timsort_c_timsort_r_to_pointers (ptrs, arr, nmemb, sz,
+                                      less_than, env) =
+  let
+    implement
+    array_timsort$lt<ptr> (x, y) =
+      less_than (x, y, env) <> 0
+  in
+    fill_pointers (addr@ arr, nmemb, sz, ptrs);
+    array_timsort<ptr> (ptrs, nmemb)
+  end
+
+extern fn
 ats2_timsort_c_timsort_to_separate_array
           {nmemb, sz : int}
           (result    : &array (byte?, nmemb * sz)
@@ -187,6 +210,50 @@ ats2_timsort_c_timsort_to_separate_array {nmemb, sz}
       array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
     end
 
+extern fn
+ats2_timsort_c_timsort_r_to_separate_array
+          {nmemb, sz : int}
+          (result    : &array (byte?, nmemb * sz)
+                        >> array (byte, nmemb * sz),
+           arr       : &array (byte, nmemb * sz),
+           nmemb     : size_t nmemb,
+           sz        : size_t sz,
+           less_than : (ptr, ptr, ptr) -<fun> int,
+           env       : ptr)
+    : void = "sta#ats2_timsort_c_timsort_r_to_separate_array"
+
+implement
+ats2_timsort_c_timsort_r_to_separate_array {nmemb, sz}
+                                           (result, arr, nmemb, sz,
+                                            less_than, env) =
+  if nmemb <= i2sz PTRS_THRESHOLD then
+    let
+      prval () = lemma_g1uint_param nmemb
+      var storage : @[ptr?][PTRS_THRESHOLD]
+      prval @(pf_ptrs, pf_unused) =
+        array_v_split {ptr?} {..} {PTRS_THRESHOLD} {nmemb}
+                      (view@ storage)
+      macdef ptrs = !(addr@ storage)
+      val () = ats2_timsort_c_timsort_r_to_pointers (ptrs, arr,
+                                                     nmemb, sz,
+                                                     less_than, env)
+      val () = copy_elements (result, arr, nmemb, sz, ptrs)
+      prval () = view@ storage :=
+        array_v_unsplit (pf_ptrs, pf_unused)
+    in
+    end
+  else
+    let
+      val @(pf_ptrs, pfgc_ptrs | p_ptrs) =
+        array_ptr_alloc<ptr> nmemb
+      macdef ptrs = !p_ptrs
+    in
+      ats2_timsort_c_timsort_r_to_pointers (ptrs, arr, nmemb, sz,
+                                            less_than, env);
+      copy_elements (result, arr, nmemb, sz, ptrs);
+      array_ptr_free (pf_ptrs, pfgc_ptrs | p_ptrs)
+    end
+
 %{$
 
 #define BUFFER_THRESHOLD 256
@@ -205,22 +272,54 @@ ats2_timsort_c_timsort_to_array (void *result, void *arr,
       atstype_byte buffer[BUFFER_THRESHOLD];
       ats2_timsort_c_timsort_to_separate_array
         (buffer, arr, nmemb, sz, less_than);
-      ats2_timsort_c_memcpy (arr, buffer, nmemb * sz);
+      ats2_timsort_c_memcpy (result, buffer, nmemb * sz);
     }
   else
     {
       atstype_byte *buffer = ATS_MALLOC (nmemb * sz);
       ats2_timsort_c_timsort_to_separate_array
         (buffer, arr, nmemb, sz, less_than);
-      ats2_timsort_c_memcpy (arr, buffer, nmemb * sz);
+      ats2_timsort_c_memcpy (result, buffer, nmemb * sz);
       ATS_MFREE (buffer);
     }
 }
 
-/* An addressable instantiation of the inline subroutine. */
+void
+ats2_timsort_c_timsort_r_to_array (void *result, void *arr,
+                                   size_t nmemb, size_t sz,
+                                   void *less_than, void *env)
+{
+  if ((char *) result + (nmemb * sz) <= (char *) arr ||
+      (char *) arr + (nmemb * sz) <= (char *) result)
+    ats2_timsort_c_timsort_r_to_separate_array
+      (result, arr, nmemb, sz, less_than, env);
+  else if (nmemb * sz <= BUFFER_THRESHOLD)
+    {
+      atstype_byte buffer[BUFFER_THRESHOLD];
+      ats2_timsort_c_timsort_r_to_separate_array
+        (buffer, arr, nmemb, sz, less_than, env);
+      ats2_timsort_c_memcpy (result, buffer, nmemb * sz);
+    }
+  else
+    {
+      atstype_byte *buffer = ATS_MALLOC (nmemb * sz);
+      ats2_timsort_c_timsort_r_to_separate_array
+        (buffer, arr, nmemb, sz, less_than, env);
+      ats2_timsort_c_memcpy (result, buffer, nmemb * sz);
+      ATS_MFREE (buffer);
+    }
+}
+
+/* An addressable instantiations of the inline subroutines. */
 extern inline void
 timsort_to_array (void *result, const void *arr,
                   size_t nmemb, size_t sz,
                   ats2_timsort_c_bool ( *less_than )
                     (const void *, const void *));
+extern inline void
+timsort_r_to_array (void *result, const void *arr,
+                    size_t nmemb, size_t sz,
+                    ats2_timsort_c_bool ( *less_than )
+                      (const void *, const void *, void *environment),
+                    void *environment);
 %}

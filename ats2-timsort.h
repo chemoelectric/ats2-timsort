@@ -206,6 +206,13 @@ ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal64_timsort_r;
 ats2_timsort_c_timsort_r_t ats2_timsort_c_decimal128_timsort_r;
 #endif
 
+extern void ats2_timsort_c_timsort_r_to_array (void *result,
+                                               void *arr,
+                                               size_t nmemb,
+                                               size_t sz,
+                                               void *less_than,
+                                               void *environment);
+
 /*------------------------------------------------------------------*/
 /* Non-reentrant inline interfaces, with typechecking.              */
 
@@ -398,6 +405,23 @@ ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal64, _Decimal64)
 #ifdef DEC128_MANT_DIG
 ATS2_TIMSORT_C_DEFINE_FUNCTION_R (decimal128, _Decimal128)
 #endif
+
+inline void
+timsort_r_to_array (void *result, const void *arr,
+                    size_t nmemb, size_t sz,
+                    ats2_timsort_c_bool (*less_than)
+                    (const void *, const void *, void *environment),
+                    void *environment)
+{
+  /* The ‘result’ array may overlap with the original array,
+     ‘arr’. More O(n) temporary space is used than in the ‘typed’
+     sorts, with even more space used if the arrays overlap than if
+     they do not. */
+  ats2_timsort_c_timsort_r_to_array (result, (void *) arr,
+                                     nmemb, sz,
+                                     (void *) less_than,
+                                     environment);
+}
 
 /*------------------------------------------------------------------*/
 
