@@ -14,14 +14,21 @@ Included:
 
   * Sort functions for C, which are the foregoing array sort
     specialized for particular C types. Probably the most important of
-    these types are void pointers and size_t, which can be used for
-    general sorting. Also supported are numerous integer and floating
-    point types.
+    these types is void pointers, which can be used to sort heap
+    objects, arrays of general elements, arrays of bytes, etc. Also
+    supported are numerous integer and floating point types.
 
     The interfaces are ‘true’ C functions: there is no special runtime
     code needed. Both ‘envless’ and ‘reentrant’ (‘env-full’)
     interfaces are available.
 
+  * Sort functions for C, to sort arrays of bytes. These are similar
+    to qsort, but in fact sort of arrays of pointers and then copy the
+    data, in sorted order, to a new location. If the new location is
+    identical to or overlaps with the original, the data is copied
+    first, in sorted order, to a temporary buffer. (This is faster
+    than using the sorted pointers to permute the original data in
+    place.)
 
 And I may add a sort for list_vt. This would have more conventional
 insertion sort and merge.

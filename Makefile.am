@@ -219,6 +219,7 @@ include $(top_srcdir)/ats2-timsort-c.am
 nodist_libats2_timsort_c_la_SOURCES =
 nodist_libats2_timsort_c_la_SOURCES += $(TIMSORT_C_SRC)
 nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory_dats.c
+nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-to-array_dats.c
 dist_libats2_timsort_c_la_SOURCES =
 dist_libats2_timsort_c_la_SOURCES += ats2-timsort.h
 dist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory.h
@@ -230,10 +231,12 @@ nobase_dist_pkginclude_HEADERS += ats2-timsort.h
 timsort-for-c-memory_dats.$(OBJEXT): timsort-for-c-memory.include.c
 
 CLEANFILES += timsort-for-c-memory_dats.c
+CLEANFILES += timsort-for-c-to-array_dats.c
 
 EXTRA_DIST += typed-timsort-for-c.dats.m4
 EXTRA_DIST += timsort-for-c-memory.dats
 EXTRA_DIST += timsort-for-c-memory.include.c
+EXTRA_DIST += timsort-for-c-to-array.dats
 
 #--------------------------------------------------------------------------
 
@@ -355,6 +358,38 @@ tests_test_timing_array_timsort_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_timing_array_timsort_LDADD =
 tests_test_timing_array_timsort_LDADD += libats2-timsort.la
 tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
+
+TESTS += tests/test-timsort_to_array
+EXTRA_PROGRAMS += tests/test-timsort_to_array
+CLEANFILES += tests/test-timsort_to_array
+tests_test_timsort_to_array_SOURCES =
+tests_test_timsort_to_array_SOURCES += tests/test-timsort_to_array.c
+tests_test_timsort_to_array_SOURCES += tests/Perry-Nadkarni/timsort.c
+tests_test_timsort_to_array_SOURCES += tests/Perry-Nadkarni/timsort.h
+tests_test_timsort_to_array_SOURCES += tests/Perry-Nadkarni/timsort-impl.h
+tests_test_timsort_to_array_DEPENDENCIES =
+tests_test_timsort_to_array_DEPENDENCIES += libats2-timsort-c.la
+tests_test_timsort_to_array_CPPFLAGS =
+tests_test_timsort_to_array_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_timsort_to_array_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_timsort_to_array_LDADD =
+tests_test_timsort_to_array_LDADD += libats2-timsort-c.la
+
+TESTS += tests/test-timsort_r_to_array
+EXTRA_PROGRAMS += tests/test-timsort_r_to_array
+CLEANFILES += tests/test-timsort_r_to_array
+tests_test_timsort_r_to_array_SOURCES =
+tests_test_timsort_r_to_array_SOURCES += tests/test-timsort_r_to_array.c
+tests_test_timsort_r_to_array_SOURCES += tests/Perry-Nadkarni/timsort.c
+tests_test_timsort_r_to_array_SOURCES += tests/Perry-Nadkarni/timsort.h
+tests_test_timsort_r_to_array_SOURCES += tests/Perry-Nadkarni/timsort-impl.h
+tests_test_timsort_r_to_array_DEPENDENCIES =
+tests_test_timsort_r_to_array_DEPENDENCIES += libats2-timsort-c.la
+tests_test_timsort_r_to_array_CPPFLAGS =
+tests_test_timsort_r_to_array_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_timsort_r_to_array_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_timsort_r_to_array_LDADD =
+tests_test_timsort_r_to_array_LDADD += libats2-timsort-c.la
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
