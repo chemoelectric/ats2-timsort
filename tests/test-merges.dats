@@ -175,12 +175,12 @@ test_merge_left_with_primes () : void =
     val bp_i = bp_arr + n_left
     and bp_n = bp_arr + n
 
-    var params : merge_params_vt
-    val () = initialize_gallop_thresholds params
+    var vars : merge_vars_vt
+    val () = initialize_gallop_thresholds vars
     val () =
       merge_left<entry_t>
         {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}
-        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params)
+        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, vars)
 
     val gotten =
       list_vt2t (array_copy_to_list_vt<entry_t> (!p_arr, i2sz n))
@@ -237,12 +237,12 @@ test_merge_right_with_primes () : void =
     val bp_i = bp_arr + n_left
     and bp_n = bp_arr + n
 
-    var params : merge_params_vt
-    val () = initialize_gallop_thresholds params
+    var vars : merge_vars_vt
+    val () = initialize_gallop_thresholds vars
     val () =
       merge_right<entry_t>
         {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}
-        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params)
+        (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, vars)
 
     val gotten =
       list_vt2t (array_copy_to_list_vt<entry_t> (!p_arr, i2sz n))
@@ -283,11 +283,11 @@ test_an_example_pair
     val bp_p = ptr2bptr_anchor p
     and bp_q = ptr2bptr_anchor q
 
-    var params : merge_params_vt
-    val () = initialize_gallop_thresholds params
+    var vars : merge_vars_vt
+    val () = initialize_gallop_thresholds vars
     val () =
       merge_adjacent_runs<entry_t>
-        (pf, qf | bp_p, bp_p + n_L, bp_p + np, bp_q, params)
+        (pf, qf | bp_p, bp_p + n_L, bp_p + np, bp_q, vars)
 
     val gotten = list_vt2t (array2list (!p, i2sz np))
   in

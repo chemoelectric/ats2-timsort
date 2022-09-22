@@ -547,7 +547,7 @@ find_1st_position_past_lte_x
 (*------------------------------------------------------------------*)
 (* Merges.                                                          *)
 
-vtypedef merge_params_vt =
+vtypedef merge_vars_vt =
   @{
     gallop_start_threshold = [t : pos] size_t t,
     gallop_stop_threshold = [t : pos] size_t t
@@ -555,39 +555,39 @@ vtypedef merge_params_vt =
 
 fn {}
 initialize_gallop_thresholds
-          (params : &merge_params_vt? >> merge_params_vt)
+          (vars : &merge_vars_vt? >> merge_vars_vt)
     :<!wrt> void =
   begin
-    params.gallop_start_threshold := i2sz 7;
-    params.gallop_stop_threshold := i2sz 7
+    vars.gallop_start_threshold := i2sz 7;
+    vars.gallop_stop_threshold := i2sz 7
   end
 
 fn {}
 lower_gallop_thresholds
-          (params : &merge_params_vt)
+          (vars : &merge_vars_vt)
     :<!wrt> void =
   let
-    val start_threshold0 = params.gallop_start_threshold
+    val start_threshold0 = vars.gallop_start_threshold
     val start_threshold1 = max (i2sz 1, pred start_threshold0)
-    val stop_threshold0 = params.gallop_stop_threshold
+    val stop_threshold0 = vars.gallop_stop_threshold
     val stop_threshold1 = max (i2sz 1, pred stop_threshold0)
   in
-    params.gallop_start_threshold := start_threshold1;
-    params.gallop_stop_threshold := stop_threshold1
+    vars.gallop_start_threshold := start_threshold1;
+    vars.gallop_stop_threshold := stop_threshold1
   end
 
 fn {}
 raise_gallop_thresholds
-          (params : &merge_params_vt)
+          (vars : &merge_vars_vt)
     :<!wrt> void =
   let
-    val start_threshold0 = params.gallop_start_threshold
+    val start_threshold0 = vars.gallop_start_threshold
     val start_threshold1 = succ start_threshold0
-    val stop_threshold0 = params.gallop_stop_threshold
+    val stop_threshold0 = vars.gallop_stop_threshold
     val stop_threshold1 = succ stop_threshold0
   in
-    params.gallop_start_threshold := start_threshold1;
-    params.gallop_stop_threshold := stop_threshold1
+    vars.gallop_start_threshold := start_threshold1;
+    vars.gallop_stop_threshold := stop_threshold1
   end
 
 extern fn {a : vt@ype}
@@ -603,12 +603,12 @@ merge_left :
    bptr (a, p_arr, i),
    bptr (a, p_arr, n),
    bptr_anchor (a?, p_work),
-   &merge_params_vt >> _) -< !wrt >
+   &merge_vars_vt >> _) -< !wrt >
     void
 
 implement {a}
 merge_left {p_arr} {n} {i} {p_work} {worksz}
-           (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params) =
+           (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, vars) =
   let
     stadef pntr (p : addr, i : int) = p + (i * sizeof a)
 
@@ -703,7 +703,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_lft     : bptr (a, p_temp, i_lft),
                count_lft  : Size_t,
                count_rgt  : Size_t,
-               params     : &merge_params_vt >> _)
+               vars     : &merge_vars_vt >> _)
         :<!wrt> void =
       if bp_lft = bp_tempsz then
         let
@@ -746,15 +746,15 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               and count_lft = i2sz 0
               and count_rgt = succ count_rgt
             in
-              if count_rgt >= (params.gallop_start_threshold) then
+              if count_rgt >= (vars.gallop_start_threshold) then
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
-                                 bp_between, bp_rgt, bp_lft, params)
+                                 bp_between, bp_rgt, bp_lft, vars)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
                             bp_between, bp_rgt, bp_lft,
-                            count_lft, count_rgt, params)
+                            count_lft, count_rgt, vars)
             end
           else
             let                 (* L <= R. Take L. *)
@@ -772,15 +772,15 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               and count_lft = succ count_lft
               and count_rgt = i2sz 0
             in
-              if count_lft >= (params.gallop_start_threshold) then
+              if count_lft >= (vars.gallop_start_threshold) then
                 galloping_merge (pf_merged, pf_between, pf_rgt,
                                  pf_cleared, pf_lft |
-                                 bp_between, bp_rgt, bp_lft, params)
+                                 bp_between, bp_rgt, bp_lft, vars)
               else
                 merge_runs (pf_merged, pf_between, pf_rgt,
                             pf_cleared, pf_lft |
                             bp_between, bp_rgt, bp_lft,
-                            count_lft, count_rgt, params)
+                            count_lft, count_rgt, vars)
             end
         end
     and
@@ -803,7 +803,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                bp_between : bptr (a?, p_arr, i_between),
                bp_rgt     : bptr (a, p_arr, i_rgt),
                bp_lft     : bptr (a, p_temp, i_lft),
-               params     : &merge_params_vt >> _)
+               vars       : &merge_vars_vt >> _)
         :<!wrt> void =
       if bp_lft = bp_tempsz then
         let
@@ -874,12 +874,12 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
               prval () = lemma_mul_isfun {i_lft, sizeof a}
                                          {tempsz, sizeof a} ()
             in
-              if (count_lft >= (params.gallop_stop_threshold))
+              if (count_lft >= (vars.gallop_stop_threshold))
                     + (succ (bp_n - bp_rgt)
-                          >= (params.gallop_stop_threshold)) then
-                lower_gallop_thresholds params
+                          >= (vars.gallop_stop_threshold)) then
+                lower_gallop_thresholds vars
               else
-                raise_gallop_thresholds params;
+                raise_gallop_thresholds vars;
 
               left_is_done {i_rgt}
                            (pf_merged, pf_between, pf_rgt, pf_lft | )
@@ -909,10 +909,10 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   prval () = lemma_mul_isfun {i_rgt, sizeof a}
                                              {n, sizeof a} ()
                 in
-                  if count_lft >= (params.gallop_stop_threshold) then
-                    lower_gallop_thresholds params
+                  if count_lft >= (vars.gallop_stop_threshold) then
+                    lower_gallop_thresholds vars
                   else
-                    raise_gallop_thresholds params;
+                    raise_gallop_thresholds vars;
 
                   right_is_done {i_between} {i_lft}
                                 (pf_merged, pf_between, pf_rgt,
@@ -980,27 +980,27 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
                   val bp_between = succ bp_between
                   and bp_lft = succ bp_lft
                 in
-                  if (count_lft >= (params.gallop_stop_threshold))
+                  if (count_lft >= (vars.gallop_stop_threshold))
                         + (count_rgt
-                              >= (params.gallop_stop_threshold)) then
+                              >= (vars.gallop_stop_threshold)) then
                     begin
                       (* Lower the gallop thresholds and continue
                          galloping. *)
-                      lower_gallop_thresholds params;
+                      lower_gallop_thresholds vars;
                       galloping_merge (pf_merged, pf_between, pf_rgt,
                                        pf_cleared, pf_lft |
                                        bp_between, bp_rgt, bp_lft,
-                                       params)
+                                       vars)
                     end
                   else
                     begin
                       (* Raise the gallop thresholds and stop
                          galloping. *)
-                      raise_gallop_thresholds params;
+                      raise_gallop_thresholds vars;
                       merge_runs (pf_merged, pf_between, pf_rgt,
                                   pf_cleared, pf_lft |
                                   bp_between, bp_rgt, bp_lft,
-                                  i2sz 0, i2sz 0, params)
+                                  i2sz 0, i2sz 0, vars)
                     end
                 end
             end
@@ -1012,7 +1012,7 @@ merge_left {p_arr} {n} {i} {p_work} {worksz}
     val () = merge_runs (pf_merged, pf_between, pf_right,
                          pf_cleared, pf_temp |
                          ptr2bptr_anchor (bptr2ptr bp_arr),
-                         bp_i, bp_temp, i2sz 0, i2sz 0, params)
+                         bp_i, bp_temp, i2sz 0, i2sz 0, vars)
 
     prval () = pf_arr := pf_merged
     prval () = pf_work := array_v_unsplit (pf_cleared, pf_unused)
@@ -1032,12 +1032,12 @@ merge_right :
    bptr (a, p_arr, i),
    bptr (a, p_arr, n),
    bptr_anchor (a?, p_work),
-   &merge_params_vt >> _) -< !wrt >
+   &merge_vars_vt >> _) -< !wrt >
     void
 
 implement {a}
 merge_right {p_arr} {n} {i} {p_work} {worksz}
-            (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, params) =
+            (pf_arr, pf_work | bp_arr, bp_i, bp_n, bp_work, vars) =
   let
     stadef pntr (p : addr, i : int) = p + (i * sizeof a)
 
@@ -1128,7 +1128,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                bp_rgt     : bptr (a, p_temp, i_rgt),
                count_lft  : Size_t,
                count_rgt  : Size_t,
-               params     : &merge_params_vt >> _)
+               vars       : &merge_vars_vt >> _)
         :<!wrt> void =
       if bp_rgt = bp_temp then
         let
@@ -1173,15 +1173,15 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
               val count_lft = succ count_lft
               and count_rgt = i2sz 0
             in
-              if count_lft >= (params.gallop_start_threshold) then
+              if count_lft >= (vars.gallop_start_threshold) then
                 galloping_merge (pf_lft, pf_between, pf_merged,
                                  pf_rgt, pf_cleared |
-                                 bp_merged, bp_lft, bp_rgt, params)
+                                 bp_merged, bp_lft, bp_rgt, vars)
               else
                 merge_runs (pf_lft, pf_between, pf_merged,
                             pf_rgt, pf_cleared |
                             bp_merged, bp_lft, bp_rgt,
-                            count_lft, count_rgt, params)
+                            count_lft, count_rgt, vars)
             end
           else
             let                 (* R >= L. Take R. *)
@@ -1197,15 +1197,15 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
               val count_lft = i2sz 0
               and count_rgt = succ count_rgt
             in
-              if count_rgt >= (params.gallop_start_threshold) then
+              if count_rgt >= (vars.gallop_start_threshold) then
                 galloping_merge (pf_lft, pf_between, pf_merged,
                                  pf_rgt, pf_cleared |
-                                 bp_merged, bp_lft, bp_rgt, params)
+                                 bp_merged, bp_lft, bp_rgt, vars)
               else
                 merge_runs (pf_lft, pf_between, pf_merged,
                             pf_rgt, pf_cleared |
                             bp_merged, bp_lft, bp_rgt,
-                            count_lft, count_rgt, params)
+                            count_lft, count_rgt, vars)
             end
         end
     and
@@ -1227,7 +1227,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                bp_merged  : bptr (a?, p_arr, i_merged),
                bp_lft     : bptr (a, p_arr, i_lft),
                bp_rgt     : bptr (a, p_temp, i_rgt),
-               params     : &merge_params_vt >> _)
+               vars       : &merge_vars_vt >> _)
         :<!wrt> void =
       if bp_rgt = bp_temp then
         let
@@ -1299,12 +1299,12 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                                          {0, sizeof a} ()
             in
               if ((succ (bp_lft - bp_arr))
-                      >= (params.gallop_stop_threshold))
+                      >= (vars.gallop_stop_threshold))
                     + (count_rgt
-                          >= (params.gallop_stop_threshold)) then
-                lower_gallop_thresholds params
+                          >= (vars.gallop_stop_threshold)) then
+                lower_gallop_thresholds vars
               else
-                raise_gallop_thresholds params;
+                raise_gallop_thresholds vars;
 
               right_is_done {i_lft}
                             (pf_lft, pf_between, pf_merged, pf_rgt | )
@@ -1335,10 +1335,10 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                   prval () = lemma_mul_isfun {i_lft, sizeof a}
                                              {0, sizeof a} ()
                 in
-                  if count_rgt >= (params.gallop_stop_threshold) then
-                    lower_gallop_thresholds params
+                  if count_rgt >= (vars.gallop_stop_threshold) then
+                    lower_gallop_thresholds vars
                   else
-                    raise_gallop_thresholds params;
+                    raise_gallop_thresholds vars;
 
                   left_is_done {i_rgt}
                                (pf_lft, pf_between, pf_merged,
@@ -1401,27 +1401,27 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                     array_v_cons (pf_R, pf_cleared)
                   and () = pf_rgt := pf_rgt1
                 in
-                  if (count_lft >= (params.gallop_stop_threshold))
+                  if (count_lft >= (vars.gallop_stop_threshold))
                         + (count_rgt
-                              >= (params.gallop_stop_threshold)) then
+                              >= (vars.gallop_stop_threshold)) then
                     begin
                       (* Lower the gallop thresholds and continue
                          galloping. *)
-                      lower_gallop_thresholds params;
+                      lower_gallop_thresholds vars;
                       galloping_merge (pf_lft, pf_between, pf_merged,
                                        pf_rgt, pf_cleared |
                                        bp_merged, bp_lft, bp_rgt,
-                                       params)
+                                       vars)
                     end
                   else
                     begin
                       (* Raise the gallop thresholds and stop
                          galloping. *)
-                      raise_gallop_thresholds params;
+                      raise_gallop_thresholds vars;
                       merge_runs (pf_lft, pf_between, pf_merged,
                                   pf_rgt, pf_cleared |
                                   bp_merged, bp_lft, bp_rgt,
-                                  i2sz 0, i2sz 0, params)
+                                  i2sz 0, i2sz 0, vars)
                     end
                 end
             end
@@ -1434,7 +1434,7 @@ merge_right {p_arr} {n} {i} {p_work} {worksz}
                          pf_temp, pf_cleared |
                          ptr2bptr_anchor (bptr2ptr bp_arr)
                             + (bp_n - bp_arr),
-                         bp_i, bp_tempsz, i2sz 0, i2sz 0, params)
+                         bp_i, bp_tempsz, i2sz 0, i2sz 0, vars)
 
     prval () = pf_arr := pf_merged
     prval () = pf_work := array_v_unsplit (pf_cleared, pf_unused)
@@ -1454,13 +1454,13 @@ merge_adjacent_runs :
    bptr (a, p_arr, i),
    bptr (a, p_arr, n),
    bptr_anchor (a?, p_work),
-   &merge_params_vt >> _) -< !wrt >
+   &merge_vars_vt >> _) -< !wrt >
     void
 
 implement {a}
 merge_adjacent_runs {p_arr} {n} {i} {p_work} {worksz}
                     (pf_arr, pf_work |
-                     bp_arr, bp_i, bp_n, bp_work, params) =
+                     bp_arr, bp_i, bp_n, bp_work, vars) =
   let
     (* Find any prefix that already is in place. *)
     prval @(pf_lft, pf_rgt) =
@@ -1501,10 +1501,10 @@ merge_adjacent_runs {p_arr} {n} {i} {p_work} {worksz}
           begin
             if bp1 - bp0 <= bp2 - bp1 then
               merge_left (pf_middle, pf_work |
-                          bp0, bp1, bp2, bp_work, params)
+                          bp0, bp1, bp2, bp_work, vars)
             else
               merge_right (pf_middle, pf_work |
-                           bp0, bp1, bp2, bp_work, params)
+                           bp0, bp1, bp2, bp_work, vars)
           end
 
         prval () = pf_arr1 := array_v_unsplit (pf_middle, pf_suffix)
@@ -1534,7 +1534,7 @@ include_new_run
            index   : size_t index,
            size    : size_t size,
            p_work  : ptr p_work,
-           params  : &merge_params_vt >> _,
+           vars    : &merge_vars_vt >> _,
            stk     : &stk_vt (p_stk, depth0, stk_max)
                       >> stk_vt (p_stk, depth1, stk_max))
     :<!wrt> #[depth1 : pos | depth1 <= depth0 + 1]
@@ -1545,7 +1545,7 @@ include_new_run
 implement {a}
 include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
                 (pf_arr, pf_work | p_arr, n, index, size,
-                                   p_work, params, stk) =
+                                   p_work, vars, stk) =
   if stk_vt_depth stk = 0 then
     stk_vt_push (index, size, ARBITRARY_POWER, stk)
   else
@@ -1572,7 +1572,7 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
                 .<depth1>.
                 (pf_arr  : !array_v (a, p_arr, n),
                  pf_work : !array_v (a?, p_work, worksz) |
-                 params  : &merge_params_vt >> _,
+                 vars    : &merge_vars_vt >> _,
                  stk     : &stk_vt (p_stk, depth1, stk_max)
                             >> stk_vt (p_stk, depth2, stk_max))
           :<!wrt> #[depth2 : pos | depth2 <= depth1]
@@ -1625,7 +1625,7 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
                 {p_arr + (index1 * sizeof a)}
                 {size1 + size0} {size1} {p_work} {worksz}
                 (pf_middle, pf_work |
-                 bp_middle, bp_middle_i, bp_middle_n, bp_work, params)
+                 bp_middle, bp_middle_i, bp_middle_n, bp_work, vars)
 
             prval () = pf_arr1 :=
               array_v_unsplit (pf_middle, pf_after)
@@ -1635,10 +1635,10 @@ include_new_run {p_arr} {n} {index} {size} {p_work} {worksz}
             stk_vt_overwrite (index1, size1 + size0, ARBITRARY_POWER,
                               stk, 1);
             stk_vt_drop stk;
-            merge_subarrays (pf_arr, pf_work | params, stk)
+            merge_subarrays (pf_arr, pf_work | vars, stk)
           end
     in
-      merge_subarrays (pf_arr, pf_work | params, stk);
+      merge_subarrays (pf_arr, pf_work | vars, stk);
       stk_vt_overwrite ((stk_vt_peek (stk, 0)).index,
                         (stk_vt_peek (stk, 0)).size,
                         power, stk, 0);
@@ -1659,7 +1659,7 @@ merge_remaining_runs
            p_arr   : ptr p_arr,
            n       : size_t n,
            p_work  : ptr p_work,
-           params  : &merge_params_vt >> _,
+           vars    : &merge_vars_vt >> _,
            stk     : &stk_vt (p_stk, depth0, stk_max)
                       >> stk_vt (p_stk, 0, stk_max))
     :<!wrt> void
@@ -1667,7 +1667,7 @@ merge_remaining_runs
 implement {a}
 merge_remaining_runs {p_arr} {n} {p_work} {worksz}
                      (pf_arr, pf_work | p_arr, n, p_work,
-                                        params, stk) =
+                                        vars, stk) =
   let
     fn
     merge_1_with_0
@@ -1676,7 +1676,7 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
               {depth   : int | 2 <= depth}
               (pf_arr  : !array_v (a, p_arr, n),
                pf_work : !array_v (a?, p_work, worksz) |
-               params  : &merge_params_vt >> _,
+               vars    : &merge_vars_vt >> _,
                stk     : &stk_vt (p_stk, depth, stk_max)
                           >> stk_vt (p_stk, depth - 1, stk_max))
         :<!wrt> void =
@@ -1719,7 +1719,7 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
             {p_arr + (index1 * sizeof a)}
             {size1 + size0} {size1} {p_work} {worksz}
             (pf_middle, pf_work |
-             bp_middle, bp_middle_i, bp_middle_n, bp_work, params)
+             bp_middle, bp_middle_i, bp_middle_n, bp_work, vars)
 
         prval () = pf_arr1 :=
           array_v_unsplit (pf_middle, pf_after)
@@ -1737,7 +1737,7 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
               {depth   : int | 3 <= depth}
               (pf_arr  : !array_v (a, p_arr, n),
                pf_work : !array_v (a?, p_work, worksz) |
-               params  : &merge_params_vt >> _,
+               vars    : &merge_vars_vt >> _,
                stk     : &stk_vt (p_stk, depth, stk_max)
                           >> stk_vt (p_stk, depth - 1, stk_max))
         :<!wrt> void =
@@ -1788,7 +1788,7 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
             {p_arr + (index2 * sizeof a)}
             {size2 + size1} {size2} {p_work} {worksz}
             (pf_middle, pf_work |
-             bp_middle, bp_middle_i, bp_middle_n, bp_work, params)
+             bp_middle, bp_middle_i, bp_middle_n, bp_work, vars)
 
         prval () = pf_arr1 :=
           array_v_unsplit (pf_middle, pf_after)
@@ -1806,7 +1806,7 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
          .<depth>.
          (pf_arr  : !array_v (a, p_arr, n),
           pf_work : !array_v (a?, p_work, worksz) |
-          params  : &merge_params_vt >> _,
+          vars    : &merge_vars_vt >> _,
           stk     : &stk_vt (p_stk, depth, stk_max)
                      >> stk_vt (p_stk, 0, stk_max))
         :<!wrt> void =
@@ -1814,22 +1814,22 @@ merge_remaining_runs {p_arr} {n} {p_work} {worksz}
         stk_vt_drop stk
       else if stk_vt_depth stk = 2 then
         begin
-          merge_1_with_0 (pf_arr, pf_work | params, stk);
-          loop (pf_arr, pf_work | params, stk)
+          merge_1_with_0 (pf_arr, pf_work | vars, stk);
+          loop (pf_arr, pf_work | vars, stk)
         end
       else if ((stk_vt_peek (stk, 0)).size)
                   <= ((stk_vt_peek (stk, 2)).size) then
         begin
-          merge_1_with_0 (pf_arr, pf_work | params, stk);
-          loop (pf_arr, pf_work | params, stk)
+          merge_1_with_0 (pf_arr, pf_work | vars, stk);
+          loop (pf_arr, pf_work | vars, stk)
         end
       else
         begin
-          merge_2_with_1 (pf_arr, pf_work | params, stk);
-          loop (pf_arr, pf_work | params, stk)
+          merge_2_with_1 (pf_arr, pf_work | vars, stk);
+          loop (pf_arr, pf_work | vars, stk)
         end
   in
-    loop (pf_arr, pf_work | params, stk)
+    loop (pf_arr, pf_work | vars, stk)
   end
 
 (*------------------------------------------------------------------*)
@@ -1863,7 +1863,7 @@ timsort_main
          (pf_arr  : !array_v (a, p_arr, n),
           pf_work : !array_v (a?, p_work, worksz) |
           i       : size_t i,
-          params  : &merge_params_vt >> _,
+          vars    : &merge_vars_vt >> _,
           stk     : &stk_vt (p_stk, depth0, stk_max)
                      >> stk_vt (p_stk, depth1, stk_max))
         :<!wrt> #[depth1 : pos]
@@ -1879,16 +1879,16 @@ timsort_main
         in
           include_new_run (pf_arr, pf_work |
                            p_arr, n, i, j - i, p_work,
-                           params, stk);
-          loop (pf_arr, pf_work | j, params, stk)
+                           vars, stk);
+          loop (pf_arr, pf_work | j, vars, stk)
         end
 
-    var params : merge_params_vt
-    val () = initialize_gallop_thresholds params
+    var vars : merge_vars_vt
+    val () = initialize_gallop_thresholds vars
   in
-    loop (pf_arr, pf_work | i2sz 0, params, stk);
+    loop (pf_arr, pf_work | i2sz 0, vars, stk);
     merge_remaining_runs<a> (pf_arr, pf_work |
-                             p_arr, n, p_work, params, stk)
+                             p_arr, n, p_work, vars, stk)
   end
 
 fn {a : vt@ype}
