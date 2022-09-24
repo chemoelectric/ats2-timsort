@@ -554,7 +554,7 @@ vtypedef merge_vars_vt =
   }
 
 fn {}
-initialize_gallop_thresholds
+initialize_merge_vars
           (vars : &merge_vars_vt? >> merge_vars_vt)
     :<!wrt> void =
   begin
@@ -1884,7 +1884,7 @@ timsort_main
         end
 
     var vars : merge_vars_vt
-    val () = initialize_gallop_thresholds vars
+    val () = initialize_merge_vars vars
   in
     loop (pf_arr, pf_work | i2sz 0, vars, stk);
     merge_remaining_runs<a> (pf_arr, pf_work |

@@ -176,7 +176,7 @@ test_merge_left_with_primes () : void =
     and bp_n = bp_arr + n
 
     var vars : merge_vars_vt
-    val () = initialize_gallop_thresholds vars
+    val () = initialize_merge_vars vars
     val () =
       merge_left<entry_t>
         {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}
@@ -238,7 +238,7 @@ test_merge_right_with_primes () : void =
     and bp_n = bp_arr + n
 
     var vars : merge_vars_vt
-    val () = initialize_gallop_thresholds vars
+    val () = initialize_merge_vars vars
     val () =
       merge_right<entry_t>
         {p_arr} {n} {n_left} {p_work} {(n / 2) + 1}
@@ -284,7 +284,7 @@ test_an_example_pair
     and bp_q = ptr2bptr_anchor q
 
     var vars : merge_vars_vt
-    val () = initialize_gallop_thresholds vars
+    val () = initialize_merge_vars vars
     val () =
       merge_adjacent_runs<entry_t>
         (pf, qf | bp_p, bp_p + n_L, bp_p + np, bp_q, vars)
