@@ -423,6 +423,22 @@ tests_test_timsort_r_to_array_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_timsort_r_to_array_LDADD =
 tests_test_timsort_r_to_array_LDADD += libats2-timsort-c.la
 
+TESTS += tests/test-timsort_to_array-big-records
+EXTRA_PROGRAMS += tests/test-timsort_to_array-big-records
+CLEANFILES += tests/test-timsort_to_array-big-records
+tests_test_timsort_to_array_big_records_SOURCES =
+tests_test_timsort_to_array_big_records_SOURCES += tests/test-timsort_to_array-big-records.c
+tests_test_timsort_to_array_big_records_SOURCES += tests/Perry-Nadkarni/timsort.c
+tests_test_timsort_to_array_big_records_SOURCES += tests/Perry-Nadkarni/timsort.h
+tests_test_timsort_to_array_big_records_SOURCES += tests/Perry-Nadkarni/timsort-impl.h
+tests_test_timsort_to_array_big_records_DEPENDENCIES =
+tests_test_timsort_to_array_big_records_DEPENDENCIES += libats2-timsort-c.la
+tests_test_timsort_to_array_big_records_CPPFLAGS =
+tests_test_timsort_to_array_big_records_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_timsort_to_array_big_records_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_timsort_to_array_big_records_LDADD =
+tests_test_timsort_to_array_big_records_LDADD += libats2-timsort-c.la
+
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
 
