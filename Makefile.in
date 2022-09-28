@@ -633,11 +633,14 @@ am__objects_13 = timsort/SATS/bptr_sats.lo
 am__objects_14 = timsort/DATS/bptr_dats.lo
 am__objects_15 = timsort/SATS/array-timsort_sats.lo
 am__objects_16 = timsort/DATS/array-timsort_dats.lo
-am__objects_17 = timsort/SATS/COMMON/timsort-common_sats.lo
-am__objects_18 = timsort/DATS/COMMON/timsort-common_dats.lo
+am__objects_17 = timsort/SATS/list-timsort_sats.lo
+am__objects_18 = timsort/DATS/list-timsort_dats.lo
+am__objects_19 = timsort/SATS/COMMON/timsort-common_sats.lo
+am__objects_20 = timsort/DATS/COMMON/timsort-common_dats.lo
 nodist_libats2_timsort_la_OBJECTS = $(am__objects_13) \
 	$(am__objects_14) $(am__objects_15) $(am__objects_16) \
-	$(am__objects_17) $(am__objects_18)
+	$(am__objects_17) $(am__objects_18) $(am__objects_19) \
+	$(am__objects_20)
 libats2_timsort_la_OBJECTS = $(nodist_libats2_timsort_la_OBJECTS)
 nodist_list_ats_dependencies_OBJECTS = list_ats_dependencies-list-ats-dependencies_depsprog.$(OBJEXT)
 list_ats_dependencies_OBJECTS =  \
@@ -1307,9 +1310,11 @@ am__depfiles_remade = ./$(DEPDIR)/decimal128_timsort_dats.Plo \
 	tests/src/$(DEPDIR)/test_unsigned_short_timsort_r-test-unsigned_short_timsort_r.Po \
 	timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo \
 	timsort/DATS/$(DEPDIR)/bptr_dats.Plo \
+	timsort/DATS/$(DEPDIR)/list-timsort_dats.Plo \
 	timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo \
 	timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo \
 	timsort/SATS/$(DEPDIR)/bptr_sats.Plo \
+	timsort/SATS/$(DEPDIR)/list-timsort_sats.Plo \
 	timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -2006,7 +2011,8 @@ EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
 	list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
 CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
-	$(ARRAY_TIMSORT_DATS_C) $(TIMSORT_COMMON_SATS_C) \
+	$(ARRAY_TIMSORT_DATS_C) $(LIST_TIMSORT_SATS_C) \
+	$(LIST_TIMSORT_DATS_C) $(TIMSORT_COMMON_SATS_C) \
 	$(TIMSORT_COMMON_DATS_C) pointer_timsort.dats \
 	pointer_timsort_dats.c pointer_timsort_r.dats \
 	pointer_timsort_r_dats.c tests/test-pointer_timsort \
@@ -2277,6 +2283,11 @@ ARRAY_TIMSORT_DATS = timsort/DATS/array-timsort.dats
 ARRAY_TIMSORT_SATS_C = timsort/SATS/array-timsort_sats.c
 ARRAY_TIMSORT_DATS_C = timsort/DATS/array-timsort_dats.c
 ARRAY_TIMSORT_HATS = timsort/HATS/array-timsort.hats
+LIST_TIMSORT_SATS = timsort/SATS/list-timsort.sats
+LIST_TIMSORT_DATS = timsort/DATS/list-timsort.dats
+LIST_TIMSORT_SATS_C = timsort/SATS/list-timsort_sats.c
+LIST_TIMSORT_DATS_C = timsort/DATS/list-timsort_dats.c
+#LIST_TIMSORT_HATS = timsort/HATS/list-timsort.hats
 TIMSORT_COMMON_SATS = timsort/SATS/COMMON/timsort-common.sats
 TIMSORT_COMMON_DATS = timsort/DATS/COMMON/timsort-common.dats
 TIMSORT_COMMON_SATS_C = timsort/SATS/COMMON/timsort-common_sats.c
@@ -2284,10 +2295,12 @@ TIMSORT_COMMON_DATS_C = timsort/DATS/COMMON/timsort-common_dats.c
 TIMSORT_CATS = timsort/CATS/timsort.cats
 nobase_dist_pkginclude_HEADERS = $(BPTR_SATS) $(BPTR_DATS) \
 	$(BPTR_CATS) $(ARRAY_TIMSORT_SATS) $(ARRAY_TIMSORT_DATS) \
+	$(LIST_TIMSORT_SATS) $(LIST_TIMSORT_DATS) \
 	$(TIMSORT_COMMON_SATS) $(TIMSORT_COMMON_DATS) \
 	$(ARRAY_TIMSORT_HATS) $(TIMSORT_CATS) ats2-timsort.h
 nodist_libats2_timsort_la_SOURCES = $(BPTR_SATS_C) $(BPTR_DATS_C) \
 	$(ARRAY_TIMSORT_SATS_C) $(ARRAY_TIMSORT_DATS_C) \
+	$(LIST_TIMSORT_SATS_C) $(LIST_TIMSORT_DATS_C) \
 	$(TIMSORT_COMMON_SATS_C) $(TIMSORT_COMMON_DATS_C)
 libats2_timsort_la_DEPENDENCIES = $(TIMSORT_CATS) $(BPTR_CATS)
 TIMSORT_ATS_SRC = pointer_timsort.dats pointer_timsort_r.dats \
@@ -3160,6 +3173,10 @@ timsort/SATS/array-timsort_sats.lo: timsort/SATS/$(am__dirstamp) \
 	timsort/SATS/$(DEPDIR)/$(am__dirstamp)
 timsort/DATS/array-timsort_dats.lo: timsort/DATS/$(am__dirstamp) \
 	timsort/DATS/$(DEPDIR)/$(am__dirstamp)
+timsort/SATS/list-timsort_sats.lo: timsort/SATS/$(am__dirstamp) \
+	timsort/SATS/$(DEPDIR)/$(am__dirstamp)
+timsort/DATS/list-timsort_dats.lo: timsort/DATS/$(am__dirstamp) \
+	timsort/DATS/$(DEPDIR)/$(am__dirstamp)
 timsort/SATS/COMMON/$(am__dirstamp):
 	@$(MKDIR_P) timsort/SATS/COMMON
 	@: > timsort/SATS/COMMON/$(am__dirstamp)
@@ -3958,9 +3975,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/src/$(DEPDIR)/test_unsigned_short_timsort_r-test-unsigned_short_timsort_r.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/bptr_dats.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/$(DEPDIR)/list-timsort_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/$(DEPDIR)/bptr_sats.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/$(DEPDIR)/list-timsort_sats.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -6702,9 +6721,11 @@ distclean: distclean-am
 	-rm -f tests/src/$(DEPDIR)/test_unsigned_short_timsort_r-test-unsigned_short_timsort_r.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
+	-rm -f timsort/DATS/$(DEPDIR)/list-timsort_dats.Plo
 	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
 	-rm -f timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo
 	-rm -f timsort/SATS/$(DEPDIR)/bptr_sats.Plo
+	-rm -f timsort/SATS/$(DEPDIR)/list-timsort_sats.Plo
 	-rm -f timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo
 	-rm -f GNUmakefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -6934,9 +6955,11 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/src/$(DEPDIR)/test_unsigned_short_timsort_r-test-unsigned_short_timsort_r.Po
 	-rm -f timsort/DATS/$(DEPDIR)/array-timsort_dats.Plo
 	-rm -f timsort/DATS/$(DEPDIR)/bptr_dats.Plo
+	-rm -f timsort/DATS/$(DEPDIR)/list-timsort_dats.Plo
 	-rm -f timsort/DATS/COMMON/$(DEPDIR)/timsort-common_dats.Plo
 	-rm -f timsort/SATS/$(DEPDIR)/array-timsort_sats.Plo
 	-rm -f timsort/SATS/$(DEPDIR)/bptr_sats.Plo
+	-rm -f timsort/SATS/$(DEPDIR)/list-timsort_sats.Plo
 	-rm -f timsort/SATS/COMMON/$(DEPDIR)/timsort-common_sats.Plo
 	-rm -f GNUmakefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
