@@ -451,6 +451,22 @@ tests_test_timsort_to_array_big_records_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_timsort_to_array_big_records_LDADD =
 tests_test_timsort_to_array_big_records_LDADD += libats2-timsort-c.la
 
+TESTS += tests/test-list_vt_insertion_sort
+EXTRA_PROGRAMS += tests/test-list_vt_insertion_sort
+CLEANFILES += tests/test-list_vt_insertion_sort
+CLEANFILES += tests/test-list_vt_insertion_sort_tests.c
+EXTRA_DIST += tests/test-list_vt_insertion_sort.dats
+tests_test_list_vt_insertion_sort_SOURCES =
+tests_test_list_vt_insertion_sort_SOURCES += tests/test-list_vt_insertion_sort_tests.c
+tests_test_list_vt_insertion_sort_DEPENDENCIES =
+tests_test_list_vt_insertion_sort_DEPENDENCIES += tests/test-list_vt_insertion_sort.dats
+tests_test_list_vt_insertion_sort_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_list_vt_insertion_sort_CPPFLAGS =
+tests_test_list_vt_insertion_sort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_list_vt_insertion_sort_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_list_vt_insertion_sort_LDADD =
+tests/test-list_vt_insertion_sort_tests.c: tests/test-list_vt_insertion_sort.dats
+
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
 

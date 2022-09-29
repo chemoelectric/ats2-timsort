@@ -61,43 +61,42 @@ list_vt_insertion_sort :
   {n : int}
   list_vt (a, n) -< !wrt > list_vt (a, n)
 
-(*------------------------------------------------------------------*)
-
 extern fn {a : vt@ype}
-list_vt_insertion_sort_reverse :
-  {n : int}
-  list_vt (a, n) -< !wrt > list_vt (a, n)
+list_vt_insertion_sort$lt :
+  (&a, &a) -<> bool
 
 implement {a}
-list_vt_insertion_sort_reverse {n} lst =
+list_vt_insertion_sort {n} lst =
   let
     fun
-    insert_reverse
-              {m       : nat}
-              {p_xnode : addr}
-              {p_x     : addr}
-              {p_xs    : addr}
-              .<m>.
-              (pf_x  : a @ p_x,
-               pf_xs : list_vt (a, 0)? @ p_xs |
-               dst   : &list_vt (a, m) >> list_vt (a, m + 1),
-               (* list_vt_cons_unfold is a viewtype created by the
-                  unfolding of a list_vt_cons (our :: operator). *)
-               xnode : list_vt_cons_unfold (p_xnode, p_x, p_xs),
-               p_x   : ptr p_x,
-               p_xs  : ptr p_xs)
+    insert {m       : nat}
+           {p_xnode : addr}
+           {p_x     : addr}
+           {p_xs    : addr}
+           .<m>.
+           (pf_x  : a @ p_x,
+            pf_xs : list_vt (a, 0)? @ p_xs |
+            dst   : &list_vt (a, m) >> list_vt (a, m + 1),
+            (* list_vt_cons_unfold is a viewtype created by the
+               unfolding of a list_vt_cons (our :: operator). *)
+            xnode : list_vt_cons_unfold (p_xnode, p_x, p_xs),
+            p_x   : ptr p_x,
+            p_xs  : ptr p_xs)
         :<!wrt> void =
-      (* dst is some tail of the current (reverse-order) destination
-         list.  xnode is a viewtype for the current node in the source
-         list.
-         p_x points to the node's CAR.
-         p_xs points to the node's CDR. *)
+
+      (*
+        dst is some tail of the current destination list; xnode is a
+        viewtype for the current node in the source list.
+
+        p_x points to the node's CAR.
+
+        p_xs points to the node's CDR.
+      *)
       case+ dst of
       | @ (y :: ys) =>
-        if list_vt_timsort$lt<a> (!p_x, y) then
+        if ~list_vt_insertion_sort$lt<a> (!p_x, y) then
           let                 (* Move to the next destination node. *)
-            val () = insert_reverse (pf_x, pf_xs |
-                                     ys, xnode, p_x, p_xs)
+            val () = insert (pf_x, pf_xs | ys, xnode, p_x, p_xs)
             prval () = fold@ dst
           in
           end
@@ -117,7 +116,7 @@ list_vt_insertion_sort_reverse {n} lst =
         in
         end
 
-    fun                         (* Create a list sorted in reverse. *)
+    fun                         (* Create a sorted list. *)
     loop {i : nat | i <= n}
          .<n - i>.
          (dst : &list_vt (a, i) >> list_vt (a, n),
@@ -128,8 +127,7 @@ list_vt_insertion_sort_reverse {n} lst =
         let
           val tail = xs
         in
-          insert_reverse (view@ x, view@ xs |
-                          dst, src, addr@ x, addr@ xs);
+          insert (view@ x, view@ xs | dst, src, addr@ x, addr@ xs);
           loop (dst, tail)
         end
       | ~ NIL => ()             (* We are done. *)

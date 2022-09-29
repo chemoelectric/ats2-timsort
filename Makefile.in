@@ -184,6 +184,7 @@ EXTRA_PROGRAMS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-timsort_to_array$(EXEEXT) \
 	tests/test-timsort_r_to_array$(EXEEXT) \
 	tests/test-timsort_to_array-big-records$(EXEEXT) \
+	tests/test-list_vt_insertion_sort$(EXEEXT) \
 	list-ats-dependencies$(EXEEXT)
 TESTS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-pointer_timsort_r$(EXEEXT) \
@@ -253,7 +254,8 @@ TESTS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-timsort_r_to_pointers$(EXEEXT) \
 	tests/test-timsort_to_array$(EXEEXT) \
 	tests/test-timsort_r_to_array$(EXEEXT) \
-	tests/test-timsort_to_array-big-records$(EXEEXT)
+	tests/test-timsort_to_array-big-records$(EXEEXT) \
+	tests/test-list_vt_insertion_sort$(EXEEXT)
 @HAVE_INT128_T_TRUE@am__append_1 = int128_t_timsort.dats \
 @HAVE_INT128_T_TRUE@	int128_t_timsort_r.dats \
 @HAVE_INT128_T_TRUE@	tests/src/test-int128_t_timsort.c \
@@ -872,6 +874,9 @@ nodist_tests_test_intptr_t_timsort_r_OBJECTS = tests/src/test_intptr_t_timsort_r
 tests_test_intptr_t_timsort_r_OBJECTS =  \
 	$(am_tests_test_intptr_t_timsort_r_OBJECTS) \
 	$(nodist_tests_test_intptr_t_timsort_r_OBJECTS)
+am_tests_test_list_vt_insertion_sort_OBJECTS = tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.$(OBJEXT)
+tests_test_list_vt_insertion_sort_OBJECTS =  \
+	$(am_tests_test_list_vt_insertion_sort_OBJECTS)
 am_tests_test_long_double_timsort_OBJECTS =
 nodist_tests_test_long_double_timsort_OBJECTS = tests/src/test_long_double_timsort-test-long_double_timsort.$(OBJEXT)
 tests_test_long_double_timsort_OBJECTS =  \
@@ -1215,6 +1220,7 @@ am__depfiles_remade = ./$(DEPDIR)/decimal128_timsort_dats.Plo \
 	tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po \
 	tests/$(DEPDIR)/test_clz-test-clz_tests.Po \
 	tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po \
+	tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Po \
 	tests/$(DEPDIR)/test_merges-test-merges_tests.Po \
 	tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po \
 	tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po \
@@ -1417,6 +1423,7 @@ SOURCES = $(dist_libats2_timsort_c_la_SOURCES) \
 	$(nodist_tests_test_intptr_t_timsort_SOURCES) \
 	$(tests_test_intptr_t_timsort_r_SOURCES) \
 	$(nodist_tests_test_intptr_t_timsort_r_SOURCES) \
+	$(tests_test_list_vt_insertion_sort_SOURCES) \
 	$(tests_test_long_double_timsort_SOURCES) \
 	$(nodist_tests_test_long_double_timsort_SOURCES) \
 	$(tests_test_long_double_timsort_r_SOURCES) \
@@ -1546,6 +1553,7 @@ DIST_SOURCES = $(dist_libats2_timsort_c_la_SOURCES) \
 	$(tests_test_intmax_t_timsort_r_SOURCES) \
 	$(tests_test_intptr_t_timsort_SOURCES) \
 	$(tests_test_intptr_t_timsort_r_SOURCES) \
+	$(tests_test_list_vt_insertion_sort_SOURCES) \
 	$(tests_test_long_double_timsort_SOURCES) \
 	$(tests_test_long_double_timsort_r_SOURCES) \
 	$(tests_test_long_long_timsort_SOURCES) \
@@ -2008,6 +2016,7 @@ EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
 	tests/test-galloping.dats tests/test-merges.dats \
 	tests/test-array_timsort.dats \
 	tests/test-timing-array_timsort.dats \
+	tests/test-list_vt_insertion_sort.dats \
 	list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
 CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
@@ -2165,8 +2174,10 @@ CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
 	tests/test-timsort_to_pointers \
 	tests/test-timsort_r_to_pointers tests/test-timsort_to_array \
 	tests/test-timsort_r_to_array \
-	tests/test-timsort_to_array-big-records list-ats-dependencies \
-	list-ats-dependencies_depsprog.c
+	tests/test-timsort_to_array-big-records \
+	tests/test-list_vt_insertion_sort \
+	tests/test-list_vt_insertion_sort_tests.c \
+	list-ats-dependencies list-ats-dependencies_depsprog.c
 DISTCLEANFILES = Makefile GNUmakefile
 BUILT_SOURCES = pointer_timsort.dats pointer_timsort_r.dats \
 	tests/src/test-pointer_timsort.c \
@@ -3011,6 +3022,14 @@ tests_test_timsort_to_array_big_records_DEPENDENCIES =  \
 tests_test_timsort_to_array_big_records_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DATS_MEMALLOC_LIBC
 tests_test_timsort_to_array_big_records_LDADD = libats2-timsort-c.la
+tests_test_list_vt_insertion_sort_SOURCES =  \
+	tests/test-list_vt_insertion_sort_tests.c
+tests_test_list_vt_insertion_sort_DEPENDENCIES =  \
+	tests/test-list_vt_insertion_sort.dats \
+	timsort/CATS/timsort.cats
+tests_test_list_vt_insertion_sort_CPPFLAGS = $(AM_CPPFLAGS) \
+	-DATS_MEMALLOC_LIBC
+tests_test_list_vt_insertion_sort_LDADD = 
 nodist_list_ats_dependencies_SOURCES =  \
 	list-ats-dependencies_depsprog.c
 list_ats_dependencies_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
@@ -3460,6 +3479,12 @@ tests/src/test_intptr_t_timsort_r-test-intptr_t_timsort_r.$(OBJEXT):  \
 tests/test-intptr_t_timsort_r$(EXEEXT): $(tests_test_intptr_t_timsort_r_OBJECTS) $(tests_test_intptr_t_timsort_r_DEPENDENCIES) $(EXTRA_tests_test_intptr_t_timsort_r_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test-intptr_t_timsort_r$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_intptr_t_timsort_r_OBJECTS) $(tests_test_intptr_t_timsort_r_LDADD) $(LIBS)
+tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.$(OBJEXT):  \
+	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test-list_vt_insertion_sort$(EXEEXT): $(tests_test_list_vt_insertion_sort_OBJECTS) $(tests_test_list_vt_insertion_sort_DEPENDENCIES) $(EXTRA_tests_test_list_vt_insertion_sort_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test-list_vt_insertion_sort$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_list_vt_insertion_sort_OBJECTS) $(tests_test_list_vt_insertion_sort_LDADD) $(LIBS)
 tests/src/test_long_double_timsort-test-long_double_timsort.$(OBJEXT):  \
 	tests/src/$(am__dirstamp) tests/src/$(DEPDIR)/$(am__dirstamp)
 
@@ -3880,6 +3905,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_clz-test-clz_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_merges-test-merges_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po@am__quote@ # am--include-marker
@@ -4599,6 +4625,20 @@ tests/src/test_intptr_t_timsort_r-test-intptr_t_timsort_r.obj: tests/src/test-in
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/src/test-intptr_t_timsort_r.c' object='tests/src/test_intptr_t_timsort_r-test-intptr_t_timsort_r.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_intptr_t_timsort_r_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/src/test_intptr_t_timsort_r-test-intptr_t_timsort_r.obj `if test -f 'tests/src/test-intptr_t_timsort_r.c'; then $(CYGPATH_W) 'tests/src/test-intptr_t_timsort_r.c'; else $(CYGPATH_W) '$(srcdir)/tests/src/test-intptr_t_timsort_r.c'; fi`
+
+tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.o: tests/test-list_vt_insertion_sort_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_list_vt_insertion_sort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.o -MD -MP -MF tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Tpo -c -o tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.o `test -f 'tests/test-list_vt_insertion_sort_tests.c' || echo '$(srcdir)/'`tests/test-list_vt_insertion_sort_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Tpo tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-list_vt_insertion_sort_tests.c' object='tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_list_vt_insertion_sort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.o `test -f 'tests/test-list_vt_insertion_sort_tests.c' || echo '$(srcdir)/'`tests/test-list_vt_insertion_sort_tests.c
+
+tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.obj: tests/test-list_vt_insertion_sort_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_list_vt_insertion_sort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.obj -MD -MP -MF tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Tpo -c -o tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.obj `if test -f 'tests/test-list_vt_insertion_sort_tests.c'; then $(CYGPATH_W) 'tests/test-list_vt_insertion_sort_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-list_vt_insertion_sort_tests.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Tpo tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-list_vt_insertion_sort_tests.c' object='tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_list_vt_insertion_sort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.obj `if test -f 'tests/test-list_vt_insertion_sort_tests.c'; then $(CYGPATH_W) 'tests/test-list_vt_insertion_sort_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-list_vt_insertion_sort_tests.c'; fi`
 
 tests/src/test_long_double_timsort-test-long_double_timsort.o: tests/src/test-long_double_timsort.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_long_double_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/src/test_long_double_timsort-test-long_double_timsort.o -MD -MP -MF tests/src/$(DEPDIR)/test_long_double_timsort-test-long_double_timsort.Tpo -c -o tests/src/test_long_double_timsort-test-long_double_timsort.o `test -f 'tests/src/test-long_double_timsort.c' || echo '$(srcdir)/'`tests/src/test-long_double_timsort.c
@@ -6283,6 +6323,13 @@ tests/test-timsort_to_array-big-records.log: tests/test-timsort_to_array-big-rec
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+tests/test-list_vt_insertion_sort.log: tests/test-list_vt_insertion_sort$(EXEEXT)
+	@p='tests/test-list_vt_insertion_sort$(EXEEXT)'; \
+	b='tests/test-list_vt_insertion_sort'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -6626,6 +6673,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_clz-test-clz_tests.Po
 	-rm -f tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
+	-rm -f tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_merges-test-merges_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
@@ -6860,6 +6908,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_array_timsort-test-array_timsort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_clz-test-clz_tests.Po
 	-rm -f tests/$(DEPDIR)/test_galloping-test-galloping_tests.Po
+	-rm -f tests/$(DEPDIR)/test_list_vt_insertion_sort-test-list_vt_insertion_sort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_merges-test-merges_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
@@ -7647,6 +7696,7 @@ tests/test-galloping_tests.c: tests/test-galloping.dats
 tests/test-merges_tests.c: tests/test-merges.dats
 tests/test-array_timsort_tests.c: tests/test-array_timsort.dats
 tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
+tests/test-list_vt_insertion_sort_tests.c: tests/test-list_vt_insertion_sort.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
