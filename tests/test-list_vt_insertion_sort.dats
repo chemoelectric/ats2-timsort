@@ -60,10 +60,19 @@ display {n   : int}
   end
 
 fn
-test_list {n   : int}
-          (lst : list (entry_t, n))
+test_list {m, n      : int}
+          (lst       : list (entry_t, m),
+           presorted : list (entry_t, n))
     : void =
   let
+    macdef cpy = list_copy<entry_t>
+    macdef check (expected, gotten) =
+      begin
+        display ,(expected);
+        display ,(gotten);
+        assertloc (,(gotten) = ,(expected))
+      end
+
     implement
     list_vt_mergesort$cmp<entry_t> (x, y) =
       if (x.0) < (y.0) then
@@ -77,21 +86,42 @@ test_list {n   : int}
     list_vt_insertion_sort$lt<entry_t> (x, y) =
       (x.0) < (y.0)
 
-    macdef cpy = list_copy<entry_t>
-    val expected = list_vt2t (list_vt_mergesort<entry_t> (cpy lst))
-    val gotten = list_vt2t (list_vt_insertion_sort<entry_t> (cpy lst))
+    val expected =
+      list_vt2t (list_vt_mergesort<entry_t> (cpy (presorted + lst)))
   in
-    display expected;
-    display gotten;
-    assertloc (gotten = expected)
+    case+ presorted of
+    | NIL =>
+      let
+        val gotten =
+          list_vt2t (list_vt_insertion_sort<entry_t> (cpy lst))
+      in
+        check (expected, gotten)
+      end
+    | _ :: _ =>
+      let
+        val gotten =
+          list_vt2t
+            (list_vt_insertion_sort<entry_t> (cpy lst, cpy presorted))
+      in
+        check (expected, gotten)
+      end
   end
 
 fn
 test_list_reverse_order
-          {n   : int}
-          (lst : list (entry_t, n))
+          {m, n      : int}
+          (lst       : list (entry_t, m),
+           presorted : list (entry_t, n))
     : void =
   let
+    macdef cpy = list_copy<entry_t>
+    macdef check (expected, gotten) =
+      begin
+        display ,(expected);
+        display ,(gotten);
+        assertloc (,(gotten) = ,(expected))
+      end
+
     implement
     list_vt_mergesort$cmp<entry_t> (x, y) =
       if (x.0) < (y.0) then
@@ -106,14 +136,31 @@ test_list_reverse_order
       (* Use >= instead of >, to reverse the ‘order of stability’. *)
       (x.0) >= (y.0)
 
-    macdef cpy = list_copy<entry_t>
+    val presorted_reversed = list_vt2t (reverse presorted)
     val expected =
-      list_vt2t (reverse (list_vt_mergesort<entry_t> (cpy lst)))
+      list_vt2t
+        (reverse
+          (list_vt_mergesort<entry_t>
+            (cpy (presorted_reversed + lst))))
+
     val gotten = list_vt2t (list_vt_insertion_sort<entry_t> (cpy lst))
   in
-    display expected;
-    display gotten;
-    assertloc (gotten = expected)
+    case+ presorted of
+    | NIL =>
+      let
+        val gotten =
+          list_vt2t (list_vt_insertion_sort<entry_t> (cpy lst))
+      in
+        check (expected, gotten)
+      end
+    | _ :: _ =>
+      let
+        val gotten =
+          list_vt2t
+            (list_vt_insertion_sort<entry_t> (cpy lst, cpy presorted))
+      in
+        check (expected, gotten)
+      end
   end
 
 implement
@@ -122,10 +169,22 @@ main () =
     test_list
       ($list{entry_t} ((1, 2), (3, 4), (3, 5),
                        (1, 3), (2, 30), (2, 31),
-                       (1, 7), (3, 7), (2, 50)));
+                       (1, 7), (3, 7), (2, 50)),
+       NIL);
     test_list_reverse_order
       ($list{entry_t} ((1, 2), (3, 4), (3, 5),
                        (1, 3), (2, 30), (2, 31),
-                       (1, 7), (3, 7), (2, 50)));
+                       (1, 7), (3, 7), (2, 50)),
+       NIL);
+    test_list
+      ($list{entry_t} ((1, 2), (3, 4), (3, 5),
+                       (1, 3), (2, 30), (2, 31),
+                       (1, 7), (3, 7), (2, 50)),
+       $list{entry_t} ((2, 5), (3, 6), (3, 8)));
+    test_list_reverse_order
+      ($list{entry_t} ((1, 2), (3, 4), (3, 5),
+                       (1, 3), (2, 30), (2, 31),
+                       (1, 7), (3, 7), (2, 50)),
+       $list{entry_t} ((3, 8), (3, 6), (2, 5)));
     0
   end
