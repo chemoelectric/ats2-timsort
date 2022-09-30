@@ -57,26 +57,43 @@ list_vt_timsort$cmp (x, y) =
 (*------------------------------------------------------------------*)
 
 extern fn {a : vt@ype}
-list_vt_insertion_sort :
+list_vt_insertion_sort_with_some_of_it_presorted :
+  {m, n : int}
+  (list_vt (a, m),
+   list_vt (a, n)) -< !wrt >
+    list_vt (a, m + n)
+
+extern fn {a : vt@ype}
+list_vt_insertion_sort_without_any_of_it_presorted :
   {n : int}
-  list_vt (a, n) -< !wrt > list_vt (a, n)
+  list_vt (a, n) -< !wrt >
+    list_vt (a, n)
 
 extern fn {a : vt@ype}
 list_vt_insertion_sort$lt :
   (&a, &a) -<> bool
 
+overload list_vt_insertion_sort with
+  list_vt_insertion_sort_with_some_of_it_presorted
+overload list_vt_insertion_sort with
+  list_vt_insertion_sort_without_any_of_it_presorted
+
 implement {a}
-list_vt_insertion_sort {n} lst =
+list_vt_insertion_sort_with_some_of_it_presorted
+                    {m, n} (lst, presorted) =
   let
+    prval () = lemma_list_vt_param lst
+    prval () = lemma_list_vt_param presorted
+
     fun
-    insert {m       : nat}
+    insert {u       : nat}
            {p_xnode : addr}
            {p_x     : addr}
            {p_xs    : addr}
-           .<m>.
+           .<u>.
            (pf_x  : a @ p_x,
             pf_xs : list_vt (a, 0)? @ p_xs |
-            dst   : &list_vt (a, m) >> list_vt (a, m + 1),
+            dst   : &list_vt (a, u) >> list_vt (a, u + 1),
             (* list_vt_cons_unfold is a viewtype created by the
                unfolding of a list_vt_cons (our :: operator). *)
             xnode : list_vt_cons_unfold (p_xnode, p_x, p_xs),
@@ -117,10 +134,10 @@ list_vt_insertion_sort {n} lst =
         end
 
     fun                         (* Create a sorted list. *)
-    loop {i : nat | i <= n}
-         .<n - i>.
-         (dst : &list_vt (a, i) >> list_vt (a, n),
-          src : list_vt (a, n - i))
+    loop {u : int | n <= u; u <= n + m}
+         .<n + m - u>.
+         (dst : &list_vt (a, u) >> list_vt (a, n + m),
+          src : list_vt (a, n + m - u))
         :<!wrt> void =
       case+ src of
       | @ (x :: xs) =>
@@ -132,12 +149,14 @@ list_vt_insertion_sort {n} lst =
         end
       | ~ NIL => ()             (* We are done. *)
 
-    prval () = lemma_list_vt_param lst
-
-    var dst : List_vt a = NIL
+    var dst : [u : int | n <= u] list_vt (a, u) = presorted
   in
     loop (dst, lst);
     dst
   end
+
+implement {a}
+list_vt_insertion_sort_without_any_of_it_presorted lst =
+  list_vt_insertion_sort_with_some_of_it_presorted<a> (lst, NIL)
 
 (*------------------------------------------------------------------*)
