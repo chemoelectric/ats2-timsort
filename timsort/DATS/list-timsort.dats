@@ -160,3 +160,62 @@ list_vt_insertion_sort_without_any_of_it_presorted lst =
   list_vt_insertion_sort_with_some_of_it_presorted<a> (lst, NIL)
 
 (*------------------------------------------------------------------*)
+
+extern fn {a : vt@ype}
+split_after_increasing_run :
+  {n : int | 2 <= n}
+  list_vt (a, n) -< !wrt >
+    [m : int | 2 <= m; m <= n]
+    @(list_vt (a, m),
+      list_vt (a, n - m))
+
+implement {a}
+split_after_increasing_run {n} lst =
+  let
+    fun
+    loop {u : nat | u + 2 <= n}
+         .<u>.
+         (lst1a : &list_vt (a, u) >> list_vt (a, v),
+          lst2  : &(List_vt a)? >> list_vt (a, u - v),
+          prev  : &a)
+        :<!wrt> #[v : nat | v <= u]
+                void =
+      case+ lst1a of
+      | NIL => lst2 := NIL
+      | @ (next :: rest) =>
+        let
+          val done = list_vt_timsort$lt<a> (next, prev)
+        in
+          if done then
+            let
+              prval () = fold@ lst1a
+            in
+              lst2 := lst1a;
+              lst1a := NIL
+            end
+          else
+            let
+              val () = loop (rest, lst2, next)
+              prval () = fold@ lst1a
+            in
+            end
+        end
+
+    var lst1 = lst
+    var lst2 : List_vt a?
+
+    (* It is assumed that the second list element is not less than the
+       first. (We do not prove the result is monotonically
+       non-descending, anyway, so I will not bother to prove or assert
+       this precondition. We will unit-test the routine.) *)
+
+    val+ @ (_first :: rest1) = lst1
+    val+ @ (second :: rest2) = rest1
+    val () = loop (rest2, lst2, second)
+    prval () = fold@ rest1
+    prval () = fold@ lst1
+  in
+    @(lst1, lst2)
+  end
+
+(*------------------------------------------------------------------*)
