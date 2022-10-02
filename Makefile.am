@@ -483,6 +483,22 @@ tests_test_splits_after_run_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_splits_after_run_LDADD =
 tests/test-splits-after-run_tests.c: tests/test-splits-after-run.dats
 
+TESTS += tests/test-provide_a_nondecreasing_run
+EXTRA_PROGRAMS += tests/test-provide_a_nondecreasing_run
+CLEANFILES += tests/test-provide_a_nondecreasing_run
+CLEANFILES += tests/test-provide_a_nondecreasing_run_tests.c
+EXTRA_DIST += tests/test-provide_a_nondecreasing_run.dats
+tests_test_provide_a_nondecreasing_run_SOURCES =
+tests_test_provide_a_nondecreasing_run_SOURCES += tests/test-provide_a_nondecreasing_run_tests.c
+tests_test_provide_a_nondecreasing_run_DEPENDENCIES =
+tests_test_provide_a_nondecreasing_run_DEPENDENCIES += tests/test-provide_a_nondecreasing_run.dats
+tests_test_provide_a_nondecreasing_run_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_provide_a_nondecreasing_run_CPPFLAGS =
+tests_test_provide_a_nondecreasing_run_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_provide_a_nondecreasing_run_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_provide_a_nondecreasing_run_LDADD =
+tests/test-provide_a_nondecreasing_run_tests.c: tests/test-provide_a_nondecreasing_run.dats
+
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
 

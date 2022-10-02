@@ -16,7 +16,7 @@
   <https://www.gnu.org/licenses/>.
 *)
 
-(* Unit testing of the list insertion sort. *)
+(* Unit testing. *)
 
 #include "share/atspre_staload.hats"
 staload UN = "prelude/SATS/unsafe.sats"
