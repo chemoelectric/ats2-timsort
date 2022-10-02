@@ -360,7 +360,7 @@ provide_a_nondecreasing_run {n} {minrun} (lst, minrun) =
 
             val i = minrun - m
             val @(lst1a, lst2, j) = list_vt_split_at_most<a> (lst2, i)
-            val lst1 = list_vt_insertion_sort<a> (lst1, lst1a)
+            val lst1 = list_vt_insertion_sort<a> (lst1a, lst1)
           in
             @(lst1, lst2, m + j)
           end
@@ -370,18 +370,21 @@ provide_a_nondecreasing_run {n} {minrun} (lst, minrun) =
         val @(lst1, lst2, m) = split_after_decreasing_run<a> lst
       in
         if (minrun <= m) + (iseqz<a> lst2) then
-          @(reverse<a> lst1, lst2, m)
+          @(reverse<a> lst1, lst2, m) (* Reverse the run. *)
         else
           let
+            (* The following implementation of
+               list_vt_insertion_sort$lt will give us a nonincreasing
+               run with the orders of ‘equal’ entries reversed. *)
             implement
             list_vt_insertion_sort$lt<a> (x, y) =
               ~list_vt_timsort$lt<a> (x, y)
 
             val i = minrun - m
             val @(lst1a, lst2, j) = list_vt_split_at_most<a> (lst2, i)
-            val lst1 = list_vt_insertion_sort<a> (lst1, lst1a)
+            val lst1 = list_vt_insertion_sort<a> (lst1a, lst1)
           in
-            @(reverse<a> lst1, lst2, m + j)
+            @(reverse<a> lst1, lst2, m + j) (* Reverse the run. *)
           end
       end
   end
