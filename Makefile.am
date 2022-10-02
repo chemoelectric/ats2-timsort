@@ -467,6 +467,22 @@ tests_test_list_vt_insertion_sort_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_list_vt_insertion_sort_LDADD =
 tests/test-list_vt_insertion_sort_tests.c: tests/test-list_vt_insertion_sort.dats
 
+TESTS += tests/test-splits-after-run
+EXTRA_PROGRAMS += tests/test-splits-after-run
+CLEANFILES += tests/test-splits-after-run
+CLEANFILES += tests/test-splits-after-run_tests.c
+EXTRA_DIST += tests/test-splits-after-run.dats
+tests_test_splits_after_run_SOURCES =
+tests_test_splits_after_run_SOURCES += tests/test-splits-after-run_tests.c
+tests_test_splits_after_run_DEPENDENCIES =
+tests_test_splits_after_run_DEPENDENCIES += tests/test-splits-after-run.dats
+tests_test_splits_after_run_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_splits_after_run_CPPFLAGS =
+tests_test_splits_after_run_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_splits_after_run_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_splits_after_run_LDADD =
+tests/test-splits-after-run_tests.c: tests/test-splits-after-run.dats
+
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
 

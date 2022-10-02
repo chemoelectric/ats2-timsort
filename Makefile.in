@@ -185,6 +185,7 @@ EXTRA_PROGRAMS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-timsort_r_to_array$(EXEEXT) \
 	tests/test-timsort_to_array-big-records$(EXEEXT) \
 	tests/test-list_vt_insertion_sort$(EXEEXT) \
+	tests/test-splits-after-run$(EXEEXT) \
 	list-ats-dependencies$(EXEEXT)
 TESTS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-pointer_timsort_r$(EXEEXT) \
@@ -255,7 +256,8 @@ TESTS = tests/test-pointer_timsort$(EXEEXT) \
 	tests/test-timsort_to_array$(EXEEXT) \
 	tests/test-timsort_r_to_array$(EXEEXT) \
 	tests/test-timsort_to_array-big-records$(EXEEXT) \
-	tests/test-list_vt_insertion_sort$(EXEEXT)
+	tests/test-list_vt_insertion_sort$(EXEEXT) \
+	tests/test-splits-after-run$(EXEEXT)
 @HAVE_INT128_T_TRUE@am__append_1 = int128_t_timsort.dats \
 @HAVE_INT128_T_TRUE@	int128_t_timsort_r.dats \
 @HAVE_INT128_T_TRUE@	tests/src/test-int128_t_timsort.c \
@@ -962,6 +964,9 @@ nodist_tests_test_size_t_timsort_r_OBJECTS = tests/src/test_size_t_timsort_r-tes
 tests_test_size_t_timsort_r_OBJECTS =  \
 	$(am_tests_test_size_t_timsort_r_OBJECTS) \
 	$(nodist_tests_test_size_t_timsort_r_OBJECTS)
+am_tests_test_splits_after_run_OBJECTS = tests/test_splits_after_run-test-splits-after-run_tests.$(OBJEXT)
+tests_test_splits_after_run_OBJECTS =  \
+	$(am_tests_test_splits_after_run_OBJECTS)
 am_tests_test_ssize_t_timsort_OBJECTS =
 nodist_tests_test_ssize_t_timsort_OBJECTS =  \
 	tests/src/test_ssize_t_timsort-test-ssize_t_timsort.$(OBJEXT)
@@ -1224,6 +1229,7 @@ am__depfiles_remade = ./$(DEPDIR)/decimal128_timsort_dats.Plo \
 	tests/$(DEPDIR)/test_merges-test-merges_tests.Po \
 	tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po \
 	tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po \
+	tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Po \
 	tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po \
 	tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po \
 	tests/$(DEPDIR)/test_timsort_r_to_pointers-test-timsort_r_to_pointers.Po \
@@ -1454,6 +1460,7 @@ SOURCES = $(dist_libats2_timsort_c_la_SOURCES) \
 	$(nodist_tests_test_size_t_timsort_SOURCES) \
 	$(tests_test_size_t_timsort_r_SOURCES) \
 	$(nodist_tests_test_size_t_timsort_r_SOURCES) \
+	$(tests_test_splits_after_run_SOURCES) \
 	$(tests_test_ssize_t_timsort_SOURCES) \
 	$(nodist_tests_test_ssize_t_timsort_SOURCES) \
 	$(tests_test_ssize_t_timsort_r_SOURCES) \
@@ -1570,6 +1577,7 @@ DIST_SOURCES = $(dist_libats2_timsort_c_la_SOURCES) \
 	$(tests_test_signed_char_timsort_r_SOURCES) \
 	$(tests_test_size_t_timsort_SOURCES) \
 	$(tests_test_size_t_timsort_r_SOURCES) \
+	$(tests_test_splits_after_run_SOURCES) \
 	$(tests_test_ssize_t_timsort_SOURCES) \
 	$(tests_test_ssize_t_timsort_r_SOURCES) \
 	$(tests_test_timing_array_timsort_SOURCES) \
@@ -2017,7 +2025,7 @@ EXTRA_DIST = $(srcdir)/silent-rules.mk COPYING INSTALL README AUTHORS \
 	tests/test-array_timsort.dats \
 	tests/test-timing-array_timsort.dats \
 	tests/test-list_vt_insertion_sort.dats \
-	list-ats-dependencies.dats
+	tests/test-splits-after-run.dats list-ats-dependencies.dats
 MOSTLYCLEANFILES = 
 CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
 	$(ARRAY_TIMSORT_DATS_C) $(LIST_TIMSORT_SATS_C) \
@@ -2177,7 +2185,9 @@ CLEANFILES = $(BPTR_SATS_C) $(BPTR_DATS_C) $(ARRAY_TIMSORT_SATS_C) \
 	tests/test-timsort_to_array-big-records \
 	tests/test-list_vt_insertion_sort \
 	tests/test-list_vt_insertion_sort_tests.c \
-	list-ats-dependencies list-ats-dependencies_depsprog.c
+	tests/test-splits-after-run \
+	tests/test-splits-after-run_tests.c list-ats-dependencies \
+	list-ats-dependencies_depsprog.c
 DISTCLEANFILES = Makefile GNUmakefile
 BUILT_SOURCES = pointer_timsort.dats pointer_timsort_r.dats \
 	tests/src/test-pointer_timsort.c \
@@ -3030,6 +3040,13 @@ tests_test_list_vt_insertion_sort_DEPENDENCIES =  \
 tests_test_list_vt_insertion_sort_CPPFLAGS = $(AM_CPPFLAGS) \
 	-DATS_MEMALLOC_LIBC
 tests_test_list_vt_insertion_sort_LDADD = 
+tests_test_splits_after_run_SOURCES =  \
+	tests/test-splits-after-run_tests.c
+tests_test_splits_after_run_DEPENDENCIES =  \
+	tests/test-splits-after-run.dats timsort/CATS/timsort.cats
+tests_test_splits_after_run_CPPFLAGS = $(AM_CPPFLAGS) \
+	-DATS_MEMALLOC_LIBC
+tests_test_splits_after_run_LDADD = 
 nodist_list_ats_dependencies_SOURCES =  \
 	list-ats-dependencies_depsprog.c
 list_ats_dependencies_CPPFLAGS = $(AM_CPPFLAGS) -DATS_MEMALLOC_LIBC
@@ -3587,6 +3604,12 @@ tests/src/test_size_t_timsort_r-test-size_t_timsort_r.$(OBJEXT):  \
 tests/test-size_t_timsort_r$(EXEEXT): $(tests_test_size_t_timsort_r_OBJECTS) $(tests_test_size_t_timsort_r_DEPENDENCIES) $(EXTRA_tests_test_size_t_timsort_r_DEPENDENCIES) tests/$(am__dirstamp)
 	@rm -f tests/test-size_t_timsort_r$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(tests_test_size_t_timsort_r_OBJECTS) $(tests_test_size_t_timsort_r_LDADD) $(LIBS)
+tests/test_splits_after_run-test-splits-after-run_tests.$(OBJEXT):  \
+	tests/$(am__dirstamp) tests/$(DEPDIR)/$(am__dirstamp)
+
+tests/test-splits-after-run$(EXEEXT): $(tests_test_splits_after_run_OBJECTS) $(tests_test_splits_after_run_DEPENDENCIES) $(EXTRA_tests_test_splits_after_run_DEPENDENCIES) tests/$(am__dirstamp)
+	@rm -f tests/test-splits-after-run$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(tests_test_splits_after_run_OBJECTS) $(tests_test_splits_after_run_LDADD) $(LIBS)
 tests/src/test_ssize_t_timsort-test-ssize_t_timsort.$(OBJEXT):  \
 	tests/src/$(am__dirstamp) tests/src/$(DEPDIR)/$(am__dirstamp)
 
@@ -3909,6 +3932,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_merges-test-merges_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tests/$(DEPDIR)/test_timsort_r_to_pointers-test-timsort_r_to_pointers.Po@am__quote@ # am--include-marker
@@ -4877,6 +4901,20 @@ tests/src/test_size_t_timsort_r-test-size_t_timsort_r.obj: tests/src/test-size_t
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/src/test-size_t_timsort_r.c' object='tests/src/test_size_t_timsort_r-test-size_t_timsort_r.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_size_t_timsort_r_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/src/test_size_t_timsort_r-test-size_t_timsort_r.obj `if test -f 'tests/src/test-size_t_timsort_r.c'; then $(CYGPATH_W) 'tests/src/test-size_t_timsort_r.c'; else $(CYGPATH_W) '$(srcdir)/tests/src/test-size_t_timsort_r.c'; fi`
+
+tests/test_splits_after_run-test-splits-after-run_tests.o: tests/test-splits-after-run_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_splits_after_run_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_splits_after_run-test-splits-after-run_tests.o -MD -MP -MF tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Tpo -c -o tests/test_splits_after_run-test-splits-after-run_tests.o `test -f 'tests/test-splits-after-run_tests.c' || echo '$(srcdir)/'`tests/test-splits-after-run_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Tpo tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-splits-after-run_tests.c' object='tests/test_splits_after_run-test-splits-after-run_tests.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_splits_after_run_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_splits_after_run-test-splits-after-run_tests.o `test -f 'tests/test-splits-after-run_tests.c' || echo '$(srcdir)/'`tests/test-splits-after-run_tests.c
+
+tests/test_splits_after_run-test-splits-after-run_tests.obj: tests/test-splits-after-run_tests.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_splits_after_run_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/test_splits_after_run-test-splits-after-run_tests.obj -MD -MP -MF tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Tpo -c -o tests/test_splits_after_run-test-splits-after-run_tests.obj `if test -f 'tests/test-splits-after-run_tests.c'; then $(CYGPATH_W) 'tests/test-splits-after-run_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-splits-after-run_tests.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Tpo tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='tests/test-splits-after-run_tests.c' object='tests/test_splits_after_run-test-splits-after-run_tests.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_splits_after_run_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tests/test_splits_after_run-test-splits-after-run_tests.obj `if test -f 'tests/test-splits-after-run_tests.c'; then $(CYGPATH_W) 'tests/test-splits-after-run_tests.c'; else $(CYGPATH_W) '$(srcdir)/tests/test-splits-after-run_tests.c'; fi`
 
 tests/src/test_ssize_t_timsort-test-ssize_t_timsort.o: tests/src/test-ssize_t_timsort.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(tests_test_ssize_t_timsort_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tests/src/test_ssize_t_timsort-test-ssize_t_timsort.o -MD -MP -MF tests/src/$(DEPDIR)/test_ssize_t_timsort-test-ssize_t_timsort.Tpo -c -o tests/src/test_ssize_t_timsort-test-ssize_t_timsort.o `test -f 'tests/src/test-ssize_t_timsort.c' || echo '$(srcdir)/'`tests/src/test-ssize_t_timsort.c
@@ -6330,6 +6368,13 @@ tests/test-list_vt_insertion_sort.log: tests/test-list_vt_insertion_sort$(EXEEXT
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+tests/test-splits-after-run.log: tests/test-splits-after-run$(EXEEXT)
+	@p='tests/test-splits-after-run$(EXEEXT)'; \
+	b='tests/test-splits-after-run'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -6677,6 +6722,7 @@ distclean: distclean-am
 	-rm -f tests/$(DEPDIR)/test_merges-test-merges_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
+	-rm -f tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po
 	-rm -f tests/$(DEPDIR)/test_timsort_r_to_pointers-test-timsort_r_to_pointers.Po
@@ -6912,6 +6958,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tests/$(DEPDIR)/test_merges-test-merges_tests.Po
 	-rm -f tests/$(DEPDIR)/test_minrun-test-minrun_tests.Po
 	-rm -f tests/$(DEPDIR)/test_nodepower-test-nodepower_tests.Po
+	-rm -f tests/$(DEPDIR)/test_splits_after_run-test-splits-after-run_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timing_array_timsort-test-timing-array_timsort_tests.Po
 	-rm -f tests/$(DEPDIR)/test_timsort_r_to_array-test-timsort_r_to_array.Po
 	-rm -f tests/$(DEPDIR)/test_timsort_r_to_pointers-test-timsort_r_to_pointers.Po
@@ -7697,6 +7744,7 @@ tests/test-merges_tests.c: tests/test-merges.dats
 tests/test-array_timsort_tests.c: tests/test-array_timsort.dats
 tests/test-timing-array_timsort_tests.c: tests/test-timing-array_timsort.dats
 tests/test-list_vt_insertion_sort_tests.c: tests/test-list_vt_insertion_sort.dats
+tests/test-splits-after-run_tests.c: tests/test-splits-after-run.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)

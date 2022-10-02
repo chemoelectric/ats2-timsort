@@ -162,15 +162,19 @@ list_vt_insertion_sort_without_any_of_it_presorted lst =
 (*------------------------------------------------------------------*)
 
 extern fn {a : vt@ype}
-split_after_increasing_run :
+split_at_pair_after_first :
   {n : int | 2 <= n}
   list_vt (a, n) -< !wrt >
     [m : int | 2 <= m; m <= n]
     @(list_vt (a, m),
       list_vt (a, n - m))
 
+extern fn {a : vt@ype}
+split_at_pair_after_first$here :
+  (&a, &a) -<> bool
+
 implement {a}
-split_after_increasing_run {n} lst =
+split_at_pair_after_first {n} lst =
   let
     fun
     loop {u : nat | u + 2 <= n}
@@ -184,7 +188,7 @@ split_after_increasing_run {n} lst =
       | NIL => lst2 := NIL
       | @ (next :: rest) =>
         let
-          val done = list_vt_timsort$lt<a> (next, prev)
+          val done = split_at_pair_after_first$here<a> (prev, next)
         in
           if done then
             let
@@ -216,6 +220,46 @@ split_after_increasing_run {n} lst =
     prval () = fold@ lst1
   in
     @(lst1, lst2)
+  end
+
+(*------------------------------------------------------------------*)
+
+extern fn {a : vt@ype}
+split_after_nondecreasing_run :
+  {n : int | 2 <= n}
+  list_vt (a, n) -< !wrt >
+    [m : int | 2 <= m; m <= n]
+    @(list_vt (a, m),
+      list_vt (a, n - m))
+
+implement {a}
+split_after_nondecreasing_run {n} lst =
+  let
+    implement
+    split_at_pair_after_first$here<a> (prev, next) =
+      list_vt_timsort$lt<a> (next, prev)
+  in
+    split_at_pair_after_first {n} lst
+  end
+
+(*------------------------------------------------------------------*)
+
+extern fn {a : vt@ype}
+split_after_decreasing_run :
+  {n : int | 2 <= n}
+  list_vt (a, n) -< !wrt >
+    [m : int | 2 <= m; m <= n]
+    @(list_vt (a, m),
+      list_vt (a, n - m))
+
+implement {a}
+split_after_decreasing_run {n} lst =
+  let
+    implement
+    split_at_pair_after_first$here<a> (prev, next) =
+      ~list_vt_timsort$lt<a> (next, prev)
+  in
+    split_at_pair_after_first {n} lst
   end
 
 (*------------------------------------------------------------------*)
