@@ -214,7 +214,7 @@ split_at_pair_after_first {n} lst =
         end
 
     var lst1 = lst
-    var lst2 : List_vt a?
+    var lst2 : List_vt a
     var m : int
 
     (* It is assumed that the second list element is not less than the
@@ -271,6 +271,119 @@ split_after_decreasing_run {n} lst =
       ~list_vt_timsort$lt<a> (next, prev)
   in
     split_at_pair_after_first {n} lst
+  end
+
+(*------------------------------------------------------------------*)
+
+extern fn {a : vt@ype}
+list_vt_split_at_most :
+  {n : int}
+  {i : nat}
+  (list_vt (a, n),
+   int i) -< !wrt >
+    [m : nat | m == min (n, i)]
+    @(list_vt (a, m),
+      list_vt (a, n - m),
+      int m)
+
+implement {a}
+list_vt_split_at_most {n} {i} (lst, i) =
+  let
+    prval () = lemma_list_vt_param lst
+    prval () = prop_verify {0 <= min (n, i)} ()
+
+    fun
+    loop {m0 : nat | m0 <= min (n, i)}
+         .<n - m0>.
+         (lst1a : &list_vt (a, n - m0) >> list_vt (a, m - m0),
+          lst2  : &(List_vt a)? >> list_vt (a, n - m),
+          m0    : int m0,
+          m     : &int? >> int m)
+        :<!wrt> #[m : int | m == min (n, i)]
+                void =
+      if (m0 = i) + (iseqz<a> lst1a) then
+        begin
+          lst2 := lst1a;
+          lst1a := NIL;
+          m := m0
+        end
+      else
+        let
+          val+ @ (_ :: rest) = lst1a
+          val () = loop (rest, lst2, m0 + 1, m)
+          prval () = fold@ lst1a
+        in
+        end
+
+    var lst1 = lst
+    var lst2 : List_vt a
+    var m : int
+
+    val () = loop (lst1, lst2, 0, m)
+  in
+    @(lst1, lst2, m)
+  end
+
+(*------------------------------------------------------------------*)
+
+extern fn {a : vt@ype}
+provide_a_nondecreasing_run :
+  {n      : int | 2 <= n}
+  {minrun : int | 2 <= minrun}
+  (list_vt (a, n),
+   int minrun) -< !wrt >
+    [m : int | min (n, minrun) <= m; m <= n]
+    @(list_vt (a, m),
+      list_vt (a, n - m),
+      int m)
+
+implement {a}
+provide_a_nondecreasing_run {n} {minrun} (lst, minrun) =
+  let
+    val+ @ (first :: rest1) = lst
+    val+ @ (second :: rest2) = rest1
+    val nondecreasing = ~list_vt_timsort$lt<a> (second, first)
+    prval () = fold@ rest1
+    prval () = fold@ lst
+  in
+    if nondecreasing then
+      let                       (* A nondecreasing run. *)
+        val @(lst1, lst2, m) = split_after_nondecreasing_run<a> lst
+      in
+        if (minrun <= m) + (iseqz<a> lst2) then
+          @(lst1, lst2, m)
+        else
+          let
+            implement
+            list_vt_insertion_sort$lt<a> (x, y) =
+              list_vt_timsort$lt<a> (x, y)
+
+            val i = minrun - m
+            val @(lst1a, lst2, j) = list_vt_split_at_most<a> (lst2, i)
+            val lst1 = list_vt_insertion_sort<a> (lst1, lst1a)
+          in
+            @(lst1, lst2, m + j)
+          end
+      end
+    else
+      let                       (* A decreasing run. *)
+        val @(lst1, lst2, m) = split_after_decreasing_run<a> lst
+      in
+        if (minrun <= m) + (iseqz<a> lst2) then
+          @(reverse<a> lst1, lst2, m)
+        else
+          let
+            implement
+            list_vt_insertion_sort$lt<a> (x, y) =
+              ~list_vt_timsort$lt<a> (x, y)
+
+            val i = minrun - m
+            val @(lst1a, lst2, j) = list_vt_split_at_most<a> (lst2, i)
+            val lst1 = list_vt_insertion_sort<a> (lst1, lst1a)
+          in
+            @(reverse<a> lst1, lst2, m + j)
+          end
+      end
   end
 
 (*------------------------------------------------------------------*)
