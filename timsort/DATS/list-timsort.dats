@@ -167,7 +167,8 @@ split_at_pair_after_first :
   list_vt (a, n) -< !wrt >
     [m : int | 2 <= m; m <= n]
     @(list_vt (a, m),
-      list_vt (a, n - m))
+      list_vt (a, n - m),
+      int m)
 
 extern fn {a : vt@ype}
 split_at_pair_after_first$here :
@@ -177,15 +178,21 @@ implement {a}
 split_at_pair_after_first {n} lst =
   let
     fun
-    loop {u : nat | u + 2 <= n}
-         .<u>.
-         (lst1a : &list_vt (a, u) >> list_vt (a, v),
-          lst2  : &(List_vt a)? >> list_vt (a, u - v),
-          prev  : &a)
-        :<!wrt> #[v : nat | v <= u]
+    loop {m0 : int | 2 <= m0; m0 <= n}
+         .<n - m0>.
+         (lst1a : &list_vt (a, n - m0) >> list_vt (a, m - m0),
+          lst2  : &(List_vt a)? >> list_vt (a, n - m),
+          prev  : &a,
+          m0    : int m0,
+          m     : &int? >> int m)
+        :<!wrt> #[m : int | m0 <= m; m <= n]
                 void =
       case+ lst1a of
-      | NIL => lst2 := NIL
+      | NIL =>
+        begin
+          lst2 := NIL;
+          m := m0
+        end
       | @ (next :: rest) =>
         let
           val done = split_at_pair_after_first$here<a> (prev, next)
@@ -195,11 +202,12 @@ split_at_pair_after_first {n} lst =
               prval () = fold@ lst1a
             in
               lst2 := lst1a;
-              lst1a := NIL
+              lst1a := NIL;
+              m := m0
             end
           else
             let
-              val () = loop (rest, lst2, next)
+              val () = loop (rest, lst2, next, m0 + 1, m)
               prval () = fold@ lst1a
             in
             end
@@ -207,6 +215,7 @@ split_at_pair_after_first {n} lst =
 
     var lst1 = lst
     var lst2 : List_vt a?
+    var m : int
 
     (* It is assumed that the second list element is not less than the
        first. (We do not prove the result is monotonically
@@ -215,11 +224,11 @@ split_at_pair_after_first {n} lst =
 
     val+ @ (_first :: rest1) = lst1
     val+ @ (second :: rest2) = rest1
-    val () = loop (rest2, lst2, second)
+    val () = loop (rest2, lst2, second, 2, m)
     prval () = fold@ rest1
     prval () = fold@ lst1
   in
-    @(lst1, lst2)
+    @(lst1, lst2, m)
   end
 
 (*------------------------------------------------------------------*)
@@ -230,7 +239,8 @@ split_after_nondecreasing_run :
   list_vt (a, n) -< !wrt >
     [m : int | 2 <= m; m <= n]
     @(list_vt (a, m),
-      list_vt (a, n - m))
+      list_vt (a, n - m),
+      int m)
 
 implement {a}
 split_after_nondecreasing_run {n} lst =
@@ -250,7 +260,8 @@ split_after_decreasing_run :
   list_vt (a, n) -< !wrt >
     [m : int | 2 <= m; m <= n]
     @(list_vt (a, m),
-      list_vt (a, n - m))
+      list_vt (a, n - m),
+      int m)
 
 implement {a}
 split_after_decreasing_run {n} lst =

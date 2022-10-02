@@ -74,7 +74,7 @@ test_nondecreasing_run
       (x.0) < (y.0)
 
     val lst0 = list_copy<entry_t> lst
-    val @(lst1, lst2) = split_after_nondecreasing_run<entry_t> lst0
+    val @(lst1, lst2, m) = split_after_nondecreasing_run<entry_t> lst0
     val lst1 = list_vt2t lst1
     and lst2 = list_vt2t lst2
   in
@@ -84,7 +84,8 @@ test_nondecreasing_run
     display lst2;
     println! ();
     assertloc (lst1 = expected1);
-    assertloc (lst2 = expected2)
+    assertloc (lst2 = expected2);
+    assertloc (length lst1 = m)
   end
 
 fn
@@ -101,7 +102,7 @@ test_decreasing_run
       (x.0) < (y.0)
 
     val lst0 = list_copy<entry_t> lst
-    val @(lst1, lst2) = split_after_decreasing_run<entry_t> lst0
+    val @(lst1, lst2, m) = split_after_decreasing_run<entry_t> lst0
     val lst1 = list_vt2t lst1
     and lst2 = list_vt2t lst2
   in
@@ -111,7 +112,8 @@ test_decreasing_run
     display lst2;
     println! ();
     assertloc (lst1 = expected1);
-    assertloc (lst2 = expected2)
+    assertloc (lst2 = expected2);
+    assertloc (length lst1 = m)
   end
 
 implement
