@@ -390,3 +390,61 @@ provide_a_nondecreasing_run {n} {minrun} (lst, minrun) =
   end
 
 (*------------------------------------------------------------------*)
+
+extern fn {a : vt@ype}
+merge_two_nondecreasing_runs :
+  {m, n : int}
+  (list_vt (a, m),
+   list_vt (a, n)) -< !wrt >
+    list_vt (a, m + n)
+
+implement {a}
+merge_two_nondecreasing_runs (lst1, lst2) =
+  let
+    fun
+    loop {m, n : nat}
+         .<m + n>.
+         (lst_m  : list_vt (a, m),
+          lst_n  : list_vt (a, n),
+          result : &List_vt a? >> list_vt (a, m + n))
+        :<!wrt> void =
+      case+ lst_m of
+      | ~ NIL => result := lst_n
+      | @ (x :: rest_m) =>
+        begin
+          case+ lst_n of
+          | ~ NIL =>
+            let
+              prval () = fold@ lst_m
+            in
+              result := lst_m
+            end
+          | @ (y :: rest_n) =>
+            if list_vt_timsort$lt<a> (x, y) then
+              let
+                prval () = fold@ lst_n
+                val () = result := lst_m
+                val () = loop (rest_m, lst_n, rest_m)
+                prval () = fold@ result
+              in
+              end
+            else
+              let
+                prval () = fold@ lst_m
+                val () = result := lst_n
+                val () = loop (lst_m, rest_n, rest_n)
+                prval () = fold@ result
+              in
+              end
+        end
+
+    prval () = lemma_list_vt_param lst1
+    prval () = lemma_list_vt_param lst2
+
+    var result : List_vt a
+  in
+    loop (lst1, lst2, result);
+    result
+  end
+
+(*------------------------------------------------------------------*)
