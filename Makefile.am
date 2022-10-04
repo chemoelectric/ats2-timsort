@@ -499,6 +499,22 @@ tests_test_provide_a_nondecreasing_run_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_provide_a_nondecreasing_run_LDADD =
 tests/test-provide_a_nondecreasing_run_tests.c: tests/test-provide_a_nondecreasing_run.dats
 
+TESTS += tests/test-merge_two_nondecreasing_runs
+EXTRA_PROGRAMS += tests/test-merge_two_nondecreasing_runs
+CLEANFILES += tests/test-merge_two_nondecreasing_runs
+CLEANFILES += tests/test-merge_two_nondecreasing_runs_tests.c
+EXTRA_DIST += tests/test-merge_two_nondecreasing_runs.dats
+tests_test_merge_two_nondecreasing_runs_SOURCES =
+tests_test_merge_two_nondecreasing_runs_SOURCES += tests/test-merge_two_nondecreasing_runs_tests.c
+tests_test_merge_two_nondecreasing_runs_DEPENDENCIES =
+tests_test_merge_two_nondecreasing_runs_DEPENDENCIES += tests/test-merge_two_nondecreasing_runs.dats
+tests_test_merge_two_nondecreasing_runs_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_merge_two_nondecreasing_runs_CPPFLAGS =
+tests_test_merge_two_nondecreasing_runs_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_merge_two_nondecreasing_runs_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_merge_two_nondecreasing_runs_LDADD =
+tests/test-merge_two_nondecreasing_runs_tests.c: tests/test-merge_two_nondecreasing_runs.dats
+
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
 

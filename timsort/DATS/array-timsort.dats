@@ -291,6 +291,7 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
       let
         prval () = pf_arr := array_v_unsplit (pf_arr0, pf_arr1)
       in
+        // FIXME: Do unit testing for the correct length.
         //$effmask_all println! ("Run length = ", runlen);
         bp_i + runlen
       end
@@ -309,6 +310,7 @@ provide_a_sorted_run {p_arr} {n} {i} (pf_arr | bp_i, bp_n, minrun) =
           array_v_unsplit
             (pf_arr0, array_v_unsplit (pf_arr2, pf_arr3))
       in
+        // FIXME: Do unit testing for the correct length.
         //$effmask_all println! ("Run length (minrun) = ", minrun);
         bp_i + minrun
       end
