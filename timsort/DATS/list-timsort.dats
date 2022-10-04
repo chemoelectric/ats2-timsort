@@ -420,7 +420,7 @@ merge_two_nondecreasing_runs (lst1, lst2) =
               result := lst_m
             end
           | @ (y :: rest_n) =>
-            if list_vt_timsort$lt<a> (x, y) then
+            if ~list_vt_timsort$lt<a> (y, x) then
               let
                 prval () = fold@ lst_n
                 val () = result := lst_m
