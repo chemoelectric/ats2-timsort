@@ -44,6 +44,171 @@ infix ( && ) &&&
 macdef &&& = andalso1
 
 (*------------------------------------------------------------------*)
+(* A stack of subarray boundaries.                                  *)
+
+typedef stk_entry_t (index : int, size : int, power : int) =
+  @{
+    index = size_t index,      (* The subarray begins at this index.*)
+    size = size_t size,        (* The subarray has this length. *)
+    power = int power   (* The node power, if it has been computed. *)
+  }
+typedef stk_entry_t =
+  [index, size, power : int]
+  stk_entry_t (index, size, power)
+
+vtypedef stk_vt (p        : addr,
+                 depth    : int,
+                 stk_max  : int) =
+  @{
+    pf       = array_v (stk_entry_t, p, stk_max) |
+    p        = ptr p,
+    depth    = int depth,
+    stk_max  = int stk_max
+  }
+
+extern fn {}
+stk_vt_make :
+  {p       : addr}
+  {stk_max : int}
+  (array_v (stk_entry_t, p, stk_max) | ptr p, size_t stk_max) -<>
+    stk_vt (p, 0, stk_max)
+
+extern fn {}
+stk_vt_depth :
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : int}
+  (&stk_vt (p_stk, depth, stk_max)) -<> int depth
+
+extern fn {}
+stk_vt_push :
+  {index   : nat}
+  {size    : pos}
+  {power   : int}
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : nat}
+  (size_t index,
+   size_t size,
+   int power,
+   &stk_vt (p_stk, depth, stk_max)
+        >> stk_vt (p_stk, depth + 1, stk_max)) -< !wrt >
+    void
+
+extern fn {}
+stk_vt_pop :
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : pos}
+  (&stk_vt (p_stk, depth, stk_max)
+        >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
+    [index, size, power : int | 0 <= index; 0 < size]
+    stk_entry_t (index, size, power)
+
+extern fn {}
+stk_vt_peek :
+  {p_stk     : addr}
+  {stk_max   : int}
+  {depth     : int}
+  {entry_num : nat | entry_num < depth}
+  (&stk_vt (p_stk, depth, stk_max),
+   int entry_num) -< !wrt >
+    [index, size, power : int | 0 <= index; 0 < size]
+    stk_entry_t (index, size, power)
+
+extern fn {}
+stk_vt_overwrite :
+  {index   : nat}
+  {size    : pos}
+  {power   : int}
+  {p_stk     : addr}
+  {stk_max   : int}
+  {depth     : int}
+  {entry_num : nat | entry_num < depth}
+  (size_t index,
+   size_t size,
+   int power,
+   &stk_vt (p_stk, depth, stk_max),
+   int entry_num) -< !wrt >
+    void
+
+extern fn {}
+stk_vt_drop :
+  {p_stk   : addr}
+  {stk_max : int}
+  {depth   : pos}
+  (&stk_vt (p_stk, depth, stk_max)
+        >> stk_vt (p_stk, depth - 1, stk_max)) -< !wrt >
+    void
+
+implement {}
+stk_vt_make (pf | p, stk_max) =
+  @{
+    pf = pf |
+    p = p,
+    depth = 0,
+    stk_max = sz2i stk_max
+  }
+
+implement {}
+stk_vt_depth stk =
+  stk.depth
+
+implement {}
+stk_vt_push (index, size, power, stk) =
+  let
+    macdef storage = !(stk.p)
+    val () = $effmask_exn assertloc ((stk.depth) < (stk.stk_max))
+  in
+    storage[stk.depth] :=
+      @{
+        index = index,
+        size = size,
+        power = power
+      };
+    stk.depth := succ (stk.depth)
+  end
+
+implement {}
+stk_vt_pop stk =
+  let
+    val entry = stk_vt_peek (stk, 0)
+  in
+    stk_vt_drop stk;
+    entry
+  end
+
+implement {}
+stk_vt_peek (stk, entry_num) =
+  let
+    macdef storage = !(stk.p)
+    val () = $effmask_exn assertloc ((stk.depth) <= (stk.stk_max))
+    val entry = storage[pred ((stk.depth) - entry_num)]
+    prval () = lemma_g1uint_param (entry.index)
+    val () = $effmask_exn assertloc (i2sz 0 < (entry.size))
+  in
+    entry
+  end
+
+implement {}
+stk_vt_overwrite (index, size, power, stk, entry_num) =
+  let
+    macdef storage = !(stk.p)
+    val () = $effmask_exn assertloc ((stk.depth) <= (stk.stk_max))
+  in
+    storage[pred ((stk.depth) - entry_num)] :=
+      @{
+        index = index,
+        size = size,
+        power = power
+      }
+  end
+
+implement {}
+stk_vt_drop stk =
+  stk.depth := pred (stk.depth)
+
+(*------------------------------------------------------------------*)
 
 implement {a}
 array_timsort$lt (x, y) =
