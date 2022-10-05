@@ -118,9 +118,9 @@ stk_vt_peek :
 
 extern fn {}
 stk_vt_overwrite :
-  {index   : nat}
-  {size    : pos}
-  {power   : int}
+  {index     : nat}
+  {size      : pos}
+  {power     : int}
   {p_stk     : addr}
   {stk_max   : int}
   {depth     : int}
