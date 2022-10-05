@@ -56,9 +56,9 @@ typedef stk_entry_t =
   [index, size, power : int]
   stk_entry_t (index, size, power)
 
-vtypedef stk_vt (p        : addr,
-                 depth    : int,
-                 stk_max  : int) =
+vtypedef stk_vt (p       : addr,
+                 depth   : int,
+                 stk_max : int) =
   @{
     pf       = array_v (stk_entry_t, p, stk_max) |
     p        = ptr p,
