@@ -112,7 +112,7 @@ stk_vt_peek :
   {depth     : int}
   {entry_num : nat | entry_num < depth}
   (&stk_vt (p_stk, depth, stk_max),
-   int entry_num) -< !wrt >
+   int entry_num) -<>
     [index, size, power : int | 0 <= index; 0 < size]
     stk_entry_t (index, size, power)
 

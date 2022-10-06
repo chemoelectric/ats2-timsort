@@ -471,6 +471,15 @@ vtypedef stk_vt (p          : addr,
     stk_max    = int stk_max
   }
 
+fn {a : vt@ype}
+stk_entry2list
+          {index : nat}
+          {size  : pos}
+          {power : int}
+          (entry : stk_entry_t (index, size, power))
+    :<> list_vt (a, size) =
+  $UN.castvwtp0{list_vt (a, size)} (entry.p_sublist)
+
 fn {}
 stk_vt_make
           {p       : addr}
@@ -524,7 +533,7 @@ stk_vt_push
     stk.depth := succ (stk.depth)
   end
 
-fn {a : vt@ype}
+fn {}
 stk_vt_peek
           {p_stk     : addr}
           {stk_max   : int}
@@ -532,27 +541,13 @@ stk_vt_peek
           {entry_num : nat | entry_num < depth}
           (stk       : &stk_vt (p_stk, depth, stk_max),
            entry_num : int entry_num)
-    :<!wrt> [index, size, power : int]
-            @(list_vt (a, size),
-              int index,
-              int size,
-              int power) =
+    :<> [index, size, power : int | 0 <= index; 1 <= size]
+        stk_entry_t (index, size, power) =
   let
     macdef storage = !(stk.p)
     val () = $effmask_exn assertloc ((stk.depth) <= (stk.stk_max))
-
-    val @{
-          p_sublist = p_sublist,
-          index = index,
-          size = size,
-          power = power
-        } = storage[pred ((stk.depth) - entry_num)]
-    prval [size : int] EQINT () = eqint_make_gint size
   in
-    @($UN.castvwtp0{list_vt (a, size)} p_sublist,
-      index,
-      size,
-      power)
+    storage[pred ((stk.depth) - entry_num)]
   end
 
 fn {}
@@ -565,23 +560,20 @@ stk_vt_drop
     :<!wrt> void =
   stk.depth := pred (stk.depth)
 
-fn {a : vt@ype}
+fn {}
 stk_vt_pop
           {p_stk   : addr}
           {stk_max : int}
           {depth   : int | 1 <= depth}
           (stk     : &stk_vt (p_stk, depth, stk_max)
                       >> stk_vt (p_stk, depth - 1, stk_max))
-    :<!wrt> #[index, size, power : int]
-            @(list_vt (a, size),
-              int index,
-              int size,
-              int power) =
+    :<!wrt> #[index, size, power : int | 0 <= index; 1 <= size]
+            stk_entry_t (index, size, power) =
   let
-    val retval = stk_vt_peek (stk, 0)
+    val entry = stk_vt_peek (stk, 0)
   in
     stk_vt_drop stk;
-    retval
+    entry
   end
 
 fn {a : vt@ype}
@@ -612,5 +604,138 @@ stk_vt_overwrite
         power = power
       }
   end
+
+fn {}
+stk_vt_overwrite_power
+          {power     : int}
+          {p_stk     : addr}
+          {stk_max   : int}
+          {depth     : int}
+          {entry_num : nat | entry_num < depth}
+          (power     : int power,
+           stk       : &stk_vt (p_stk, depth, stk_max),
+           entry_num : int entry_num)
+    :<!wrt> void =
+  let
+    macdef storage = !(stk.p)
+    val () = $effmask_exn assertloc ((stk.depth) <= (stk.stk_max))
+
+    val @{
+          p_sublist = p_sublist,
+          index = index,
+          size = size,
+          power = _
+        } = storage[pred ((stk.depth) - entry_num)]
+  in
+    storage[pred ((stk.depth) - entry_num)] :=
+      @{
+        p_sublist = p_sublist,
+        index = index,
+        size = size,
+        power = power
+      }
+  end
+
+(*------------------------------------------------------------------*)
+(* Powersort strategy.                                              *)
+
+extern fn {a : vt@ype}
+include_new_run
+          {n       : int}
+          {index   : nat}
+          {size    : pos | index + size <= n}
+          {p_stk   : addr}
+          {stk_max : int}
+          {depth0  : nat}
+          (n       : int n,
+           run     : list_vt (a, size),
+           index   : int index,
+           size    : int size,
+           stk     : &stk_vt (p_stk, depth0, stk_max)
+                      >> stk_vt (p_stk, depth1, stk_max))
+    :<!wrt> #[depth1 : pos | depth1 <= depth0 + 1]
+            void
+
+#define ARBITRARY_POWER ~1234
+
+implement {a}
+include_new_run {n} {index} {size} (n, run, index, size, stk) =
+  if stk_vt_depth stk = 0 then
+    stk_vt_push (run, index, size, ARBITRARY_POWER, stk)
+  else
+    let
+      val [index0, size0, _power : int]
+          @{
+            p_sublist = _,
+            index = index0,
+            size = size0,
+            power = _
+          } = stk_vt_peek (stk, 0)
+      prval () = prop_verify {0 <= index0} ()
+      prval () = prop_verify {1 <= size0} ()
+
+      val () = $effmask_exn assertloc (index0 + size0 = index)
+      prval () = prop_verify {index0 + size0 + size <= n} ()
+
+      val power = nodepower (i2sz n, i2sz index0, i2sz size0,
+                             i2sz size)
+
+      fun
+      merge_sublists
+                {p_stk   : addr}
+                {stk_max : int}
+                {depth1  : pos}
+                .<depth1>.
+                (stk : &stk_vt (p_stk, depth1, stk_max)
+                        >> stk_vt (p_stk, depth2, stk_max))
+          :<!wrt> #[depth2 : pos | depth2 <= depth1]
+                  void =
+        if stk_vt_depth stk = 1 then
+          ()
+        else if ((stk_vt_peek (stk, 1)).power) <= power then
+          ()
+        else
+          let
+            val peek0 = stk_vt_peek (stk, 0)
+            and peek1 = stk_vt_peek (stk, 1)
+
+            val @{
+                  p_sublist = _,
+                  index = index0,
+                  size = size0,
+                  power = _
+                } = peek0
+            and @{
+                  p_sublist = _,
+                  index = index1,
+                  size = size1,
+                  power = _
+                } = peek1
+            and sublist0 = stk_entry2list peek0
+            and sublist1 = stk_entry2list peek1
+
+            prval [index0 : int] EQINT () = eqint_make_gint index0
+            prval [size0 : int] EQINT () = eqint_make_gint size0
+            prval [index1 : int] EQINT () = eqint_make_gint index1
+            prval [size1 : int] EQINT () = eqint_make_gint size1
+
+            val () = $effmask_exn assertloc (index1 + size1 = index0)
+            val () = $effmask_exn assertloc (index0 + size0 = index)
+            prval () =
+              prop_verify {index1 + size1 + size0 + size <= n} ()
+
+            val merger =
+              merge_two_nondecreasing_runs (sublist0, sublist1)
+          in
+            stk_vt_overwrite (merger, index1, size1 + size0,
+                              ARBITRARY_POWER, stk, 1);
+            stk_vt_drop stk;
+            merge_sublists stk
+          end
+    in
+      merge_sublists stk;
+      stk_vt_overwrite_power (power, stk, 0);
+      stk_vt_push (run, index, size, ARBITRARY_POWER, stk)
+    end
 
 (*------------------------------------------------------------------*)
