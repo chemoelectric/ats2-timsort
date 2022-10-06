@@ -656,6 +656,17 @@ include_new_run
     :<!wrt> #[depth1 : pos | depth1 <= depth0 + 1]
             void
 
+extern fn {a : vt@ype}
+merge_remaining_runs
+          {n       : pos}
+          {p_stk   : addr}
+          {stk_max : int}
+          {depth0  : pos}
+          (n       : int n,
+           stk     : &stk_vt (p_stk, depth0, stk_max)
+                      >> stk_vt (p_stk, 0, stk_max))
+    :<!wrt> list_vt (a, n)
+
 #define ARBITRARY_POWER ~1234
 
 implement {a}
@@ -725,7 +736,7 @@ include_new_run {n} {index} {size} (n, run, index, size, stk) =
               prop_verify {index1 + size1 + size0 + size <= n} ()
 
             val merger =
-              merge_two_nondecreasing_runs (sublist0, sublist1)
+              merge_two_nondecreasing_runs (sublist1, sublist0)
           in
             stk_vt_overwrite (merger, index1, size1 + size0,
                               ARBITRARY_POWER, stk, 1);
@@ -737,5 +748,133 @@ include_new_run {n} {index} {size} (n, run, index, size, stk) =
       stk_vt_overwrite_power (power, stk, 0);
       stk_vt_push (run, index, size, ARBITRARY_POWER, stk)
     end
+
+implement {a}
+merge_remaining_runs {n} (n, stk) =
+  let
+    fn
+    merge_1_with_0
+              {p_stk   : addr}
+              {stk_max : int}
+              {depth   : int | 2 <= depth}
+              (stk     : &stk_vt (p_stk, depth, stk_max)
+                          >> stk_vt (p_stk, depth - 1, stk_max))
+        :<!wrt> void =
+      let
+        val entry0 = stk_vt_pop stk
+        val entry1 = stk_vt_peek (stk, 0)
+        val @{
+              p_sublist = _,
+              index = index0,
+              size = size0,
+              power = _
+            } = entry0
+        and @{
+              p_sublist = _,
+              index = index1,
+              size = size1,
+              power = _
+            } = entry1
+        and sublist0 = stk_entry2list entry0
+        and sublist1 = stk_entry2list entry1
+
+        val () = $effmask_exn assertloc (index1 + size1 = index0)
+        val () = $effmask_exn assertloc (index0 + size0 = n)
+
+        val merger = merge_two_nondecreasing_runs (sublist1, sublist0)
+      in
+        stk_vt_overwrite (merger, index1, size1 + size0,
+                          ARBITRARY_POWER, stk, 0)
+      end
+
+    fn
+    merge_2_with_1
+              {p_stk   : addr}
+              {stk_max : int}
+              {depth   : int | 3 <= depth}
+              (stk     : &stk_vt (p_stk, depth, stk_max)
+                          >> stk_vt (p_stk, depth - 1, stk_max))
+        :<!wrt> void =
+      let
+        val entry0 = stk_vt_pop stk
+        val entry1 = stk_vt_pop stk
+        val entry2 = stk_vt_pop stk
+
+        val @{
+              p_sublist = _,
+              index = index0,
+              size = size0,
+              power = _
+            } = entry0
+        and @{
+              p_sublist = _,
+              index = index1,
+              size = size1,
+              power = _
+            } = entry1
+        and @{
+              p_sublist = _,
+              index = index2,
+              size = size2,
+              power = _
+            } = entry2
+        and sublist0 = stk_entry2list entry0
+        and sublist1 = stk_entry2list entry1
+        and sublist2 = stk_entry2list entry2
+
+        val () = $effmask_exn assertloc (index2 + size2 = index1)
+        val () = $effmask_exn assertloc (index1 + size1 = index0)
+        val () = $effmask_exn assertloc (index0 + size0 = n)
+
+        val merger = merge_two_nondecreasing_runs (sublist2, sublist1)
+      in
+        stk_vt_push (merger, index2, size2 + size1,
+                     ARBITRARY_POWER, stk);
+        stk_vt_push (sublist0, index0, size0, ARBITRARY_POWER, stk)
+      end
+
+    fun
+    loop {p_stk   : addr}
+         {stk_max : int}
+         {depth   : pos}
+         .<depth>.
+         (stk : &stk_vt (p_stk, depth, stk_max)
+                  >> stk_vt (p_stk, 0, stk_max))
+        :<!wrt> list_vt (a, n) =
+      if stk_vt_depth stk = 1 then
+        let
+          val entry0 = stk_vt_pop stk
+          val @{
+                p_sublist = _,
+                index = index0,
+                size = size0,
+                power = _
+              } = entry0
+          and sorted_list = stk_entry2list entry0
+
+          val () = $effmask_exn assertloc (index0 = 0)
+          val () = $effmask_exn assertloc (size0 = n)
+        in
+          sorted_list
+        end
+      else if stk_vt_depth stk = 2 then
+        begin
+          merge_1_with_0 stk;
+          loop stk
+        end
+      else if ((stk_vt_peek (stk, 0)).size)
+                  <= ((stk_vt_peek (stk, 2)).size) then
+        begin
+          merge_1_with_0 stk;
+          loop stk
+        end
+      else
+        begin
+          merge_2_with_1 stk;
+          loop stk
+        end
+  in
+    loop stk
+  end
 
 (*------------------------------------------------------------------*)
