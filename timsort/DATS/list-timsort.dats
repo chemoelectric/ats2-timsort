@@ -878,3 +878,116 @@ merge_remaining_runs {n} (n, stk) =
   end
 
 (*------------------------------------------------------------------*)
+
+fn {a : vt@ype}
+timsort_main
+          {n       : nat}
+          {p_stk   : addr}
+          {stk_max : pos}
+          (lst     : list_vt (a, n),
+           n       : int n,
+           stk     : &stk_vt (p_stk, 0, stk_max))
+    :<!wrt> list_vt (a, n) =
+  if n <= 1 then
+    lst
+  else
+    let
+      val minrun = sz2i (minimum_run_length (i2sz n))
+      prval [minrun : int] EQINT () = eqint_make_gint minrun
+      prval () = prop_verify {2 <= minrun} ()
+
+      fun
+      loop {i      : nat | i <= n}
+           {depth0 : nat}
+           .<n - i>.
+           (lst : list_vt (a, n - i),
+            i   : int i,
+            stk : &stk_vt (p_stk, depth0, stk_max)
+                    >> stk_vt (p_stk, depth1, stk_max))
+          :<!wrt> #[depth1 : pos]
+                  void =
+        if i = n then
+          let                 (* All done. *)
+            val+ ~ NIL = lst
+          in
+            $effmask_exn assertloc (0 < stk_vt_depth stk)
+          end
+        else if i = pred n then
+          begin               (* A single last element. *)
+            include_new_run (n, lst, pred n, 1, stk);
+            loop (NIL, n, stk)
+          end
+        else
+          let                 (* A run. *)
+            val @(run, rest, runlen) =
+              provide_a_nondecreasing_run (lst, minrun)
+          in
+            include_new_run (n, run, i, runlen, stk);
+            loop (rest, i + runlen, stk)
+          end
+    in
+      loop (lst, 0, stk);
+      merge_remaining_runs<a> (n, stk)
+    end
+
+implement {a}
+list_vt_timsort {n} lst =
+  let
+    prval () = lemma_list_vt_param lst
+
+    val n = length lst
+    prval () = prop_verify {0 <= n} ()
+
+    fn
+    sort_main {p_stk   : addr}
+              {stk_max : pos}
+              (lst     : list_vt (a, n),
+               stk     : &stk_vt (p_stk, 0, stk_max))
+        :<!wrt> list_vt (a, n) =
+      timsort_main<a> (lst, n, stk)
+  in
+    if (char_bit () * sizeof<size_t> <= i2sz STK_MAX_THRESHOLD)
+          ||| (iseqz (n >> STK_MAX_THRESHOLD)) then
+      let                       (* Put stk on the system stack. *)
+        var stk_storage =
+          @[stk_entry_t][STK_MAX_THRESHOLD]
+            (@{
+               p_sublist = the_null_ptr,
+               index = 0,
+               size = 1,
+               power = 0
+             })
+        var stk = stk_vt_make (view@ stk_storage |
+                               addr@ stk_storage,
+                               i2sz STK_MAX_THRESHOLD)
+        val sorted_list = sort_main (lst, stk)
+        prval () = view@ stk_storage := stk.pf
+      in
+        sorted_list
+      end
+    else
+      let                       (* Put stk in the heap. *)
+        val bitsz = char_bit () * sizeof<size_t>
+        val () = $effmask_exn assertloc (i2sz 1 <= bitsz)
+        val @(pf_stk_storage, pfgc_stk_storage | p_stk_storage) =
+          array_ptr_alloc<stk_entry_t> bitsz
+        val entry =
+          @{
+            p_sublist = the_null_ptr,
+            index = 0,
+            size = 1,
+            power = 0
+          }
+        val () = array_initize_elt<stk_entry_t> (!p_stk_storage,
+                                                 bitsz, entry)
+        var stk = stk_vt_make (pf_stk_storage | p_stk_storage, bitsz)
+        val sorted_list = sort_main (lst, stk)
+        val () = pf_stk_storage := stk.pf
+        val () = array_ptr_free (pf_stk_storage, pfgc_stk_storage |
+                                 p_stk_storage)
+      in
+        sorted_list
+      end
+  end
+
+(*------------------------------------------------------------------*)
