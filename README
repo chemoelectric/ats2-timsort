@@ -36,8 +36,10 @@ Included:
     but doing so did not seem worth the effort. Memory usually is not
     a stumbling block, these days.)
 
-And I may add a sort for list_vt. This would have more conventional
-insertion sort and merge.
+  * A linked-list sort, for ATS2, that supports linear types. The
+    insertion sort is straightforward. (Neither binary search nor
+    galloping seems applicable.) The sort uses only constant-size
+    extra space.
 
 It is possible to make it so you do not need ATS2 to compile the
 program, as long as someone has already generated the C code from the
