@@ -993,3 +993,25 @@ list_vt_timsort {n} lst =
   end
 
 (*------------------------------------------------------------------*)
+
+implement {a}
+list_timsort$lt (x, y) =
+  list_timsort$cmp<a> (x, y) < 0
+
+implement {a}
+list_timsort$cmp (x, y) =
+  (* This default is the same as for list_mergesort$cmp in the
+     prelude. *)
+  gcompare_val_val<a> (x, y)
+
+implement {a}
+list_timsort lst =
+  let
+    implement
+    list_vt_timsort$cmp<a> (x, y) =
+      list_timsort$cmp<a> (x, y)
+  in
+    list_vt_mergesort<a> (list_copy<a> lst)
+  end
+
+(*------------------------------------------------------------------*)

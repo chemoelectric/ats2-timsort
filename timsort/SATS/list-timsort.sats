@@ -21,6 +21,8 @@
 
 staload "timsort/SATS/COMMON/timsort-common.sats"
 
+(*------------------------------------------------------------------*)
+
 fn {a : vt@ype}
 list_vt_timsort :
   {n : int}
@@ -35,3 +37,25 @@ list_vt_timsort$lt :
 fn {a : vt@ype}
 list_vt_timsort$cmp :
   (&a, &a) -<> int
+
+(*------------------------------------------------------------------*)
+
+(* Note that list_timsort returns a list_vt rather than a list.
+   The prelude’s list_mergesort does likewise. Use list_vt2t to get
+   a non-linear list from the result. *)
+fn {a : t@ype}
+list_timsort :
+  {n : int}
+  list (a, n) -< !wrt > list_vt (a, n)
+
+(* Implement either list_timsort$lt or list_timsort$cmp.
+   The former takes precedence. The latter defaults to
+   ‘gcompare_val_val<a>’. *)
+fn {a : t@ype}
+list_timsort$lt :
+  (a, a) -<> bool
+fn {a : t@ype}
+list_timsort$cmp :
+  (a, a) -<> int
+
+(*------------------------------------------------------------------*)
