@@ -177,7 +177,7 @@ LIST_TIMSORT_SATS_C = timsort/SATS/list-timsort_sats.c
 LIST_TIMSORT_DATS_C = timsort/DATS/list-timsort_dats.c
 CLEANFILES += $(LIST_TIMSORT_SATS_C)
 CLEANFILES += $(LIST_TIMSORT_DATS_C)
-#LIST_TIMSORT_HATS = timsort/HATS/list-timsort.hats
+LIST_TIMSORT_HATS = timsort/HATS/list-timsort.hats
 
 TIMSORT_COMMON_SATS = timsort/SATS/COMMON/timsort-common.sats
 TIMSORT_COMMON_DATS = timsort/DATS/COMMON/timsort-common.dats
@@ -199,6 +199,7 @@ nobase_dist_pkginclude_HEADERS += $(LIST_TIMSORT_DATS)
 nobase_dist_pkginclude_HEADERS += $(TIMSORT_COMMON_SATS)
 nobase_dist_pkginclude_HEADERS += $(TIMSORT_COMMON_DATS)
 nobase_dist_pkginclude_HEADERS += $(ARRAY_TIMSORT_HATS)
+nobase_dist_pkginclude_HEADERS += $(LIST_TIMSORT_HATS)
 nobase_dist_pkginclude_HEADERS += $(TIMSORT_CATS)
 
 nodist_libats2_timsort_la_SOURCES =
@@ -514,6 +515,24 @@ tests_test_merge_two_nondecreasing_runs_CPPFLAGS += $(AM_CPPFLAGS)
 tests_test_merge_two_nondecreasing_runs_CPPFLAGS += -DATS_MEMALLOC_LIBC
 tests_test_merge_two_nondecreasing_runs_LDADD =
 tests/test-merge_two_nondecreasing_runs_tests.c: tests/test-merge_two_nondecreasing_runs.dats
+
+TESTS += tests/test-list_vt_timsort
+EXTRA_PROGRAMS += tests/test-list_vt_timsort
+CLEANFILES += tests/test-list_vt_timsort
+CLEANFILES += tests/test-list_vt_timsort_tests.c
+EXTRA_DIST += tests/test-list_vt_timsort.dats
+tests_test_list_vt_timsort_SOURCES =
+tests_test_list_vt_timsort_SOURCES += tests/test-list_vt_timsort_tests.c
+tests_test_list_vt_timsort_DEPENDENCIES =
+tests_test_list_vt_timsort_DEPENDENCIES += tests/test-list_vt_timsort.dats
+tests_test_list_vt_timsort_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_list_vt_timsort_DEPENDENCIES += libats2-timsort.la
+tests_test_list_vt_timsort_CPPFLAGS =
+tests_test_list_vt_timsort_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_list_vt_timsort_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_list_vt_timsort_LDADD =
+tests_test_list_vt_timsort_LDADD += libats2-timsort.la
+tests/test-list_vt_timsort_tests.c: tests/test-list_vt_timsort.dats
 
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
