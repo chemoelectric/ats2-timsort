@@ -249,7 +249,7 @@ split_after_nondecreasing_run {n} lst =
     split_at_pair_after_first$here<a> (prev, next) =
       list_vt_timsort$lt<a> (next, prev)
   in
-    split_at_pair_after_first {n} lst
+    split_at_pair_after_first<a> {n} lst
   end
 
 (*------------------------------------------------------------------*)
@@ -736,7 +736,7 @@ include_new_run {n} {index} {size} (n, run, index, size, stk) =
               prop_verify {index1 + size1 + size0 + size <= n} ()
 
             val merger =
-              merge_two_nondecreasing_runs (sublist1, sublist0)
+              merge_two_nondecreasing_runs<a> (sublist1, sublist0)
           in
             stk_vt_overwrite (merger, index1, size1 + size0,
                               ARBITRARY_POWER, stk, 1);
@@ -781,7 +781,8 @@ merge_remaining_runs {n} (n, stk) =
         val () = $effmask_exn assertloc (index1 + size1 = index0)
         val () = $effmask_exn assertloc (index0 + size0 = n)
 
-        val merger = merge_two_nondecreasing_runs (sublist1, sublist0)
+        val merger =
+          merge_two_nondecreasing_runs<a> (sublist1, sublist0)
       in
         stk_vt_overwrite (merger, index1, size1 + size0,
                           ARBITRARY_POWER, stk, 0)
@@ -826,7 +827,8 @@ merge_remaining_runs {n} (n, stk) =
         val () = $effmask_exn assertloc (index1 + size1 = index0)
         val () = $effmask_exn assertloc (index0 + size0 = n)
 
-        val merger = merge_two_nondecreasing_runs (sublist2, sublist1)
+        val merger =
+          merge_two_nondecreasing_runs<a> (sublist2, sublist1)
       in
         stk_vt_push (merger, index2, size2 + size1,
                      ARBITRARY_POWER, stk);
@@ -914,15 +916,15 @@ timsort_main
           end
         else if i = pred n then
           begin               (* A single last element. *)
-            include_new_run (n, lst, pred n, 1, stk);
+            include_new_run<a> (n, lst, pred n, 1, stk);
             loop (NIL, n, stk)
           end
         else
           let                 (* A run. *)
             val @(run, rest, runlen) =
-              provide_a_nondecreasing_run (lst, minrun)
+              provide_a_nondecreasing_run<a> (lst, minrun)
           in
-            include_new_run (n, run, i, runlen, stk);
+            include_new_run<a> (n, run, i, runlen, stk);
             loop (rest, i + runlen, stk)
           end
     in
