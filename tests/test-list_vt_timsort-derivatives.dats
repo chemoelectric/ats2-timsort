@@ -119,7 +119,7 @@ list_equal$eqfn<entry_t> (x, y) =
   ((x.key) = (y.key)) * ((x.value) = (y.value))
 
 fn
-cmp (x : entry_t, y : entry_t)
+cmp (x : &entry_t, y : &entry_t)
     :<> int =
   if (x.key) < (y.key) then
     ~1
@@ -296,8 +296,12 @@ test_array_of_size
            fill : filler_vt)
     : void =
   let
-    val ltcloref =
-      lam (x : &entry_t, y : &entry_t) : bool =<cloref>
+    val ltcloptr =
+      lam (x : &entry_t, y : &entry_t) : bool =<cloptr>
+        (x.key) < (y.key)
+
+    var ltclo =
+      lam@ (x : &entry_t, y : &entry_t) : bool =<clo>
         (x.key) < (y.key)
 
     val @(pf_arr, pfgc_arr | p_arr) = array_ptr_alloc<entry_t> n
@@ -305,19 +309,28 @@ test_array_of_size
     val () = fill (pf_arr | p_arr, n)
 
     val lst1 = list_vt2t (array2list (!p_arr, n))
-    val lst1a = list_vt2t (array2list (!p_arr, n))
 
-    val expected = list_vt2t (list_mergesort_fun<entry_t> (lst1, cmp))
+    val expected =
+      list_vt2t
+        (list_vt_mergesort_fun<entry_t> (list_copy<entry_t> lst1, cmp))
     val gotten1 =
       list_vt2t
         (list_vt_timsort_fun<entry_t> (list_copy<entry_t> lst1, lt))
+    val gotten2 =
+      list_vt2t
+        (list_vt_timsort_cloptr<entry_t> (list_copy<entry_t> lst1, ltcloptr))
+    val gotten3 =
+      list_vt2t
+        (list_vt_timsort_clo<entry_t> (list_copy<entry_t> lst1, ltclo))
+
+    val () = display gotten3
 
     val () = assertloc (gotten1 = expected)
-
-    (* Check that lst1 is not altered. *)
-    val () = assertloc (lst1 = lst1a)
+    val () = assertloc (gotten2 = expected)
+    val () = assertloc (gotten3 = expected)
 
     val () = array_ptr_free (pf_arr, pfgc_arr | p_arr)
+    val () = cloptr_free ($UN.castvwtp0{cloptr0} ltcloptr)
   in
   end
 
@@ -339,7 +352,7 @@ main () =
     test_array_of_size (i2sz 1000, fill_array_randomly);
     test_array_of_size (i2sz 10000, fill_array_randomly);
     test_array_of_size (i2sz 100000, fill_array_randomly);
-    test_array_of_size (i2sz 1000000, fill_array_randomly);
+    //test_array_of_size (i2sz 1000000, fill_array_randomly);
 
     test_array_of_size (i2sz 0, fill_array_with_constant);
     test_array_of_size (i2sz 1, fill_array_with_constant);
@@ -356,7 +369,7 @@ main () =
     test_array_of_size (i2sz 1000, fill_array_with_constant);
     test_array_of_size (i2sz 10000, fill_array_with_constant);
     test_array_of_size (i2sz 100000, fill_array_with_constant);
-    test_array_of_size (i2sz 1000000, fill_array_with_constant);
+    //test_array_of_size (i2sz 1000000, fill_array_with_constant);
 
     test_array_of_size (i2sz 0, fill_array_with_increasing_run);
     test_array_of_size (i2sz 1, fill_array_with_increasing_run);
@@ -373,7 +386,7 @@ main () =
     test_array_of_size (i2sz 1000, fill_array_with_increasing_run);
     test_array_of_size (i2sz 10000, fill_array_with_increasing_run);
     test_array_of_size (i2sz 100000, fill_array_with_increasing_run);
-    test_array_of_size (i2sz 1000000, fill_array_with_increasing_run);
+    //test_array_of_size (i2sz 1000000, fill_array_with_increasing_run);
 
     test_array_of_size (i2sz 0, fill_array_with_decreasing_run);
     test_array_of_size (i2sz 1, fill_array_with_decreasing_run);
@@ -390,7 +403,7 @@ main () =
     test_array_of_size (i2sz 1000, fill_array_with_decreasing_run);
     test_array_of_size (i2sz 10000, fill_array_with_decreasing_run);
     test_array_of_size (i2sz 100000, fill_array_with_decreasing_run);
-    test_array_of_size (i2sz 1000000, fill_array_with_decreasing_run);
+    //test_array_of_size (i2sz 1000000, fill_array_with_decreasing_run);
 
     0
   end

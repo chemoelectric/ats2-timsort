@@ -47,6 +47,20 @@ list_vt_timsort_fun :
    (&a, &a) -<> bool) -< !wrt >
     list_vt (a, n)
 
+fn {a : vt@ype}
+list_vt_timsort_cloptr :
+  {n : int}
+  (list_vt (a, n),
+   !(&a, &a) -<cloptr> bool) -< !wrt >
+    list_vt (a, n)
+
+fn {a : vt@ype}
+list_vt_timsort_clo :
+  {n : int}
+  (list_vt (INV(a), n),
+   &(&INV(a), &INV(a)) -<clo> bool) -< !wrt >
+    list_vt (a, n)
+
 (*------------------------------------------------------------------*)
 
 (* Note that list_timsort returns a ‘list_vt’ rather than a ‘list’.
