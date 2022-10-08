@@ -40,7 +40,7 @@ list_vt_timsort$cmp :
 
 (*------------------------------------------------------------------*)
 
-(* Note that list_timsort returns a list_vt rather than a list.
+(* Note that list_timsort returns a ‘list_vt’ rather than a ‘list’.
    The prelude’s list_mergesort does likewise. Use list_vt2t to get
    a non-linear list from the result. *)
 fn {a : t@ype}
