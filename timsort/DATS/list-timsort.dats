@@ -1008,10 +1008,10 @@ implement {a}
 list_timsort lst =
   let
     implement
-    list_vt_timsort$cmp<a> (x, y) =
-      list_timsort$cmp<a> (x, y)
+    list_vt_timsort$lt<a> (x, y) =
+      list_timsort$lt<a> (x, y)
   in
-    list_vt_mergesort<a> (list_copy<a> lst)
+    list_vt_timsort<a> (list_copy<a> lst)
   end
 
 (*------------------------------------------------------------------*)
