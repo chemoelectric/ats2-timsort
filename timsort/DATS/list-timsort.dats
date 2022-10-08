@@ -1015,3 +1015,25 @@ list_timsort lst =
   end
 
 (*------------------------------------------------------------------*)
+
+implement {a}
+list_timsort_fun (lst, lt) =
+  let
+    implement
+    list_timsort$lt<a> (x, y) =
+      x \lt y
+  in
+    list_timsort<a> lst
+  end
+
+implement {a}
+list_timsort_cloref (lst, lt) =
+  let
+    implement
+    list_timsort$lt<a> (x, y) =
+      x \lt y
+  in
+    list_timsort<a> lst
+  end
+
+(*------------------------------------------------------------------*)

@@ -552,6 +552,24 @@ tests_test_list_timsort_LDADD =
 tests_test_list_timsort_LDADD += libats2-timsort.la
 tests/test-list_timsort_tests.c: tests/test-list_timsort.dats
 
+TESTS += tests/test-list_timsort-derivatives
+EXTRA_PROGRAMS += tests/test-list_timsort-derivatives
+CLEANFILES += tests/test-list_timsort-derivatives
+CLEANFILES += tests/test-list_timsort-derivatives_tests.c
+EXTRA_DIST += tests/test-list_timsort-derivatives.dats
+tests_test_list_timsort_derivatives_SOURCES =
+tests_test_list_timsort_derivatives_SOURCES += tests/test-list_timsort-derivatives_tests.c
+tests_test_list_timsort_derivatives_DEPENDENCIES =
+tests_test_list_timsort_derivatives_DEPENDENCIES += tests/test-list_timsort-derivatives.dats
+tests_test_list_timsort_derivatives_DEPENDENCIES += timsort/CATS/timsort.cats
+tests_test_list_timsort_derivatives_DEPENDENCIES += libats2-timsort.la
+tests_test_list_timsort_derivatives_CPPFLAGS =
+tests_test_list_timsort_derivatives_CPPFLAGS += $(AM_CPPFLAGS)
+tests_test_list_timsort_derivatives_CPPFLAGS += -DATS_MEMALLOC_LIBC
+tests_test_list_timsort_derivatives_LDADD =
+tests_test_list_timsort_derivatives_LDADD += libats2-timsort.la
+tests/test-list_timsort_derivatives_tests.c: tests/test-list_timsort-derivatives.dats
+
 tests-clean:
 	-rm -f tests/*.$(OBJEXT)
 
