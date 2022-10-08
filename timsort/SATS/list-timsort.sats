@@ -40,6 +40,15 @@ list_vt_timsort$cmp :
 
 (*------------------------------------------------------------------*)
 
+fn {a : vt@ype}
+list_vt_timsort_fun :
+  {n : int}
+  (list_vt (a, n),
+   (&a, &a) -<> bool) -< !wrt >
+    list_vt (a, n)
+
+(*------------------------------------------------------------------*)
+
 (* Note that list_timsort returns a ‘list_vt’ rather than a ‘list’.
    The prelude’s list_mergesort does likewise. Use list_vt2t to get
    a non-linear list from the result. *)
