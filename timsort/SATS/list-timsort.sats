@@ -21,6 +21,8 @@
 
 staload "timsort/SATS/COMMON/timsort-common.sats"
 
+(*------------------------------------------------------------------*)
+
 fn {a : vt@ype}
 list_vt_timsort :
   {n : int}
@@ -35,3 +37,70 @@ list_vt_timsort$lt :
 fn {a : vt@ype}
 list_vt_timsort$cmp :
   (&a, &a) -<> int
+
+(*------------------------------------------------------------------*)
+
+fn {a : vt@ype}
+list_vt_timsort_fun :
+  {n : int}
+  (list_vt (a, n),
+   (&a, &a) -<> bool) -< !wrt >
+    list_vt (a, n)
+
+fn {a : vt@ype}
+list_vt_timsort_cloptr :
+  {n : int}
+  (list_vt (a, n),
+   !(&a, &a) -<cloptr> bool) -< !wrt >
+    list_vt (a, n)
+
+fn {a : vt@ype}
+list_vt_timsort_clo :
+  {n : int}
+  (list_vt (INV(a), n),
+   &(&INV(a), &INV(a)) -<clo> bool) -< !wrt >
+    list_vt (a, n)
+
+(*------------------------------------------------------------------*)
+
+(* Note that list_timsort returns a ‘list_vt’ rather than a ‘list’.
+   The prelude’s list_mergesort does likewise. Use list_vt2t to get
+   a non-linear list from the result. *)
+fn {a : t@ype}
+list_timsort :
+  {n : int}
+  list (a, n) -< !wrt > list_vt (a, n)
+
+(* Implement either list_timsort$lt or list_timsort$cmp.  The former
+   takes precedence. The latter defaults to
+   ‘gcompare_ref_ref<a>’. Note that the prelude uses call by value
+   rather than call by reference, but call by reference seems better
+   if keys and values are not treated separately. *)
+fn {a : t@ype}
+list_timsort$lt :
+  (&a, &a) -<> bool
+fn {a : t@ype}
+list_timsort$cmp :
+  (&a, &a) -<> int
+
+(*------------------------------------------------------------------*)
+
+(* The following routines return a ‘list_vt’ rather than a ‘list’.
+   The prelude’s list sorts do likewise. Use list_vt2t to get a
+   non-linear list from the result. *)
+
+fn {a : t@ype}
+list_timsort_fun :
+  {n : int}
+  (list (a, n),
+   (&a, &a) -<> bool) -< !wrt >
+    list_vt (a, n)
+
+fn {a : t@ype}
+list_timsort_cloref :
+  {n : int}
+  (list (a, n),
+   (&a, &a) -<cloref> bool) -< !wrt >
+    list_vt (a, n)
+
+(*------------------------------------------------------------------*)

@@ -993,3 +993,103 @@ list_vt_timsort {n} lst =
   end
 
 (*------------------------------------------------------------------*)
+
+implement {a}
+list_timsort$lt (x, y) =
+  list_timsort$cmp<a> (x, y) < 0
+
+implement {a}
+list_timsort$cmp (x, y) =
+  (* This default is the same as for list_mergesort$cmp in the
+     prelude. *)
+  gcompare_val_val<a> (x, y)
+
+implement {a}
+list_timsort lst =
+  let
+    implement
+    list_vt_timsort$lt<a> (x, y) =
+      list_timsort$lt<a> (x, y)
+  in
+    list_vt_timsort<a> (list_copy<a> lst)
+  end
+
+(*------------------------------------------------------------------*)
+
+implement {a}
+list_vt_timsort_fun (lst, lt) =
+  let
+    implement
+    list_vt_timsort$lt<a> (x, y) =
+      x \lt y
+  in
+    list_vt_timsort<a> lst
+  end
+
+implement {a}
+list_vt_timsort_cloptr (lst, lt) =
+  let
+    vtypedef lt_vt (a : vt@ype) =
+      (&a, &a) -<cloptr> bool
+
+    (* Use a second template, to help ensure consistent types despite
+       the unsafe casts. *)
+
+    fn {a : vt@ype}
+    sort {n   : int}
+         (lst : list_vt (a, n),
+          lt  : !lt_vt a)
+        :<!wrt> list_vt (a, n) =
+      let
+        val p_lt = $UN.castvwtp1{ptr} lt
+
+        implement
+        list_vt_timsort$lt<a> (x, y) =
+          let
+            val lt = $UN.castvwtp0{lt_vt a} p_lt
+            val retval = (x \lt y)
+            val () = $UN.castvwtp0{void} lt
+          in
+            retval
+          end
+      in
+        list_vt_timsort<a> lst
+      end
+  in
+    sort<a> (lst, lt)
+  end
+
+implement {a}
+list_vt_timsort_clo (lst, lt) =
+  let
+    vtypedef lt_vt (a : vt@ype) =
+      (&a, &a) -<cloptr> bool
+
+    val lt1 = $UN.castvwtp0{lt_vt a} (addr@ lt)
+    val retval = list_vt_timsort_cloptr (lst, lt1)
+    val () = $UN.castvwtp0{void} lt1
+  in
+    retval
+  end
+
+implement {a}
+list_timsort_fun (lst, lt) =
+  let
+    implement
+    list_timsort$lt<a> (x, y) =
+      x \lt y
+  in
+    list_timsort<a> lst
+  end
+
+implement {a}
+list_timsort_cloref (lst, lt) =
+  let
+    implement
+    list_timsort$lt<a> (x, y) =
+      x \lt y
+  in
+    list_timsort<a> lst
+  end
+
+(*------------------------------------------------------------------*)
