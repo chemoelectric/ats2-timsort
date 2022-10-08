@@ -63,9 +63,10 @@ list_vt_timsort_clo :
 
 (*------------------------------------------------------------------*)
 
-(* Note that list_timsort returns a ‘list_vt’ rather than a ‘list’.
-   The prelude’s list_mergesort does likewise. Use list_vt2t to get
-   a non-linear list from the result. *)
+(* list_timsort is guaranteed to return a list made from a fresh copy
+   of each node. Note that list_timsort returns a ‘list_vt’ rather
+   than a ‘list’. The prelude’s list_mergesort does likewise. Use
+   list_vt2t if you want to get a non-linear list from the result. *)
 fn {a : t@ype}
 list_timsort :
   {n : int}
@@ -73,9 +74,9 @@ list_timsort :
 
 (* Implement either list_timsort$lt or list_timsort$cmp.  The former
    takes precedence. The latter defaults to
-   ‘gcompare_ref_ref<a>’. Note that the prelude uses call by value
-   rather than call by reference, but call by reference seems better
-   if keys and values are not treated separately. *)
+   ‘gcompare_ref_ref<a>’. Note that the prelude’s list_mergesort uses
+   call by value rather than call by reference, but call by reference
+   seems better if keys and values are not treated separately. *)
 fn {a : t@ype}
 list_timsort$lt :
   (&a, &a) -<> bool
@@ -85,9 +86,10 @@ list_timsort$cmp :
 
 (*------------------------------------------------------------------*)
 
-(* The following routines return a ‘list_vt’ rather than a ‘list’.
-   The prelude’s list sorts do likewise. Use list_vt2t to get a
-   non-linear list from the result. *)
+(* The following routines are guaranteed to return a list made from a
+   fresh copy of each node. Note that they return a ‘list_vt’ rather
+   than a ‘list’. Use list_vt2t if you want to get a non-linear list
+   from the result. *)
 
 fn {a : t@ype}
 list_timsort_fun :

@@ -41,6 +41,10 @@ Included:
     galloping seems applicable.) The sort uses only constant-size
     extra space.
 
+  * A linked-list sort, for ATS2, for non-linear lists. This is a
+    wrapper around the sort for linear lists, and is guaranteed to
+    make a fresh copy of each node.
+
 It is possible to make it so you do not need ATS2 to compile the
 program, as long as someone has already generated the C code from the
 ATS2. However, I have not yet decided whether to implement this
