@@ -88,7 +88,6 @@ PATSOPT_DEPS =
 AM_PATSOPTFLAGS =
 AM_PATSOPTFLAGS += -IATS $(builddir)
 AM_PATSOPTFLAGS += -IATS $(srcdir)
-AM_PATSOPTFLAGS += $(ATS2_FLOATTYPES_PATSOPTFLAGS)
 
 TOTAL_PATSOPTFLAGS =
 TOTAL_PATSOPTFLAGS += $(AM_PATSOPTFLAGS)
@@ -236,8 +235,6 @@ nodist_libats2_timsort_c_la_SOURCES += timsort-for-c-to-array_dats.c
 dist_libats2_timsort_c_la_SOURCES =
 dist_libats2_timsort_c_la_SOURCES += ats2-timsort.h
 dist_libats2_timsort_c_la_SOURCES += timsort-for-c-memory.h
-libats2_timsort_c_la_LIBADD =
-libats2_timsort_c_la_LIBADD += $(ATS2_FLOATTYPES_LIBS)
 
 nobase_dist_pkginclude_HEADERS += ats2-timsort.h
 

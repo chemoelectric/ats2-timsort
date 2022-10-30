@@ -579,7 +579,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libats2_timsort_c_la_DEPENDENCIES =
+libats2_timsort_c_la_LIBADD =
 dist_libats2_timsort_c_la_OBJECTS =
 @HAVE_INT128_T_TRUE@am__objects_1 = int128_t_timsort_dats.lo \
 @HAVE_INT128_T_TRUE@	int128_t_timsort_r_dats.lo
@@ -2355,8 +2355,7 @@ TOTAL_M4FLAGS = $(AM_M4FLAGS) $(M4FLAGS) $(XM4FLAGS)
 
 #--------------------------------------------------------------------------
 PATSOPT_DEPS = 
-AM_PATSOPTFLAGS = -IATS $(builddir) -IATS $(srcdir) \
-	$(ATS2_FLOATTYPES_PATSOPTFLAGS)
+AM_PATSOPTFLAGS = -IATS $(builddir) -IATS $(srcdir)
 TOTAL_PATSOPTFLAGS = $(AM_PATSOPTFLAGS) $(PATSOPTFLAGS) \
 	$(XPATSOPTFLAGS)
 TESTS_PATSOPTFLAGS = -IATS $(builddir)/tests -IATS $(srcdir)/tests
@@ -3018,7 +3017,6 @@ nodist_libats2_timsort_c_la_SOURCES = $(TIMSORT_C_SRC) \
 	timsort-for-c-memory_dats.c timsort-for-c-to-array_dats.c
 dist_libats2_timsort_c_la_SOURCES = ats2-timsort.h \
 	timsort-for-c-memory.h
-libats2_timsort_c_la_LIBADD = $(ATS2_FLOATTYPES_LIBS)
 tests_test_clz_SOURCES = tests/test-clz_tests.c
 tests_test_clz_DEPENDENCIES = tests/test-clz.dats \
 	timsort/CATS/timsort.cats
