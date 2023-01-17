@@ -168,7 +168,9 @@ ARRAY_TIMSORT_SATS_C = timsort/SATS/array-timsort_sats.c
 ARRAY_TIMSORT_DATS_C = timsort/DATS/array-timsort_dats.c
 CLEANFILES += $(ARRAY_TIMSORT_SATS_C)
 CLEANFILES += $(ARRAY_TIMSORT_DATS_C)
-ARRAY_TIMSORT_HATS = timsort/HATS/array-timsort.hats
+ARRAY_TIMSORT_HATS =
+ARRAY_TIMSORT_HATS += timsort/HATS/array-timsort_dats.hats
+ARRAY_TIMSORT_HATS += timsort/HATS/array-timsort.hats
 
 LIST_TIMSORT_SATS = timsort/SATS/list-timsort.sats
 LIST_TIMSORT_DATS = timsort/DATS/list-timsort.dats
@@ -176,7 +178,9 @@ LIST_TIMSORT_SATS_C = timsort/SATS/list-timsort_sats.c
 LIST_TIMSORT_DATS_C = timsort/DATS/list-timsort_dats.c
 CLEANFILES += $(LIST_TIMSORT_SATS_C)
 CLEANFILES += $(LIST_TIMSORT_DATS_C)
-LIST_TIMSORT_HATS = timsort/HATS/list-timsort.hats
+LIST_TIMSORT_HATS =
+LIST_TIMSORT_HATS += timsort/HATS/list-timsort_dats.hats
+LIST_TIMSORT_HATS += timsort/HATS/list-timsort.hats
 
 TIMSORT_COMMON_SATS = timsort/SATS/COMMON/timsort-common.sats
 TIMSORT_COMMON_DATS = timsort/DATS/COMMON/timsort-common.dats

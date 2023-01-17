@@ -1,5 +1,5 @@
 (*
-  Copyright © 2022 Barry Schwartz
+  Copyright © 2022, 2023 Barry Schwartz
 
   This program is free software: you can redistribute it and/or
   modify it under the terms of the GNU General Public License, as
@@ -16,7 +16,8 @@
   <https://www.gnu.org/licenses/>.
 *)
 
-staload "timsort/SATS/list-timsort.sats"
+(* You might use this include file, if you do not need to assign a
+   name to timsort/SATS/list-timsort.sats. *)
 
-staload _ = "timsort/DATS/list-timsort.dats"
-staload _ = "timsort/DATS/COMMON/timsort-common.dats"
+staload "timsort/SATS/list-timsort.sats"
+#include "timsort/HATS/list-timsort_dats.hats"

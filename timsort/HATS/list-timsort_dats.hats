@@ -16,8 +16,5 @@
   <https://www.gnu.org/licenses/>.
 *)
 
-(* You might use this include file, if you do not need to assign a
-   name to timsort/SATS/array-timsort.sats. *)
-
-staload "timsort/SATS/array-timsort.sats"
-#include "timsort/HATS/array-timsort_dats.hats"
+staload _ = "timsort/DATS/list-timsort.dats"
+staload _ = "timsort/DATS/COMMON/timsort-common.dats"
